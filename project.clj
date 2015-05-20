@@ -1,6 +1,8 @@
-(defproject hello-atom-shell "0.1.0-SNAPSHOT"
-  :source-paths ["src/tools"]
-  :description "A hello, world application for atom-shell"
+(defproject great-things-done "0.1.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.webjars/react "0.12.0"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2511"]
@@ -9,6 +11,7 @@
                  [ring/ring-core "1.3.1"]]
   :plugins [[lein-cljsbuild "1.0.3"]
             [lein-figwheel "0.1.5-SNAPSHOT"]]
+  :source-paths ["src/tools"]
   :cljsbuild
   {:builds
    [{:source-paths ["src/atom"],
