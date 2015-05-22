@@ -9,6 +9,7 @@
                  [figwheel "0.1.5-SNAPSHOT"]
                  [reagent "0.5.0-alpha"]
                  [ring/ring-core "1.3.1"]]
+
   :plugins [[lein-cljsbuild "1.0.3"]
             [lein-figwheel "0.1.5-SNAPSHOT"]]
   :source-paths ["src/tools"]
@@ -20,7 +21,7 @@
                 :optimizations :simple
                 :pretty-print true
                 :cache-analysis true}}
-    {:source-paths ["src/great_things_done"],
+    {:source-paths ["src/node" "src/ui" "src/great_things_done" "src/core"],
      :id "great-things-done",
      :compiler {:output-dir "resources/public/js/great-things-done-out"
                 :output-to "resources/public/js/great-things-done-core.js",

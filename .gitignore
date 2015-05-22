@@ -13,3 +13,4 @@ node_modules
 *.iws
 resources/public/js
 resources/main.js
+.nrepl-port
