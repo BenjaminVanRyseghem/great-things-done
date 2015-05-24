@@ -4,9 +4,9 @@
 (def browser-window (js/require "browser-window"))
 (def crash-reporter (js/require "crash-reporter"))
 
-(def main-window (atom nil))
+(def ^:private main-window (atom nil))
 
-(defn init-browser []
+(defn- init-browser []
   (reset! main-window (browser-window.
                         (clj->js {:width 800
                                   :height 600})))
