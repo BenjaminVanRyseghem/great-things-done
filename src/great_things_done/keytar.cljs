@@ -6,16 +6,8 @@
 (defn add-password!
   "Add the `password` for the `service` and `account` to the keychain."
   [service account password]
-  (js/console.log service)
-  (js/console.log account)
-  (js/console.log password)
-  (let [result (.addPassword keytar service account password)]
-    (js/console.log result)
-    (when-not result
-      (throw (js/Error. "Error during the creation of the password")))))
-
-;;   (when-not (.addPassword keytar service account password)
-;;     (throw (js/Error. "Error during the creation of the password"))))
+  (when-not (.addPassword keytar service account password)
+    (throw (js/Error. "Error during the creation of the password"))))
 
 (defn get-password
   "Get the stored password for the `service` and `account`."
