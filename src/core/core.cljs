@@ -15,6 +15,10 @@
 
 ;; Ensures all necessary folders and files are present
 (platform/ensure-database-path!)
+(platform/ensure-database-meta-projects-path!)
+(platform/ensure-database-projects-path!)
+(platform/ensure-database-tasks-path!)
+(platform/ensure-config-file!)
 
 ;; Finally render the app
 (ui/render-core)
@@ -29,3 +33,4 @@
 
 (keytar/replace-password! "great-things-done" "benjamin" "password")
 (js/console.log (keytar/get-password "great-things-done" "benjamin"))
+(import-db/import-meta-projects)
