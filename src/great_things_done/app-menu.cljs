@@ -51,12 +51,12 @@
                                             :accelerator "Command+A"
                                             :selector "selectAll:"}]}
                                 {:label "View"
-                                 :submenu: [{:label "Reload"
-                                             :accelerator "Command+R"
-                                             :click #(.reloadIgnoringCache (.getFocusedWindow BrowserWindow))}
-                                            {:label "Toggle DevTools"
-                                             :accelerator "Alt+Command+I"
-                                             :click #(.toggleDevTools (.getFocusedWindow BrowserWindow))}]}
+                                 :submenu [{:label "Reload"
+                                            :accelerator "Command+R"
+                                            :click #(.reloadIgnoringCache (.getFocusedWindow BrowserWindow))}
+                                           {:label "Toggle DevTools"
+                                            :accelerator "Alt+Command+I"
+                                            :click #(.toggleDevTools (.getFocusedWindow BrowserWindow))}]}
                                 {:label "Window"
                                  :submenu [{:label "Minimize"
                                             :accelerator "Command+M"
