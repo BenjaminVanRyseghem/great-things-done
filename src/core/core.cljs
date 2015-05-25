@@ -1,10 +1,11 @@
 (ns core.core
-  (:require [figwheel.client :as fw]
+  (:require [figwheel.client :as fw :include-macros true]
             [ui.core :as ui]
-            [great_things_done.crypto :as crypto]
-            [great_things_done.keytar :as keytar]
-            [great_things_done.platform :as platform]
-            [great_things_done.app-menu :as app-menu]))
+            [great-things-done.app-menu :as app-menu]
+            [great-things-done.crypto :as crypto]
+            [great-things-done.import-db :as import-db]
+            [great-things-done.keytar :as keytar]
+            [great-things-done.platform :as platform]))
 
 
 ;; Initialize figwheel websocket

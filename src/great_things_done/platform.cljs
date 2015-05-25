@@ -1,6 +1,6 @@
-(ns great_things_done.platform
+(ns great-things-done.platform
   (:require [node.fs :as fs])
-  (:use-macros [great_things_done.macro :only (for-os)]))
+  (:use-macros [great-things-done.macro :only (for-os)]))
 
 (defn- home
   "Creates a path starting from current user home"

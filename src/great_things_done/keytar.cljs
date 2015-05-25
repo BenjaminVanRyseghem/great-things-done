@@ -1,4 +1,4 @@
-(ns great_things_done.keytar
+(ns great-things-done.keytar
   "A native Node module to get, add, replace, and delete passwords. On OS X the passwords are managed by the Keychain, and on Windows they are managed by the Credential Vault.")
 
 (def ^:private keytar (js/require "keytar"))

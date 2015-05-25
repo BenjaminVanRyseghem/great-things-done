@@ -1,4 +1,4 @@
-(ns great_things_done.crypto
+(ns great-things-done.crypto
   "Encryption/Decryption node modulde based on https://gist.github.com/chris-rock/993d8a22c7138d1f0d2e#file-crypto-ctr-js")
 
 (def ^:private crypto (js/require "crypto"))
