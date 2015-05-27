@@ -1,6 +1,7 @@
 (ns core.core
   (:require [figwheel.client :as fw :include-macros true]
             [ui.core :as ui]
+            [great-things-done.application-info :as application-info]
             [great-things-done.app-menu :as app-menu]
             [great-things-done.crypto :as crypto]
             [great-things-done.import-db :as import-db]
@@ -33,3 +34,7 @@
 (keytar/replace-password! "great-things-done" "benjamin" "password")
 (js/console.log (keytar/get-password "great-things-done" "benjamin"))
 (import-db/import-meta-projects)
+
+(js/console.log "INFO: ")
+(js/console.log (str (:id (application-info/get-current-app-info))))
+(js/console.log (str (:name (application-info/get-current-app-info))))
