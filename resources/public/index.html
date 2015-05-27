@@ -10,7 +10,9 @@
             var ret = globalShortcut.register('ctrl+x', function() {
                 console.log('ctrl+x is pressed');
                 great_things_done.application_info.js_get_current_app_data(function(data) {
-                    console.log(data);
+                    data.forEach(function(each) {
+                        console.log(each);
+                    })
                 });
             });
         </script>
