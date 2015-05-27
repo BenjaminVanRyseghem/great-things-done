@@ -35,11 +35,6 @@
   []
   (str (database-path) "/projects"))
 
-(defn database-tasks-path
-  "Return the database path for the tasks"
-  []
-  (str (database-path) "/tasks"))
-
 (defn- config-path
   "Return the OS Specific path to config files"
   []
@@ -61,11 +56,6 @@
   "Ensure that `database-projects-path` exists on disk"
   []
   (ensure-path! (database-projects-path)))
-
-(defn ensure-database-tasks-path!
-  "Ensure that `database-tasks-path` exists on disk"
-  []
-  (ensure-path! (database-tasks-path)))
 
 (defn ensure-config-file!
   "Ensure that the config file exists"

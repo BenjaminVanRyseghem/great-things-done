@@ -17,7 +17,6 @@
 (platform/ensure-database-path!)
 (platform/ensure-database-meta-projects-path!)
 (platform/ensure-database-projects-path!)
-(platform/ensure-database-tasks-path!)
 (platform/ensure-config-file!)
 
 ;; Finally render the app
