@@ -1,6 +1,7 @@
 (ns great-things-done.db
   (:require [cljs-uuid-utils.core :as uuid]
             [great-things-done.platform :as platform]
+            [great-things-done.utils :refer [clj->json]]
             [node.fs :as fs]))
 
 (def ^:private meta-projects (atom []))
@@ -22,37 +23,52 @@
 (defn- write-project-to-disk
   [project]
   (let [projects-path (platform/database-projects-path)
-        filename      (str (:name project) "-" (:id project))])
-  )
+        filename      (str (:name project) "-" (:id project))
+        full-path     (str projects-path "/" filename)]
+    (fs/ensure-dir! full-path)
+    (fs/write-file! (str full-path "/.project.pgtd")
+                    (clj->json (assoc
+                                 project
+                                 :tasks
+                                 (map :id (:tasks project)))))))
 
 (defn- install-project
   [project]
   (swap! projects assoc (:id project) project)
-  (write-project-to-disk project))
+  (write-project-to-disk project)
+  project)
 
+(defn- move-all-tasks
+  [project old-name]
+  (let [new-path      (str (platform/database-projects-path)
+                           "/"
+                           (str (:name project) "-" (:id project)))
+        old-path      (str (platform/database-projects-path)
+                           "/"
+                           (str old-name "-" (:id project)))]
+    (fs/rename! old-path new-path)))
 
-(defn- create-project
+(defn- new-project
   [project-name tags tasks description due-date]
-  (let [id (generate-uuid)]
-    [id
      {:name          project-name
+      :id            (generate-uuid)
       :tags          tags
       :tasks         tasks
       :description   description
       :creation-date (now-as-milliseconds)
-      :due-date      due-date}]))
+      :due-date      due-date})
 
-(defn register-project!
+(defn register-project
   [project-name & {:keys [tags tasks description due-date]
                    :or {tags []
                         tasks []
                         description ""
                         due-date nil}}]
-  (let [project (create-project project-name
-                                tags
-                                tasks
-                                description
-                                due-date)]
+  (let [project (new-project project-name
+                             tags
+                             tasks
+                             description
+                             due-date)]
     (install-project project)))
 
 (defn update-project!
@@ -61,12 +77,15 @@
                    (map #(into [] %)
                         (partition 2 body)))]
     (if (even? (count body))
-      (let [tmp-project (atom {})]
+      (let [tmp-project (atom project)]
         (doseq [[k v] args]
           (when (= (name k) "id")
             (throw (js/Error. "`id` can not be updated!")))
           (swap! tmp-project assoc (keyword k) v)
-          (install-project (merge project tmp-project))))
+          (js/console.log (name k))
+          (when (= (name k) "name")
+            (move-all-tasks @tmp-project (:name project))))
+          (install-project @tmp-project))
       (throw (js/Error. "Wong number of arguments. `body` has to have an even number of elements")))))
 
 (defn ^:export list-of-projects
