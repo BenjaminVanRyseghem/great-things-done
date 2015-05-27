@@ -3,14 +3,16 @@
 
 (def ^:private osx-mail-applescript
   "tell application \"Mail\"
-    set _sel to get selection
-    set _links to {}
-    set the selected_message to item 1 of the _sel
-    set _messageURL to \"message://%3c\" & selected_message's message id & \"%3e\"
-    set AppleScript's text item delimiters to return
-  end tell
+     set _sel to get selection
+     set _links to {}
+     repeat with _msg in _sel
+       set _messageURL to \"message://%3c\" & _msg's message id & \"%3e\"
+       set end of _links to _messageURL
+     end repeat
+     set AppleScript's text item delimiters to return
+   end tell
 
-  return _messageURL")
+   return _links")
 
 (defmulti retrieve-current-app-data-osx
   #(:id %1))
