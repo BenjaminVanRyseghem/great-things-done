@@ -14,17 +14,35 @@
 
    return _links")
 
+(def ^:private osx-finder-applescript
+  "tell application \"Finder\"
+     set acc to {}
+   	 set sel to the selection
+   	 repeat with each in sel
+   	   set end of acc to URL of each
+     end repeat
+   end tell
+
+   return acc")
+
+(defn- run-applescript
+  [code callback]
+  (let [applescript (js/require "applescript")]
+    (.execString applescript
+                 code
+                 (fn [err res]
+                   (when err
+                     (throw (js/Error. (str "Error when performing" code))))
+                     (callback res)))))
+
 (defmulti retrieve-current-app-data-osx
   #(:id %1))
 
 (defmethod retrieve-current-app-data-osx "com.apple.mail" [info callback]
-  (let [applescript (js/require "applescript")]
-    (.execString applescript
-                 osx-mail-applescript
-                 (fn [err res]
-                   (when err
-                     (throw (js/Error. "Error when retrieving data from Mail.app")))
-                   (callback res)))))
+  (run-applescript osx-mail-applescript callback))
+
+(defmethod retrieve-current-app-data-osx "com.apple.finder" [info callback]
+  (run-applescript osx-finder-applescript callback))
 
 (defn- get-current-app-info-osx
   "Return info about the current frontmost application on OSX"
