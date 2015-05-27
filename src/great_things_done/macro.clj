@@ -1,5 +1,7 @@
 (ns great-things-done.macro)
 
+
+;; TODO: Avoid duplication
 (defmacro for-os
   "Execute code depending on the current OS"
   [& body]
@@ -11,11 +13,12 @@
         os-map#               (into {}
                                     (into []
                                           (map #(into [] %)
-                                               (partition 2 body))))]
+                                               (partition 2 body))))
+        keys#                 (keys os-map#)]
     (if (even? (count body))
-      `(if (contains? ~os-map# (get ~platform-translation#
-                                    js/process.platform))
-                      (get ~os-map# (get ~platform-translation#
-                                         js/process.platform))
-                      ~(get os-map# :default))
-         (throw (Exception. "Wrong number of args. `for-os` should have an even number of arguments")))))
+      `(if (some #{(get ~platform-translation#
+                        js/process.platform)} '~keys#)
+         (get ~os-map# (get ~platform-translation#
+                            js/process.platform))
+         ~(get os-map# :default))
+      (throw (Exception. "Wrong number of args. `for-os` should have an even number of arguments")))))
