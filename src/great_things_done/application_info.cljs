@@ -18,7 +18,6 @@
   #(:id %1))
 
 (defmethod retrieve-current-app-data-osx "com.apple.mail" [info callback]
-  (js/console.log "Been there")
   (let [applescript (js/require "applescript")]
     (.execString applescript
                  osx-mail-applescript
@@ -30,7 +29,6 @@
 (defn- get-current-app-info-osx
   "Return info about the current frontmost application on OSX"
   []
-  (js/console.log "Been there2")
   (let [remote  (js/require "remote")
         nodobjc (js/require "nodobjc")]
     (.framework nodobjc "AppKit")
