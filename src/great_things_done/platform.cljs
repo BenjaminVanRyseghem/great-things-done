@@ -12,12 +12,6 @@
         args      (conj body "/" home-path)]
     (apply str args)))
 
-(defn- ensure-path!
-  "Ensures the path provided as argument is present on disk"
-  [path]
-  (when-not (fs/exists? path)
-    (fs/mkdir path)))
-
 (defn database-path
   "Return the database path according to the operating system"
   []
@@ -45,19 +39,19 @@
 (defn ensure-database-path!
   "Ensure that `database-path` exists on disk"
   []
-  (ensure-path! (database-path)))
+  (fs/ensure-dir! (database-path)))
 
 (defn ensure-database-meta-projects-path!
   "Ensure that `database-meta-projects-path` exists on disk"
   []
-  (ensure-path! (database-meta-projects-path)))
+  (fs/ensure-dir! (database-meta-projects-path)))
 
 (defn ensure-database-projects-path!
   "Ensure that `database-projects-path` exists on disk"
   []
-  (ensure-path! (database-projects-path)))
+  (fs/ensure-dir! (database-projects-path)))
 
 (defn ensure-config-file!
   "Ensure that the config file exists"
   []
-  (ensure-path! (config-path)))
+  (fs/ensure-dir! (config-path)))
