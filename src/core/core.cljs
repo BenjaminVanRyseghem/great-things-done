@@ -4,6 +4,7 @@
             [great-things-done.application-info :as application-info]
             [great-things-done.app-menu :as app-menu]
             [great-things-done.crypto :as crypto]
+            [great-things-done.db :as db]
             [great-things-done.import-db :as import-db]
             [great-things-done.keytar :as keytar]
             [great-things-done.platform :as platform]))
@@ -35,6 +36,13 @@
 (js/console.log (keytar/get-password "great-things-done" "benjamin"))
 (import-db/import-meta-projects)
 
-(js/console.log "INFO: ")
-(js/console.log (str (:id (application-info/get-current-app-info))))
-(js/console.log (str (:name (application-info/get-current-app-info))))
+;; (db/register-project "first-project"
+;;                       :tasks [{:id 1 :name "foo"}
+;;                               {:id 2 :name "bar"}])
+
+;; (db/update-project! {:id "2be2ca7c-1578-4921-a5c4-b432edd1111d"
+;;                      :name "first-project"
+;;                      :tags []
+;;                      :tasks []}
+;;                     :name "Lapin2"
+;;                     :due-date "1432758623759")
