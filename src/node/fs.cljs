@@ -62,6 +62,13 @@ The encoding option is ignored if data is a buffer. It defaults to 'utf8'.
     (.readdir fs path callback)
     (.readdirSync fs path)))
 
+(defn read-file
+  "Synchronously reads the entire contents of a file. If `callback` is provided the execution is asynchronous."
+  [path & [options callback]]
+  (if callback
+    (.readFile fs path options callback)
+    (.readFileSync fs path options)))
+
 (defn rm-dir!
   "Synchronous rmdir(2). If `callback` is provided the execution is asynchronous."
   [path & [callback]]
@@ -80,9 +87,9 @@ The encoding option is ignored if data is a buffer. It defaults to 'utf8'.
   [path & [callback]]
   (if callback
     (path-exists? path
-             #(when-not %
-                (mkdir! path
-                        nil
-                        callback)))
+                  #(when-not %
+                     (mkdir! path
+                             nil
+                             callback)))
     (when-not (path-exists? path)
       (mkdir! path))))
