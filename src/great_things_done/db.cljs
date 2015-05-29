@@ -24,9 +24,9 @@
   [project]
   (let [projects-path (platform/database-projects-path)
         filename      (str (:name project) "-" (:id project))
-        full-path     (str projects-path "/" filename)]
+        full-path     (str projects-path platform/separator filename)]
     (fs/ensure-dir! full-path)
-    (fs/write-file! (str full-path "/.project.pgtd")
+    (fs/write-file! (str full-path platform/separator ".project.pgtd")
                     (clj->json (assoc
                                  project
                                  :tasks
@@ -40,12 +40,12 @@
 
 (defn- move-all-tasks
   [project old-name]
-  (let [new-path      (str (platform/database-projects-path)
-                           "/"
-                           (str (:name project) "-" (:id project)))
-        old-path      (str (platform/database-projects-path)
-                           "/"
-                           (str old-name "-" (:id project)))]
+  (let [new-path (str (platform/database-projects-path)
+                      platform/separator
+                      (str (:name project) "-" (:id project)))
+        old-path (str (platform/database-projects-path)
+                      platform/separator
+                      (str old-name "-" (:id project)))]
     (fs/rename! old-path new-path)))
 
 (defn- new-project

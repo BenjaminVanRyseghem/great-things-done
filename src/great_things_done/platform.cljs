@@ -2,6 +2,11 @@
   (:require [node.fs :as fs])
   (:use-macros [great-things-done.macro :only (for-os)]))
 
+(def separator
+  (for-os
+   "Windows" "\\"
+   :default  "/"))
+
 (defn- home
   "Creates a path starting from current user home"
   [& body]
@@ -9,7 +14,7 @@
                    "windows" "USERPROFILE"
                    :default  "HOME")
         home-path (aget js/process.env home-env)
-        args      (conj body "/" home-path)]
+        args      (conj body separator home-path)]
     (apply str args)))
 
 (defn database-path
@@ -22,12 +27,12 @@
 (defn database-meta-projects-path
   "Return the database path for the meta projects"
   []
-  (str (database-path) "/meta-projects"))
+  (str (database-path) (str separator "meta-projects")))
 
 (defn database-projects-path
   "Return the database path for the projects"
   []
-  (str (database-path) "/projects"))
+  (str (database-path) (str separator "projects")))
 
 (defn- config-path
   "Return the OS Specific path to config files"
