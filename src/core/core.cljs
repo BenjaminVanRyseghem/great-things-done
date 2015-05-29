@@ -19,6 +19,7 @@
 (platform/ensure-database-path!)
 (platform/ensure-database-meta-projects-path!)
 (platform/ensure-database-projects-path!)
+(platform/ensure-inbox!)
 (platform/ensure-config-file!)
 
 ;; Finally render the app
@@ -46,3 +47,12 @@
 ;;                      :tasks []}
 ;;                     :name "Lapin2"
 ;;                     :due-date "1432758623759")
+
+
+
+(db/register-task "My first task"
+                  :description "Awesome first task, please suck my balls")
+
+
+;; Todo
+;; Ensure Inbox project

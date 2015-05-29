@@ -60,3 +60,14 @@
   "Ensure that the config file exists"
   []
   (fs/ensure-dir! (config-path)))
+
+(defn ensure-inbox!
+  "Ensure that the inbox folder exists"
+  []
+  (fs/ensure-dir! (str (database-projects-path)
+                       separator
+                       "Inbox")))
+
+(defn logged-user
+  []
+  (aget js/process.env "USER"))
