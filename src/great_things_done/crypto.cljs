@@ -1,7 +1,8 @@
 (ns great-things-done.crypto
   "Encryption/Decryption node modulde based on https://gist.github.com/chris-rock/993d8a22c7138d1f0d2e#file-crypto-ctr-js")
 
-(def ^:private crypto (js/require "crypto"))
+(def ^:private remote (js/require "remote"))
+(def ^:private crypto (.require remote "crypto"))
 
 ;; function encrypt(text){
 ;;   var cipher = crypto.createCipher(algorithm,password)
@@ -15,7 +16,7 @@
   [text password & {:keys [algorithm]
                     :or {algorithm "aes-256-ctr"}}]
   (let [cipher  (.createCipher crypto algorithm password)
-        crypted (.update cipher text "utf8" "hex")]
+        crypted (.update cipher (str text) "utf8" "hex")]
     (+ crypted (.final cipher "hex"))))
 
 ;; function decrypt(text){
@@ -30,5 +31,5 @@
   [text password & {:keys [algorithm]
                     :or {algorithm "aes-256-ctr"}}]
   (let [decipher  (.createDecipher crypto algorithm password)
-        decrypted (.update decipher text "hex" "utf8")]
+        decrypted (.update decipher (str text) "hex" "utf8")]
     (+ decrypted (.final decipher "utf8"))))
