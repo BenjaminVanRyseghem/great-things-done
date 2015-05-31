@@ -46,10 +46,15 @@
 ;; (import-db/import-meta-projects)
 
 (import-db/import-all-projects!)
+
 (let [projects (state/list-of-projects)]
   (js/console.log (count projects))
   (doseq [project projects]
     (js/console.log (:name project))))
+
+(let [tasks (:tasks (state/inbox))]
+  (doseq [t tasks]
+    (js/console.log (:name t))))
 
 ;; (state/register-project "first-project"
 ;;                       :tasks [{:id 1 :name "foo"}
