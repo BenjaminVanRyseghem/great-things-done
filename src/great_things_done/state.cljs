@@ -54,7 +54,7 @@
 
 (defn- store-project!
   [project]
-  (if (= project @inbox-project)
+  (if (= (:id project) "Inbox")
     (reset! inbox-project project)
     (if (:done project)
       (swap! completed-projects assoc (:id project) project)
