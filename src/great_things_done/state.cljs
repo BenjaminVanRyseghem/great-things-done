@@ -10,6 +10,16 @@
 (def ^:private completed-tasks    (atom {}))
 (def ^:private tags               (atom {}))
 
+(def ^:private inbox-project      (atom {:name          "Inbox"
+                                         :id            "Inbox"
+                                         :tags          []
+                                         :tasks         []
+                                         :description   nil
+                                         :creation-date nil
+                                         :due-date      nil
+                                         :active        nil
+                                         :done          false}))
+
 (defn- generate-uuid
   []
   (loop [uuid (uuid/uuid-string (uuid/make-random-uuid))]
@@ -44,10 +54,12 @@
 
 (defn- store-project!
   [project]
-  (if (:done project)
-    (swap! completed-projects assoc (:id project) project)
-    (swap! active-projects assoc (:id project) project))
-  (register-tags! project :projects))
+  (if (= project @inbox-project)
+    (reset! inbox-project project)
+    (if (:done project)
+      (swap! completed-projects assoc (:id project) project)
+      (swap! active-projects assoc (:id project) project))
+    (register-tags! project :projects)))
 
 (defn- install-task
   [task]
@@ -76,8 +88,8 @@
 (defn- new-task
   [task-name project tags sub-tasks description remind-date due-date repeating done]
   {:name        task-name
-   :id          (generate-uuid)
-   :project     project
+   :id          (str task-name "-" (generate-uuid))
+   :project     (select-keys project [:name :id])
    :tags        tags
    :sub-tasks   sub-tasks
    :description description
@@ -89,7 +101,7 @@
 (defn- new-project
   [project-name tags tasks description due-date active done]
   {:name          project-name
-   :id            (generate-uuid)
+   :id            (str project-name "-" (generate-uuid))
    :tags          tags
    :tasks         tasks
    :description   description
@@ -98,25 +110,30 @@
    :active        active
    :done          done})
 
+(defn inbox
+  []
+  @inbox-project)
+
 (defn register-task
   [task-name {:keys [project tags sub-tasks description remind-date due-date repeating]
-              :or   {project     {:id nil
-                                  :name "Inbox"}
+              :or   {project     (inbox)
                      tags        []
                      sub-tasks   []
                      description ""
                      remind-date nil
                      due-date    nil
                      repeating   false}}]
-  (install-task (new-task task-name
-                          project
-                          tags
-                          sub-tasks
-                          description
-                          remind-date
-                          due-date
-                          repeating
-                          false)))
+  (let [task (new-task task-name
+                       project
+                       tags
+                       sub-tasks
+                       description
+                       remind-date
+                       due-date
+                       repeating
+                       false)]
+    (install-task task)
+    (install-project (assoc project :tasks (conj (:tasks project) task)))))
 
 (defn register-project
   [project-name & {:keys [tags tasks description due-date active]
@@ -153,11 +170,11 @@
 
 (defn load-project!
   [project]
-  (store-project project))
+  (store-project! project))
 
 (defn load-task!
   [task]
-  (store-task task))
+  (store-task! task))
 
 (defn ^:export list-of-projects
   []

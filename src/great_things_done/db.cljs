@@ -24,16 +24,16 @@
 (defn deserialize-task
   [path task-id & [callback]]
   (let [task-path (str path
-                       plateform/separator
+                       platform/separator
                        task-id
                        ".egtd")
         string    (fs/read-file task-path)
         info      (decrypt-task string)
         task      (atom {})]
     (doseq [[k v] info]
-      (swap! project assoc k v)
+      (swap! task assoc k v)
       (when (= (name k) "sub-tasks")
-        (swap! project assoc k (map #(deserialize-task path %) v))))
+        (swap! task assoc k (map #(deserialize-task path %) v))))
     (when callback
       (callback @task))
     @task))
@@ -41,10 +41,10 @@
 (defn deserialize-project
   [path & [callback]]
   (let [project-path (str (platform/database-projects-path)
-                          plateform/separator
+                          platform/separator
                           path)
         full-path    (str project-path
-                          plateform/separator
+                          platform/separator
                           ".project.pgtd")
         string     (fs/read-file full-path)
         info       (json->clj string)
@@ -59,13 +59,11 @@
   [task]
   (let [project       (:project task)
         projects-path (platform/database-projects-path)
-        project-name  (if (:id project)
-                        (str (:name project) "-" (:id project))
-                        (str (:name project)))
-        task-name     (str (:name task) "-" (:id task))
+        project-id    (:id project)
+        task-name     (:id task)
         full-path     (str projects-path
                            platform/separator
-                           project-name)
+                           project-id)
         string        (encrypt-task (assoc
                                       task
                                       :sub-tasks
@@ -77,8 +75,8 @@
 (defn serialize-project!
   [project]
   (let [projects-path (platform/database-projects-path)
-        filename      (str (:name project) "-" (:id project))
-        full-path     (str projects-path platform/separator filename)]
+        project-id    (:id project)
+        full-path     (str projects-path platform/separator project-id)]
     (fs/ensure-dir! full-path)
     (fs/write-file! (str full-path platform/separator ".project.pgtd")
                     (clj->json (assoc
@@ -87,13 +85,13 @@
                                  (map :id (:tasks project)))))))
 
 (defn rename-project!
-  [project old-name]
+  [project old-id]
   (let [new-path (str (platform/database-projects-path)
                       platform/separator
-                      (str (:name project) "-" (:id project)))
+                      (:id project))
         old-path (str (platform/database-projects-path)
                       platform/separator
-                      (str old-name "-" (:id project)))]
+                      old-id)]
     (fs/rename! old-path new-path)))
 
 (defn ensure-structure
@@ -102,3 +100,15 @@
   (platform/ensure-database-meta-projects-path!)
   (platform/ensure-database-projects-path!)
   (platform/ensure-inbox!))
+
+(defn ensure-project
+  [project]
+  (let [projects-path (platform/database-projects-path)
+        project-id    (:id project)
+        exists        (fs/path-exists? (str projects-path
+                                            platform/separator
+                                            project-id
+                                            platform/separator
+                                            ".project.pgtd"))]
+    (when-not exists
+      (serialize-project! project))))

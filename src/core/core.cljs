@@ -20,6 +20,9 @@
 (db/ensure-structure)
 (platform/ensure-config-file!)
 
+;; Ensure Inbox project
+(db/ensure-project (state/inbox))
+
 ;; Finally render the app
 (ui/render-core)
 
@@ -40,7 +43,13 @@
 ;; (keytar/replace-password! "great-things-done" "benjamin" "password")
 ;; (js/console.log (keytar/get-password "great-things-done" "benjamin"))
 
-(import-db/import-meta-projects)
+;; (import-db/import-meta-projects)
+
+(import-db/import-all-projects!)
+(let [projects (state/list-of-projects)]
+  (js/console.log (count projects))
+  (doseq [project projects]
+    (js/console.log (:name project))))
 
 ;; (state/register-project "first-project"
 ;;                       :tasks [{:id 1 :name "foo"}
@@ -54,10 +63,8 @@
 ;;                     :due-date "1432758623759")
 
 
-
 (state/register-task "My first task"
                      :description "Awesome first task, please suck my balls")
 
 
 ;; Todo
-;; Ensure Inbox project

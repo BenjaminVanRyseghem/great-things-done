@@ -1,6 +1,7 @@
-(ns great-things-done.import-state
-  (:require [great-things-done.state :as state]
+(ns great-things-done.import-db
+  (:require [great-things-done.db :as db]
             [great-things-done.platform :as platform]
+            [great-things-done.state :as state]
             [node.fs :as fs]))
 
 (defn import-meta-projects
@@ -26,8 +27,10 @@
     (state/load-project! project)
     project))
 
-(defn import-all-projects
+(defn import-all-projects!
   []
   (let [root    (platform/database-projects-path)
         folders (fs/read-dir root)]
-    (map import-project folders)))
+    (doseq [folder folders]
+      (when-not (= (first folder) ".")
+        (import-project folder)))))
