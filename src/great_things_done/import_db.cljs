@@ -26,4 +26,8 @@
     (state/load-project! project)
     project))
 
-;; (defn import-all-projects)
+(defn import-all-projects
+  []
+  (let [root    (platform/database-projects-path)
+        folders (fs/read-dir root)]
+    (map import-project folders)))
