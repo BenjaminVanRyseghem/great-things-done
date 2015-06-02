@@ -28,6 +28,18 @@
       uuid
       (recur (uuid/uuid-string (uuid/make-random-uuid))))))
 
+(defn- normalize-path
+  [path]
+  (.replace path
+            (js* "/[^a-zA-z0-9-_]/g") ;; to check
+            "-"))
+
+(defn- build-id
+  [entity-name]
+  (str (normalize-path entity-name)
+       "-"
+       (generate-uuid)))
+
 (defn- now-as-milliseconds
   "Return the current time as a string"
   []
@@ -83,25 +95,26 @@
 ;;     - repeat: "after" or "every"
 ;;               "after" to indicates that the next action should appears `delay` days after the last completion
 ;;               "every" to indicate a new instance shoud be created every `delay`th of the month (note that in this case `delay` must be between 1 and 31)
-;;     - shown-before: int >= 0 number of days before the due date when the instance should appear in the inbox
+;;     - show-before: int >= 0 number of days before the due date when the instance should appear in the inbox
 
 (defn- new-task
-  [task-name project tags sub-tasks description remind-date due-date repeating done]
+  [task-name project tags sub-tasks description remind-date due-date show-before repeating done]
   {:name        task-name
-   :id          (str task-name "-" (generate-uuid))
+   :id          (build-id task-name)
    :project     (select-keys project [:name :id])
    :tags        tags
    :sub-tasks   sub-tasks
    :description description
    :remind-date remind-date
    :due-date    due-date
+   :show-before show-before
    :repeating   repeating
    :done        done})
 
 (defn- new-project
   [project-name tags tasks description due-date active done]
   {:name          project-name
-   :id            (str project-name "-" (generate-uuid))
+   :id            (build-id project-name)
    :tags          tags
    :tasks         tasks
    :description   description
@@ -114,14 +127,22 @@
   []
   @inbox-project)
 
+(defn all-projects
+  []
+  (assoc
+    (merge @active-projects @completed-projects)
+    "Inbox"
+    (inbox)))
+
 (defn register-task
-  [task-name {:keys [project tags sub-tasks description remind-date due-date repeating]
+  [task-name {:keys [project tags sub-tasks description remind-date due-date show-before repeating]
               :or   {project     (inbox)
                      tags        []
                      sub-tasks   []
                      description ""
                      remind-date nil
                      due-date    nil
+                     show-before 0
                      repeating   false}}]
   (let [task (new-task task-name
                        project
@@ -130,10 +151,12 @@
                        description
                        remind-date
                        due-date
+                       show-before
                        repeating
                        false)]
     (install-task task)
-    (install-project (assoc project :tasks (conj (:tasks project) task)))))
+    (install-project (assoc project :tasks (conj (:tasks project) task)))
+    task))
 
 (defn register-project
   [project-name & {:keys [tags tasks description due-date active]
@@ -149,7 +172,55 @@
                                 due-date
                                 active
                                 false)))
-;; TODO: update task
+
+
+(defn update-task!
+  "This function is thought in the way only one property is changed at a time"
+  [task & body]
+  (let [args (into {}
+                   (into []
+                         (map #(into [] %)
+                              (partition 2 body))))]
+    (if (even? (count body))
+      (let [tmp-task (atom (merge task args))]
+        (doseq [[k v] args]
+          (when (= (name k) "id")
+            (throw (js/Error. "`id` can not be updated!")))
+          (when (= (name k) "name")
+            (swap! tmp-task assoc :id (build-id v))
+            (let [project  (get (all-projects)
+                                (:id (:project task)))
+                  matching (first (filter #(= (:id task)
+                                              (:id %))
+                                          (:tasks project)))
+                  project  (assoc
+                             project
+                             :tasks
+                             (replace {matching @tmp-task}
+                                      (:tasks project)))]
+              (install-project project)
+              (db/remove-task! task)))
+          (when (= (name k) "project")
+            (let [old-project (get (all-projects)
+                                   (:id (:project task)))
+                  old-project (assoc
+                                old-project
+                                :tasks
+                                (filter #(not= (:id task) (:id %))
+                                        (:tasks old-project)))
+                  new-project (get (all-projects)
+                                   (:id v))
+                  new-project (assoc
+                                new-project
+                                :tasks
+                                (conj (:tasks new-project)
+                                      @tmp-task))]
+              (install-project old-project)
+              (install-project new-project)
+              (db/remove-task! task))))
+        (install-task @tmp-task))
+      (throw (js/Error. "Wrong number of arguments. `body` has to have an even number of elements")))))
+
 
 (defn update-project!
   [project & body]
@@ -162,9 +233,10 @@
           (when (= (name k) "id")
             (throw (js/Error. "`id` can not be updated!")))
           (swap! tmp-project assoc (keyword k) v)
-          (js/console.log (name k))
           (when (= (name k) "name")
-            (db/rename-project! @tmp-project (:name project))))
+            (swap! tmp-project assoc :id (build-id v))
+            (db/rename-project! @tmp-project
+                                (:id project))))
         (install-project @tmp-project))
       (throw (js/Error. "Wrong number of arguments. `body` has to have an even number of elements")))))
 

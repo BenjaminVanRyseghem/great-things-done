@@ -94,6 +94,16 @@
                       old-id)]
     (fs/rename! old-path new-path)))
 
+(defn remove-task!
+  "Remove old file in old project"
+  [task]
+  (fs/unlink! (str (platform/database-projects-path)
+                  platform/separator
+                  (get-in task [:project :id])
+                  platform/separator
+                  (:id task)
+                  ".egtd")))
+
 (defn ensure-structure
   []
   (platform/ensure-database-path!)

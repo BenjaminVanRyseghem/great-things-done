@@ -56,11 +56,10 @@
   (doseq [t tasks]
     (js/console.log (:name t))))
 
-;; (state/register-project "first-project"
-;;                       :tasks [{:id 1 :name "foo"}
-;;                               {:id 2 :name "bar"}])
+;; (state/register-project "First Project"
+;;                       :tasks [])
 
-;; (state/update-project! {:id "2be2ca7c-1578-4921-a5c4-b432edd1111d"
+;; (state/update-project! {:id "first-project-8556e5eb-fd0a-4411-ae34-a8d03f109601"
 ;;                      :name "first-project"
 ;;                      :tags []
 ;;                      :tasks []}
@@ -68,8 +67,13 @@
 ;;                     :due-date "1432758623759")
 
 
-(state/register-task "My first task"
-                     :description "Awesome first task, please suck my balls")
+;; (state/register-task "My first task"
+;;                      :description "Awesome first task, please suck my balls")
 
+
+;; (state/update-task! {:id "My-first-task-237c0056-bfad-4f9f-91fe-bba9b14dc722"
+;;                      :project {:id "Inbox"}}
+;;                     :name "Ploup"
+;;                     :done true)
 
 ;; Todo
