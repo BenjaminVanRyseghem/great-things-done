@@ -2,9 +2,14 @@
   (:require [cljs-uuid-utils.core :as uuid]
             [great-things-done.db :as db]))
 
+(def ^:private task-types ["Task" "SubTask"])
+
+;; Caches
 (def ^:private meta-projects      (atom []))
+(def ^:private projects           (atom {}))
 (def ^:private active-projects    (atom {}))
 (def ^:private completed-projects (atom {}))
+(def ^:private tasks              (atom {}))
 (def ^:private active-tasks       (atom {}))
 (def ^:private repeating-tasks    (atom {}))
 (def ^:private completed-tasks    (atom {}))
@@ -18,7 +23,8 @@
                                          :creation-date nil
                                          :due-date      nil
                                          :active        nil
-                                         :done          false}))
+                                         :done          false
+                                         :type          "Project"}))
 
 (defn- generate-uuid
   []
@@ -44,6 +50,14 @@
   "Return the current time as a string"
   []
   (str (.now js/Date)))
+
+(defn- is-project
+  [entity]
+  (= (:type entity) "Project"))
+
+(defn- is-task
+  [entity]
+  (filter #{(:type entity)} task-types))
 
 (defn- register-tags!
   [entry entry-type]
@@ -99,9 +113,20 @@
 
 (defn- new-task
   [task-name project tags sub-tasks description remind-date due-date show-before repeating done]
+  [task-name parent task-type tags sub-tasks description remind-date due-date show-before repeating done]
+  (when-not (is-task {:type task-type})
+    (throw (js/Error. (str "Task type must belong to ["
+                           (clojure.string/join ", "
+                                                task-types)
+                           "]. Provided type was `"
+                           task-type
+                           "`"))))
   {:name        task-name
    :id          (build-id task-name)
    :project     (select-keys project [:name :id])
+   :type        (if (= (:type parent) "Project")
+                  "Task"
+                  "SubTask")
    :tags        tags
    :sub-tasks   sub-tasks
    :description description
@@ -115,6 +140,7 @@
   [project-name tags tasks description due-date active done]
   {:name          project-name
    :id            (build-id project-name)
+   :type          "Project"
    :tags          tags
    :tasks         tasks
    :description   description
@@ -135,8 +161,8 @@
     (inbox)))
 
 (defn register-task
-  [task-name {:keys [project tags sub-tasks description remind-date due-date show-before repeating]
-              :or   {project     (inbox)
+  [task-name {:keys [parent tags sub-tasks description remind-date due-date show-before repeating]
+              :or   {parent      (inbox)
                      tags        []
                      sub-tasks   []
                      description ""
@@ -145,7 +171,7 @@
                      show-before 0
                      repeating   false}}]
   (let [task (new-task task-name
-                       project
+                       parent
                        tags
                        sub-tasks
                        description
