@@ -51,6 +51,10 @@
   []
   (str (.now js/Date)))
 
+(defn- register-entity-in
+  [entity atom-map]
+  (swap! atom-map assoc (:id entity) entity))
+
 (defn- is-project
   [entity]
   (= (:type entity) "Project"))
@@ -72,20 +76,29 @@
   (if (and (:repeating task)
            (= (get-in task [:repeating :type])
               "pattern"))
-    (swap! repeating-tasks assoc (:id task) task)
+    (register-entity-in task repeating-tasks)
     (if (:done task)
-      (swap! completed-tasks assoc (:id task) task)
-      (swap! active-tasks assoc (:id task) task)))
+      (register-entity-in task completed-tasks)
+      (register-entity-in task active-tasks)))
+  (register-entity-in task tasks)
   (register-tags! task :tasks))
 
 (defn- store-project!
   [project]
   (if (= (:id project) "Inbox")
     (reset! inbox-project project)
-    (if (:done project)
-      (swap! completed-projects assoc (:id project) project)
-      (swap! active-projects assoc (:id project) project))
+    (do
+      (register-entity-in project projects)
+      (if (:done project)
+        (register-entity-in project completed-projects)
+        (register-entity-in project active-projects)))
     (register-tags! project :projects)))
+
+(defn- get-parent
+  [task]
+  (if (= (:type task) "Task")
+    (get (all-projects) (:parent task))
+    (get (all-tasks) (:parent task))))
 
 (defn- install-task
   [task]
@@ -112,7 +125,6 @@
 ;;     - show-before: int >= 0 number of days before the due date when the instance should appear in the inbox
 
 (defn- new-task
-  [task-name project tags sub-tasks description remind-date due-date show-before repeating done]
   [task-name parent task-type tags sub-tasks description remind-date due-date show-before repeating done]
   (when-not (is-task {:type task-type})
     (throw (js/Error. (str "Task type must belong to ["
@@ -123,7 +135,7 @@
                            "`"))))
   {:name        task-name
    :id          (build-id task-name)
-   :project     (select-keys project [:name :id])
+   :parent      (:id parent)
    :type        (if (= (:type parent) "Project")
                   "Task"
                   "SubTask")
@@ -156,9 +168,13 @@
 (defn all-projects
   []
   (assoc
-    (merge @active-projects @completed-projects)
+    @projects
     "Inbox"
     (inbox)))
+
+(defn all-tasks
+  []
+  @tasks)
 
 (defn register-task
   [task-name {:keys [parent tags sub-tasks description remind-date due-date show-before repeating]
@@ -214,17 +230,26 @@
             (throw (js/Error. "`id` can not be updated!")))
           (when (= (name k) "name")
             (swap! tmp-task assoc :id (build-id v))
-            (let [project  (get (all-projects)
-                                (:id (:project task)))
-                  matching (first (filter #(= (:id task)
-                                              (:id %))
-                                          (:tasks project)))
-                  project  (assoc
-                             project
-                             :tasks
-                             (replace {matching @tmp-task}
-                                      (:tasks project)))]
-              (install-project project)
+            (let [parent   (get-parent task)]
+              (if (is-project parent)
+                (let [matching (first (filter #(= (:id task)
+                                                  (:id %))
+                                              (:tasks parent)))
+                      project  (assoc
+                                 parent
+                                 :tasks
+                                 (replace {matching @tmp-task}
+                                          (:tasks parent)))]
+                  (install-project project))
+                (let [matching (first (filter #(= (:id task)
+                                                  (:id %))
+                                              (:sub-tasks parent)))
+                      parent-task  (assoc
+                                     parent
+                                     :tasks
+                                     (replace {matching @tmp-task}
+                                              (:sub-tasks project)))]
+                  (install-task parent-task)))
               (db/remove-task! task)))
           (when (= (name k) "project")
             (let [old-project (get (all-projects)
