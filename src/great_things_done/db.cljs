@@ -32,7 +32,7 @@
         task      (atom {})]
     (doseq [[k v] info]
       (swap! task assoc k v)
-      (when (= (name k) "sub-tasks")
+      (when (= (name k) "tasks")
         (swap! task assoc k (map #(deserialize-task path %) v))))
     (when callback
       (callback @task))
@@ -66,8 +66,8 @@
                            project-id)
         string        (encrypt-task (assoc
                                       task
-                                      :sub-tasks
-                                      (map :id (:sub-tasks task))))]
+                                      :tasks
+                                      (map :id (:tasks task))))]
     (fs/ensure-dir! full-path)
     (fs/write-file! (str full-path platform/separator task-name ".egtd")
                     string)))

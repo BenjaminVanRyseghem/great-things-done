@@ -125,7 +125,7 @@
 ;;     - show-before: int >= 0 number of days before the due date when the instance should appear in the inbox
 
 (defn- new-task
-  [task-name parent task-type tags sub-tasks description remind-date due-date show-before repeating done]
+  [task-name parent task-type tags tasks description remind-date due-date show-before repeating done]
   (when-not (is-task {:type task-type})
     (throw (js/Error. (str "Task type must belong to ["
                            (clojure.string/join ", "
@@ -140,7 +140,7 @@
                   "Task"
                   "SubTask")
    :tags        tags
-   :sub-tasks   sub-tasks
+   :tasks   tasks
    :description description
    :remind-date remind-date
    :due-date    due-date
@@ -177,10 +177,10 @@
   @tasks)
 
 (defn register-task
-  [task-name {:keys [parent tags sub-tasks description remind-date due-date show-before repeating]
               :or   {parent      (inbox)
+  [task-name {:keys [parent tags tasks description remind-date due-date show-before repeating]
                      tags        []
-                     sub-tasks   []
+                     tasks   []
                      description ""
                      remind-date nil
                      due-date    nil
@@ -189,7 +189,7 @@
   (let [task (new-task task-name
                        parent
                        tags
-                       sub-tasks
+                       tasks
                        description
                        remind-date
                        due-date
@@ -243,12 +243,12 @@
                   (install-project project))
                 (let [matching (first (filter #(= (:id task)
                                                   (:id %))
-                                              (:sub-tasks parent)))
+                                              (:tasks parent)))
                       parent-task  (assoc
                                      parent
                                      :tasks
                                      (replace {matching @tmp-task}
-                                              (:sub-tasks project)))]
+                                              (:tasks project)))]
                   (install-task parent-task)))
               (db/remove-task! task)))
           (when (= (name k) "project")
