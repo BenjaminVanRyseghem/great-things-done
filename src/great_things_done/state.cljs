@@ -125,7 +125,7 @@
 ;;     - show-before: int >= 0 number of days before the due date when the instance should appear in the inbox
 
 (defn- new-task
-  [task-name parent task-type tags tasks description remind-date due-date show-before repeating done]
+  [task-name project parent task-type tags tasks description remind-date due-date show-before repeating done]
   (when-not (is-task {:type task-type})
     (throw (js/Error. (str "Task type must belong to ["
                            (clojure.string/join ", "
@@ -133,8 +133,19 @@
                            "]. Provided type was `"
                            task-type
                            "`"))))
+  (when (and (is-project parent)
+             (not= (:id parent)
+                   (:id project)))
+    ;; Ensure that parent is not another project if parent is a project
+    (throw (js/Error. (str "`parent` and `project` can't be different if parent is a project"))))
+  (when (and (is-task parent)
+             (not= (get-in parent [:project :id])
+                   (:id project)))
+    ;; Ensure that parent is in the same project if parent is a task
+    (throw (js/Error. (str "`parent` has to be a task of `project` if parent is a task"))))
   {:name        task-name
    :id          (build-id task-name)
+   :project     (select-keys project [:name :id])
    :parent      (:id parent)
    :type        (if (= (:type parent) "Project")
                   "Task"
@@ -177,8 +188,9 @@
   @tasks)
 
 (defn register-task
-              :or   {parent      (inbox)
-  [task-name {:keys [parent tags tasks description remind-date due-date show-before repeating]
+  [task-name {:keys [project parent tags tasks description remind-date due-date show-before repeating]
+              :or   {project     (inbox)
+                     parent      (inbox)
                      tags        []
                      tasks   []
                      description ""
@@ -187,6 +199,7 @@
                      show-before 0
                      repeating   false}}]
   (let [task (new-task task-name
+                       project
                        parent
                        tags
                        tasks
