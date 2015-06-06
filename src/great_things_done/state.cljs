@@ -248,47 +248,48 @@
         (doseq [[k v] args]
           (when (= (name k) "id")
             (throw (js/Error. "`id` can not be updated!")))
+          (when (= (name k) "project")
+            (throw (js/Error. "The field `project` can only be updated via the field `parent`.")))
           (when (= (name k) "name")
             (swap! tmp-task assoc :id (build-id v))
-            (let [parent   (get-parent task)]
-              (if (is-project parent)
-                (let [matching (first (filter #(= (:id task)
-                                                  (:id %))
-                                              (:tasks parent)))
-                      project  (assoc
-                                 parent
-                                 :tasks
-                                 (replace {matching @tmp-task}
+            (let [parent         (get-parent task)
+                  matching       (first (filter #(= (:id task)
+                                                    (:id %))
+                                                (:tasks parent)))
+                  updated-parent (assoc
+                                   parent
+                                   :tasks
+                                   (replace {matching @tmp-task}
+                                            (:tasks parent)))]
+              (install-entity! updated-parent))
+            (db/remove-task! task))
+          (when (= (name k) "parent") ; This section is not tested at all
+            (let [parent (get-parent task)]
+              ;; When new parent is a project
+              (when (is-project v)
+                (swap! tmp-task assoc :project v)
+                ;; When the task was in a different project
+                (when (not= (:id v)
+                            (get-in task [:project :id]))
+                  (db/remove-task! task)))
+              (when (is-task v)
+                (swap! tmp-task assoc :project (:project v))
+                ;; When the task was in a different project
+                (when (not= (get-in v [:project :id])
+                            (get-in task [:project :id]))
+                  (db/remove-task! task)))
+              (let [new-project (assoc
+                                  v
+                                  :tasks
+                                  (conj (:tasks v)
+                                        task))
+                    old-parent  (assoc
+                                  parent
+                                  :tasks
+                                  (filter #(not= (:id task) (:id %))
                                           (:tasks parent)))]
-                  (install-project project))
-                (let [matching (first (filter #(= (:id task)
-                                                  (:id %))
-                                              (:tasks parent)))
-                      parent-task  (assoc
-                                     parent
-                                     :tasks
-                                     (replace {matching @tmp-task}
-                                              (:tasks project)))]
-                  (install-task parent-task)))
-              (db/remove-task! task)))
-          (when (= (name k) "project")
-            (let [old-project (get (all-projects)
-                                   (:id (:project task)))
-                  old-project (assoc
-                                old-project
-                                :tasks
-                                (filter #(not= (:id task) (:id %))
-                                        (:tasks old-project)))
-                  new-project (get (all-projects)
-                                   (:id v))
-                  new-project (assoc
-                                new-project
-                                :tasks
-                                (conj (:tasks new-project)
-                                      @tmp-task))]
-              (install-project old-project)
-              (install-project new-project)
-              (db/remove-task! task))))
+                (install-entity! new-project)
+                (install-entity! old-parent)))))
         (install-task @tmp-task))
       (throw (js/Error. "Wrong number of arguments. `body` has to have an even number of elements")))))
 
