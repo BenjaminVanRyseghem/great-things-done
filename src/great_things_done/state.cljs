@@ -112,6 +112,13 @@
   (db/serialize-project! project)
   project)
 
+(defn- install-entity!
+  [entity]
+  (when (is-project entity)
+    (install-project entity))
+  (when (is-task entity)
+    (install-task entity)))
+
 ;; `repeating` can have two values:
 ;;   - nil
 ;;   - a map, with the following keys
