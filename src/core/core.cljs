@@ -47,7 +47,7 @@
 
 (import-db/import-all-projects!)
 
-(let [projects (state/list-of-projects)]
+(let [projects (vals (state/all-projects))]
   (js/console.log (count projects))
   (doseq [project projects]
     (js/console.log (:name project))))

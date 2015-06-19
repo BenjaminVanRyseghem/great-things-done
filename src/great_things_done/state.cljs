@@ -4,6 +4,9 @@
 
 (def ^:private task-types ["Task" "SubTask"])
 
+(declare all-projects)
+(declare all-tasks)
+
 ;; Caches
 (def ^:private meta-projects      (atom []))
 (def ^:private projects           (atom {}))
@@ -132,14 +135,7 @@
 ;;     - show-before: int >= 0 number of days before the due date when the instance should appear in the inbox
 
 (defn- new-task
-  [task-name project parent task-type tags tasks description remind-date due-date show-before repeating done]
-  (when-not (is-task {:type task-type})
-    (throw (js/Error. (str "Task type must belong to ["
-                           (clojure.string/join ", "
-                                                task-types)
-                           "]. Provided type was `"
-                           task-type
-                           "`"))))
+  [task-name project parent tags tasks description remind-date due-date show-before repeating done]
   (when (and (is-project parent)
              (not= (:id parent)
                    (:id project)))
@@ -154,7 +150,7 @@
    :id          (build-id task-name)
    :project     (select-keys project [:name :id])
    :parent      (:id parent)
-   :type        (if (= (:type parent) "Project")
+   :type        (if (is-project parent)
                   "Task"
                   "SubTask")
    :tags        tags
@@ -199,7 +195,7 @@
               :or   {project     (inbox)
                      parent      (inbox)
                      tags        []
-                     tasks   []
+                     tasks       []
                      description ""
                      remind-date nil
                      due-date    nil
@@ -322,4 +318,4 @@
 
 (defn ^:export list-of-projects
   []
-  (clj->js (into (vals @active-projects) (vals @completed-projects))))
+  (clj->js (vals (all-projects))))
