@@ -54,7 +54,7 @@
 
 (let [tasks (:tasks (state/inbox))]
   (doseq [t tasks]
-    (js/console.log (:name t))))
+    (js/console.log (:id t))))
 
 ;; (state/register-project "First Project"
 ;;                       :tasks [])
@@ -71,9 +71,8 @@
 ;;                      :description "Awesome first task, please suck my balls")
 
 
-;; (state/update-task! {:id "My-first-task-237c0056-bfad-4f9f-91fe-bba9b14dc722"
-;;                      :project {:id "Inbox"}}
-;;                     :name "Ploup"
+;; (state/update-task! (state/get-task-by-id "My-first-task-bb8c14f7-9397-4491-9608-a73d818d276f")
+;;                     :parent (state/get-project-by-id "First-Project-56dc33b8-c173-42c5-be31-eef12a83ea49")
 ;;                     :done true)
 
 ;; Todo

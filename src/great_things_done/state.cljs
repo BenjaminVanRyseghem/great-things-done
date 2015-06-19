@@ -64,7 +64,7 @@
 
 (defn- is-task
   [entity]
-  (filter #{(:type entity)} task-types))
+  (boolean (not-empty (filter #{(:type entity)} task-types))))
 
 (defn- register-tags!
   [entry entry-type]
@@ -121,6 +121,14 @@
     (install-project entity))
   (when (is-task entity)
     (install-task entity)))
+
+(defn get-task-by-id
+  [id]
+  (get @tasks id))
+
+(defn get-project-by-id
+  [id]
+  (get @projects id))
 
 ;; `repeating` can have two values:
 ;;   - nil
@@ -259,22 +267,30 @@
                                             (:tasks parent)))]
               (install-entity! updated-parent))
             (db/remove-task! task))
-          (when (= (name k) "parent") ; This section is not tested at all
-            (let [parent (get-parent task)]
+          ;; This section is to be tested
+          ;; The scenarios:
+          ;; [x] move a task from a project to another (Inbox -> My first project)
+          ;; [ ] update a task as a subtask of another task in the same project
+          ;; [ ] update a subtask as a task of another project
+          ;; [ ] update a subtask as a task in the same project
+          (when (= (name k) "parent")
+            (let [parent (get-parent task)
+                  project-id (get-in task [:project :id])]
               ;; When new parent is a project
               (when (is-project v)
                 (swap! tmp-task assoc :project v)
                 ;; When the task was in a different project
                 (when (not= (:id v)
-                            (get-in task [:project :id]))
+                            project-id)
                   (db/remove-task! task)))
+              ;; When new parent is a task
               (when (is-task v)
                 (swap! tmp-task assoc :project (:project v))
                 ;; When the task was in a different project
                 (when (not= (get-in v [:project :id])
-                            (get-in task [:project :id]))
+                            project-id)
                   (db/remove-task! task)))
-              (let [new-project (assoc
+              (let [new-parent  (assoc
                                   v
                                   :tasks
                                   (conj (:tasks v)
@@ -282,9 +298,11 @@
                     old-parent  (assoc
                                   parent
                                   :tasks
-                                  (filter #(not= (:id task) (:id %))
-                                          (:tasks parent)))]
-                (install-entity! new-project)
+                                  (into []
+                                        (remove #(= (:id task) (:id %))
+                                                (:tasks parent))))]
+                (js/console.log (:id old-parent))
+                (install-entity! new-parent)
                 (install-entity! old-parent)))))
         (install-task @tmp-task))
       (throw (js/Error. "Wrong number of arguments. `body` has to have an even number of elements")))))
