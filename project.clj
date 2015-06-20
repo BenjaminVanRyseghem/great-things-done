@@ -22,7 +22,7 @@
                 :optimizations :simple
                 :pretty-print true
                 :cache-analysis true}}
-    {:source-paths ["src/node" "src/ui" "src/great_things_done" "src/core"],
+    {:source-paths ["src/node" "src/ui" "src/great_things_done" "src/repl" "src/core"],
      :id "great-things-done",
      :compiler {:output-dir "resources/public/js/great-things-done-out"
                 :output-to "resources/public/js/great-things-done-core.js",
