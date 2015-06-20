@@ -8,7 +8,8 @@
             [great-things-done.import-db :as import-db]
             [great-things-done.keytar :as keytar]
             [great-things-done.platform :as platform]
-            [great-things-done.state :as state]))
+            [great-things-done.state :as state]
+            [repl.core :as repl]))
 
 
 ;; Initialize figwheel websocket
@@ -28,6 +29,9 @@
 
 ;; Initialize menu
 (app-menu/init)
+
+;; Starts repl
+(repl/init-tcp-repl "gtd>")
 
 ;; =================
 ;;
