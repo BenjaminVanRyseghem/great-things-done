@@ -32,6 +32,7 @@
 
 ;; Starts repl
 (repl/init-tcp-repl "gtd>")
+(repl/init-tcp-cli)
 
 ;; =================
 ;;
