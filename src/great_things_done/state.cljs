@@ -1,5 +1,6 @@
 (ns great-things-done.state
   (:require [cljs-uuid-utils.core :as uuid]
+            [cuerdas.core :as string]
             [great-things-done.db :as db]))
 
 (def ^:private task-types ["Task" "SubTask"])
@@ -39,9 +40,9 @@
 
 (defn- normalize-path
   [path]
-  (.replace path
-            (js* "/[^a-zA-z0-9-_]/g") ;; to check
-            "-"))
+  (string/replace path
+                  #"[^a-zA-z0-9-_]"
+                  "-"))
 
 (defn- build-id
   [entity-name]

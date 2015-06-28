@@ -1,6 +1,6 @@
 (ns repl.core
   "See doc https://nodejs.org/api/repl.html"
-  (:require [clojure.string :as string]
+  (:require [cuerdas.core :as string]
             [great-things-done.state :as state]))
 
 (def remote (js/require "remote"))
@@ -44,8 +44,8 @@
 
 (defn- split-cmd
   [string]
-  (.split (.trim (str string))
-          " "))
+  (string/split (string/trim (str string))
+                " "))
 
 (defmulti eval-repl first)
 

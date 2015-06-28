@@ -4,10 +4,11 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[com.lucasbradstreet/cljs-uuid-utils "1.0.1"]
-                 [org.webjars/react "0.12.0"]
+                 [figwheel "0.1.5-SNAPSHOT"]
+                 [funcool/cuerdas "0.5.0"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2511"]
-                 [figwheel "0.1.5-SNAPSHOT"]
+                 [org.webjars/react "0.12.0"]
                  [reagent "0.5.0-alpha"]
                  [ring/ring-core "1.3.1"]]
 
