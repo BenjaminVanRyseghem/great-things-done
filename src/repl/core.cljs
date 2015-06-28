@@ -52,8 +52,7 @@
 (defmethod eval-repl "list" [args]
   (if (= 1
          (count args))
-    (string/join "\n"
-                 (format-projects (vals (state/all-projects))))
+    (string/unlines (format-projects (vals (state/all-projects))))
     "list"))
 
 (defmethod eval-repl "help" [args]
