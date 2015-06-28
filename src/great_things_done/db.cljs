@@ -98,11 +98,11 @@
   "Remove old file in old project"
   [task]
   (fs/unlink! (str (platform/database-projects-path)
-                  platform/separator
-                  (get-in task [:project :id])
-                  platform/separator
-                  (:id task)
-                  ".egtd")))
+                   platform/separator
+                   (get-in task [:project :id])
+                   platform/separator
+                   (:id task)
+                   ".egtd")))
 
 (defn ensure-structure
   []
