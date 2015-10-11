@@ -9,26 +9,26 @@
 (declare all-tasks)
 
 ;; Caches
-(def ^:private meta-projects      (atom []))
-(def projects                     (atom {}))
-(def ^:private active-projects    (atom {}))
-(def ^:private completed-projects (atom {}))
-(def ^:private tasks              (atom {}))
-(def ^:private active-tasks       (atom {}))
-(def ^:private repeating-tasks    (atom {}))
-(def ^:private completed-tasks    (atom {}))
-(def ^:private tags               (atom {}))
+(defonce ^:private meta-projects      (atom []))
+(defonce projects                     (atom {}))
+(defonce ^:private active-projects    (atom {}))
+(defonce ^:private completed-projects (atom {}))
+(defonce ^:private tasks              (atom {}))
+(defonce ^:private active-tasks       (atom {}))
+(defonce ^:private repeating-tasks    (atom {}))
+(defonce ^:private completed-tasks    (atom {}))
+(defonce ^:private tags               (atom {}))
 
-(def ^:private inbox-project      (atom {:name          "Inbox"
-                                         :id            "Inbox"
-                                         :tags          []
-                                         :tasks         []
-                                         :description   nil
-                                         :creation-date nil
-                                         :due-date      nil
-                                         :active        nil
-                                         :done          false
-                                         :type          "Project"}))
+(defonce ^:private inbox-project      (atom {:name          "Inbox"
+                                             :id            "Inbox"
+                                             :tags          []
+                                             :tasks         []
+                                             :description   nil
+                                             :creation-date nil
+                                             :due-date      nil
+                                             :active        nil
+                                             :done          false
+                                             :type          "Project"}))
 
 (defn- generate-uuid
   []
@@ -336,6 +336,12 @@
 (defn load-task!
   [task]
   (store-task! task))
+
+(defn completion-for
+  [project]
+  {:done (count (filter (fn [task] (:done task))
+                        (:tasks project)))
+   :total (count (:tasks project))})
 
 (defn ^:export list-of-projects
   []

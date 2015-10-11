@@ -1,3 +1,7 @@
+@import "variables";
+@import "./chrome/menu";
+@import "./chrome/icons";
+
 html, body {
   height: 100%;
   width: 100%;
@@ -12,103 +16,13 @@ html, body {
   width: 100%;
 }
 
-.menu {
-  position: absolute;
-  display: inline-block;
-  height: 100%;
-  width: 168px; // width + 2*padding = 200px
-  top: 0;
-  left: 0;
-
-  color: white;
-  background-image: url(../img/debut_dark.png);
-  padding: 16px;
-
-  .menu-section {
-    margin: 0 0 20px 0;
-
-    h4 {
-      text-transform: uppercase;
-      font-size: 16px;
-      color: #aaa;
-      margin: 0;
-      font-weight: normal;
-    }
-    .menu-items {
-      margin: 10px 0 0 0;
-
-      .menu-item {
-        list-style: none;
-        margin-left: -20px;
-        margin-top: 8px;
-
-        h5 {
-          i.fa {
-            margin-right: 8px;
-            vertical-align: middle;
-          }
-
-          font-weight: normal;
-          margin: 0;
-        }
-      }
-    }
-  }
-}
-
-.menu-item .fa-stack {
-  margin: 0 10px 0 3px;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-  font-size: 18px;
-
-  i.fa {
-    &:first-child {
-      font-size: 18px;
-      margin-top: -2px;
-    }
-
-    font-size: 8px;
-    margin-top: 0;
-  }
-}
-
-.menu-item i.fa {
-  margin-top: -2px;
-}
-
-.menu-item i.fa.fa-inbox {
-  color: #7DA9D3;
-}
-
-.menu-item i.fa.fa-star {
-  color: #DFE279;
-}
-
-.menu-item i.fa.fa-server {
-  margin-top: -6px;
-}
-
-.menu-item .fa-stack i.fa.fa-calendar-o {
-  color: #DD5D5D;
-}
-
-.menu-item i.fa.fa-archive {
-  color: #A59562;
-}
-
-.menu-item i.fa.fa-cubes {
-  color: #B3ED8C;
-}
-
 .viewport {
   position: absolute;
   display: inline-block;
   height: 100%;
   right: 0;
   top: 0;
-  left: 200px;
+  left: @menu-width;
 
   color: white;
 }

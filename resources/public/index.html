@@ -2,7 +2,10 @@
 <html>
     <head>
         <title>Hello World!</title>
-        <link rel="stylesheet" href="http://localhost:3449/css/gtd.css">
+        <link rel="stylesheet" href="./css/gtd.css">
+        <link rel='stylesheet' href='./font/font-face.css' type='text/css'>
+        <script type="text/javascript" src="./lib/jquery/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="./lib/bootstrap/js/bootstrap.min.js"></script>
     </head>
     <body>
         <script>
@@ -18,13 +21,22 @@
             });
         </script>
 
-        <!-- We are using node.js <script>document.write(process.version)</script> -->
-        <!-- and atom-shell <script>document.write(process.versions['atom-shell'])</script>. -->
+
         <script type="text/javascript" src="http://localhost:3449/helpers/import.js"></script>
 
         <script type="text/javascript" src="http://localhost:3449/webjars/react/0.12.0/react-with-addons.js"></script>
         <script type="text/javascript" src="http://localhost:3449/js/out/goog/base.js"></script>
         <script type="text/javascript" src="http://localhost:3449/js/gtd-core.js"></script>
         <script type="text/javascript">goog.require('core.core')</script>
+
+        <!--     Initialize tooltips     -->
+        <script>
+            window.installTooltip = function() {
+                $('[data-toggle="tooltip"]').tooltip()
+            };
+            $(function () {
+                window.installTooltip();
+            })
+        </script>
     </body>
 </html>

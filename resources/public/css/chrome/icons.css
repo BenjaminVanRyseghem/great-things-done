@@ -1,0 +1,46 @@
+/* Sizes */
+/* Colors */
+/* @icon-green: #B3ED8C; */
+.menu-item .fa-stack {
+  margin: 0 10px 0 2px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  font-size: 18px;
+}
+.menu-item .fa-stack i.fa {
+  font-size: 8px;
+  margin-top: 1px;
+}
+.menu-item .fa-stack i.fa:first-child {
+  font-size: 18px;
+  margin-top: -1px;
+}
+.menu-item i.fa {
+  margin-top: -2px;
+}
+.menu-item i.fa.fa-inbox {
+  color: #7da9d3;
+}
+.menu-item i.fa.fa-star {
+  color: #dfe279;
+}
+.menu-item i.fa.fa-server {
+  color: white;
+  margin-top: -3px;
+}
+.menu-item .fa-stack i.fa.fa-calendar-o {
+  color: #dd5d5d;
+}
+.menu-item .fa-stack i.fa.fa-repeat {
+  color: white;
+}
+.menu-item i.fa.fa-archive {
+  color: #a59562;
+}
+.menu-item i.fa.fa-cubes {
+  color: #72965a;
+}
+.menu-item i.fa.fa-cube {
+  color: #72965a;
+}

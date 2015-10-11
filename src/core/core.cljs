@@ -16,7 +16,9 @@
 ;; Initialize figwheel websocket
 (fw/watch-and-reload
   :websocket-url   "ws://localhost:3449/figwheel-ws"
-  :jsload-callback (fn [] (print "reloaded")))
+  :jsload-callback (fn []
+                     (.installTooltip js/window)
+                     (print "reloaded")))
 
 ;; Ensures all necessary folders and files are present
 (db/ensure-structure)
@@ -60,6 +62,8 @@
 (let [tasks (:tasks (state/inbox))]
   (doseq [t tasks]
     (js/console.log (:id t))))
+
+(js/console.log (:name (state/get-project-by-id "First-Project-56dc33b8-c173-42c5-be31-eef12a83ea49")))
 
 ;; (state/register-project "First Project"
 ;;                       :tasks [])
