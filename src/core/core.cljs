@@ -1,16 +1,17 @@
 (ns core.core
-  (:require [figwheel.client :as fw :include-macros true]
+  (:require [gtd.app-menu :as app-menu]
+            [gtd.crypto :as crypto]
+            [gtd.db :as db]
+            [gtd.import-db :as import-db]
+            [gtd.keytar :as keytar]
+            [gtd.state :as state]
+            [gtd.integration :as integration]
+            [gtd.platform :as platform]
+            [repl.core :as repl]
             [ui.core :as ui]
-            [great-things-done.application-info :as application-info]
-            [great-things-done.app-menu :as app-menu]
-            [great-things-done.crypto :as crypto]
-            [great-things-done.db :as db]
-            [great-things-done.import-db :as import-db]
-            [great-things-done.keytar :as keytar]
-            [great-things-done.platform :as platform]
-            [great-things-done.state :as state]
-            [repl.core :as repl]))
+            [figwheel.client :as fw]))
 
+(enable-console-print!)
 
 ;; Initialize figwheel websocket
 (fw/watch-and-reload
@@ -31,8 +32,10 @@
 (app-menu/init)
 
 ;; Starts repl
-(repl/init-tcp-repl "gtd>")
-(repl/init-tcp-cli)
+(defonce repl
+  (do
+    (repl/init-tcp-repl "gtd>")
+    (repl/init-tcp-cli)))
 
 ;; =================
 ;;

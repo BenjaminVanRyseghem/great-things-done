@@ -1,4 +1,4 @@
-(ns great-things-done.app-menu)
+(ns gtd.app-menu)
 
 (defn init
   "Initialize the application menu."

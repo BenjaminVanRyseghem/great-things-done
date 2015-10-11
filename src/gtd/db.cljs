@@ -1,15 +1,15 @@
-(ns great-things-done.db
-  (:require [great-things-done.crypto :as crypto]
-            [great-things-done.keytar :as keytar]
-            [great-things-done.platform :as platform]
-            [great-things-done.utils :refer [clj->json json->clj]]
+(ns gtd.db
+  (:require [gtd.crypto :as crypto]
+            [gtd.keytar :as keytar]
+            [gtd.platform :as platform]
+            [utils.core :as utils]
             [node.fs :as fs]))
 
 (defn- encrypt-task
   [task]
   (let [password         (keytar/get-password "great-things-done"
                                               (platform/logged-user))
-        encrypted-string (crypto/encrypt (clj->json task)
+        encrypted-string (crypto/encrypt (utils/clj->json task)
                                          password)]
     encrypted-string))
 
@@ -17,7 +17,7 @@
   [encrypted-string]
   (let [password (keytar/get-password "great-things-done"
                                       (platform/logged-user))
-        task     (json->clj (crypto/decrypt encrypted-string
+        task     (utils/json->clj (crypto/decrypt encrypted-string
                                             password))]
     task))
 
@@ -47,7 +47,7 @@
                           platform/separator
                           ".project.pgtd")
         string     (fs/read-file full-path)
-        info       (json->clj string)
+        info       (utils/json->clj string)
         project    (atom {})]
     (doseq [[k v] info]
       (swap! project assoc k v)
@@ -79,7 +79,7 @@
         full-path     (str projects-path platform/separator project-id)]
     (fs/ensure-dir! full-path)
     (fs/write-file! (str full-path platform/separator ".project.pgtd")
-                    (clj->json (assoc
+                    (utils/clj->json (assoc
                                  project
                                  :tasks
                                  (map :id (:tasks project)))))))

@@ -1,7 +1,7 @@
-(ns great-things-done.state
+(ns gtd.state
   (:require [cljs-uuid-utils.core :as uuid]
             [cuerdas.core :as string]
-            [great-things-done.db :as db]))
+            [gtd.db :as db]))
 
 (def ^:private task-types ["Task" "SubTask"])
 
@@ -95,8 +95,8 @@
       (register-entity-in project projects)
       (if (:done project)
         (register-entity-in project completed-projects)
-        (register-entity-in project active-projects)))
-    (register-tags! project :projects)))
+        (register-entity-in project active-projects))
+      (register-tags! project :projects))))
 
 (defn- get-parent
   [task]

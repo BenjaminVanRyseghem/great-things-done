@@ -14,3 +14,5 @@ node_modules
 resources/public/js
 resources/main.js
 .nrepl-port
+electron
+*.log

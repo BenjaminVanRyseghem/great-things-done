@@ -1,7 +1,7 @@
-(ns great-things-done.import-db
-  (:require [great-things-done.db :as db]
-            [great-things-done.platform :as platform]
-            [great-things-done.state :as state]
+(ns gtd.import-db
+  (:require [gtd.db :as db]
+            [gtd.state :as state]
+            [gtd.platform :as platform]
             [node.fs :as fs]))
 
 (defn import-meta-projects

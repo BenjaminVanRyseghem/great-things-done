@@ -1,4 +1,4 @@
-(ns great-things-done.utils)
+(ns utils.core)
 
 (defn clj->json
   [data-structure]

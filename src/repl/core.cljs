@@ -1,7 +1,7 @@
 (ns repl.core
   "See doc https://nodejs.org/api/repl.html"
   (:require [cuerdas.core :as string]
-            [great-things-done.state :as state]))
+            [gtd.state :as state]))
 
 (def remote (js/require "remote"))
 (def net    (.require remote "net"))

@@ -3,34 +3,40 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.lucasbradstreet/cljs-uuid-utils "1.0.1"]
-                 [figwheel "0.1.5-SNAPSHOT"]
-                 [funcool/cuerdas "0.5.0"]
-                 [org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2511"]
-                 [org.webjars/react "0.12.0"]
-                 [reagent "0.5.0-alpha"]
-                 [ring/ring-core "1.3.1"]]
+  :dependencies [[com.lucasbradstreet/cljs-uuid-utils "1.0.2"]
+                 [figwheel "0.4.1"]
+                 [funcool/cuerdas "0.6.0"]
+                 [org.clojure/clojure "1.7.0"]
+                 [org.clojure/clojurescript "1.7.122"]
+                 [org.webjars/react "0.13.3"]
+                 [reagent "0.5.1"]
+                 [ring/ring-core "1.4.0"]]
 
-  :plugins [[lein-cljsbuild "1.0.3"]
-            [lein-figwheel "0.1.5-SNAPSHOT"]]
+  :plugins [[lein-cljsbuild "1.1.0"]
+            [lein-figwheel "0.4.1"]]
   :source-paths ["src/tools"]
-  :cljsbuild
-  {:builds
-   [{:source-paths ["src/atom"],
-     :id "atom-dev",
-     :compiler {:output-to "resources/main.js",
-                :optimizations :simple
-                :pretty-print true
-                :cache-analysis true}}
-    {:source-paths ["src/node" "src/ui" "src/great_things_done" "src/repl" "src/core"],
-     :id "great-things-done",
-     :compiler {:output-dir "resources/public/js/great-things-done-out"
-                :output-to "resources/public/js/great-things-done-core.js",
-                :optimizations :none
-                ; :pretty-print true
-                :source-map true
-                :cache-analysis true}}]}
+  :clean-targets ^{:protect false} [:target-path "resources/public/js/out"]
+  :cljsbuild {:builds
+              [{:id "atom-dev"
+                :source-paths ["src/atom"]
+                :compiler {:output-to "resources/main.js"
+                           :optimizations :simple
+                           :pretty-print true
+                           :cache-analysis true}}
+               {:id "great-things-done"
+                :figwheel true
+                :source-paths ["src/node/"
+                               "src/utils/"
+                               "src/ui/"
+                               "src/gtd/"
+                               "src/repl/"
+                               "src/core/"]
+                :compiler {:output-dir "resources/public/js/out"
+                           :output-to "resources/public/js/gtd-core.js"
+                           :optimizations :none
+                           ; :pretty-print true
+                           :source-map true
+                           :cache-analysis true}}]}
   :figwheel {:http-server-root "public"
              :ring-handler figwheel-middleware/app
              :server-port 3449})

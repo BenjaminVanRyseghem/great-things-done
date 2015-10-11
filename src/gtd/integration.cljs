@@ -1,5 +1,5 @@
-(ns great-things-done.application-info
-  (:use-macros [great-things-done.macro :only (for-os)]))
+(ns gtd.integration
+  (:require [gtd.platform :as platform]))
 
 (def ^:private osx-mail-applescript
   "tell application \"Mail\"
@@ -59,7 +59,7 @@
 
 (defn get-current-app-info
   []
-  (for-os
+  (platform/for-os
    "Mac OS X" (get-current-app-info-osx)))
 
 (defn ^:export js-get-current-app-info
@@ -69,7 +69,7 @@
 (defn get-current-app-data
   [fun]
   (let [info (get-current-app-info)]
-    (for-os
+    (platform/for-os
      "Mac OS X" (retrieve-current-app-data-osx info fun))))
 
 (defn ^:export js-get-current-app-data
