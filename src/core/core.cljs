@@ -25,9 +25,6 @@
 ;; Ensure Inbox project
 (db/ensure-project (state/inbox))
 
-;; Finally render the app
-(ui/render-core)
-
 ;; Initialize menu
 (app-menu/init)
 
@@ -84,3 +81,8 @@
 ;;                     :done true)
 
 ;; Todo
+
+
+
+;; Finally render the app
+(ui/render-core)

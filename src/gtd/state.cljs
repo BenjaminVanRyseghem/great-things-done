@@ -10,7 +10,7 @@
 
 ;; Caches
 (def ^:private meta-projects      (atom []))
-(def ^:private projects           (atom {}))
+(def projects                     (atom {}))
 (def ^:private active-projects    (atom {}))
 (def ^:private completed-projects (atom {}))
 (def ^:private tasks              (atom {}))
@@ -81,10 +81,12 @@
            (= (get-in task [:repeating :type])
               "pattern"))
     (register-entity-in task repeating-tasks)
-    (if (:done task)
-      (register-entity-in task completed-tasks)
-      (register-entity-in task active-tasks)))
-  (register-entity-in task tasks)
+    (do
+      (when (:done task)
+        (register-entity-in task completed-tasks))
+      (when (:active task)
+        (register-entity-in task active-tasks))
+      (register-entity-in task tasks)))
   (register-tags! task :tasks))
 
 (defn- store-project!

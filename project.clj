@@ -13,7 +13,8 @@
                  [ring/ring-core "1.4.0"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
-            [lein-figwheel "0.4.1"]]
+            [lein-figwheel "0.4.1"]
+            [lein-less "1.7.5"]]
   :source-paths ["src/tools"]
   :clean-targets ^{:protect false} [:target-path "resources/public/js/out"]
   :cljsbuild {:builds
@@ -27,9 +28,9 @@
                 :figwheel true
                 :source-paths ["src/node/"
                                "src/utils/"
-                               "src/ui/"
                                "src/gtd/"
                                "src/repl/"
+                               "src/ui/"
                                "src/core/"]
                 :compiler {:output-dir "resources/public/js/out"
                            :output-to "resources/public/js/gtd-core.js"
@@ -37,6 +38,10 @@
                            ; :pretty-print true
                            :source-map true
                            :cache-analysis true}}]}
+  :less {:source-paths ["resources/public/less"]
+         :target-path "resources/public/css"}
   :figwheel {:http-server-root "public"
              :ring-handler figwheel-middleware/app
-             :server-port 3449})
+             :server-port 3449
+             :css-dirs ["resources/public/css"]}
+  :hooks [leiningen.less])

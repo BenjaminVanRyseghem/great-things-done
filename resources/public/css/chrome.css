@@ -1,0 +1,96 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-image: url(../img/navy_blue.png);
+}
+.container {
+  position: relative;
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+}
+.menu {
+  position: absolute;
+  display: inline-block;
+  height: 100%;
+  width: 168px;
+  top: 0;
+  left: 0;
+  color: white;
+  background-image: url(../img/debut_dark.png);
+  padding: 16px;
+}
+.menu .menu-section {
+  margin: 0 0 20px 0;
+}
+.menu .menu-section h4 {
+  text-transform: uppercase;
+  font-size: 16px;
+  color: #aaa;
+  margin: 0;
+  font-weight: normal;
+}
+.menu .menu-section .menu-items {
+  margin: 10px 0 0 0;
+}
+.menu .menu-section .menu-items .menu-item {
+  list-style: none;
+  margin-left: -20px;
+  margin-top: 8px;
+}
+.menu .menu-section .menu-items .menu-item h5 {
+  font-weight: normal;
+  margin: 0;
+}
+.menu .menu-section .menu-items .menu-item h5 i.fa {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.menu-item .fa-stack {
+  margin: 0 10px 0 3px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  font-size: 18px;
+}
+.menu-item .fa-stack i.fa {
+  font-size: 8px;
+  margin-top: 0;
+}
+.menu-item .fa-stack i.fa:first-child {
+  font-size: 18px;
+  margin-top: -2px;
+}
+.menu-item i.fa {
+  margin-top: -2px;
+}
+.menu-item i.fa.fa-inbox {
+  color: #7DA9D3;
+}
+.menu-item i.fa.fa-star {
+  color: #DFE279;
+}
+.menu-item i.fa.fa-server {
+  margin-top: -6px;
+}
+.menu-item .fa-stack i.fa.fa-calendar-o {
+  color: #DD5D5D;
+}
+.menu-item i.fa.fa-archive {
+  color: #A59562;
+}
+.menu-item i.fa.fa-cubes {
+  color: #B3ED8C;
+}
+.viewport {
+  position: absolute;
+  display: inline-block;
+  height: 100%;
+  right: 0;
+  top: 0;
+  left: 200px;
+  color: white;
+}
