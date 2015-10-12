@@ -1,4 +1,7 @@
+@import "../mixins";
 @import "../variables";
+
+.generate-completion-color(@progress-bar-color, @icon-blue, 100);
 
 .menu {
   position: absolute;
@@ -62,11 +65,8 @@
           margin: 0;
 
           border: 1px solid #000;
+          border-radius: 4px;
           background-color: @progress-bar-background-color;
-
-          .progress-bar {
-            background-color: @progress-bar-color;
-          }
         }
       }
     }
