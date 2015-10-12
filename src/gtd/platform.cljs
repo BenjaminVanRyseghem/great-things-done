@@ -7,6 +7,11 @@
                                      "linux"   "Linux"
                                      "sunos"   "SunOS"})
 
+(defn get-os
+  []
+  (get platform-translation
+       js/process.platform))
+
 (defn for-os
   "Execute code depending on the current OS"
   [& body]
@@ -15,8 +20,7 @@
                             (map #(into [] %)
                                  (partition 2 body))))
         os-keys (keys os-map)
-        os      (get platform-translation
-                     js/process.platform)]
+        os      (get-os)]
     (if (even? (count body))
       (if (contains? os-map os)
         (get os-map os)

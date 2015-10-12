@@ -82,7 +82,8 @@
          (:icon i)]))]])
 
 (defn menu-component []
-  [:div.menu
+  [:div
+   {:class (str "menu " js/process.platform)}
    [menu-section-component
     "Collect"
     [{:title "Inbox"
