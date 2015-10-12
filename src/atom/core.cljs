@@ -9,7 +9,8 @@
 (defn- init-browser []
   (reset! main-window (browser-window.
                         (clj->js {:width 800
-                                  :height 600})))
+                                  :height 600
+                                  :title-bar-style "hidden-inset"})))
   ;; Path is relative to the compiled js file (main.js in our case)
   (.loadUrl @main-window "http://localhost:3449/index.html")
   (.on @main-window "closed" #(reset! main-window nil)))

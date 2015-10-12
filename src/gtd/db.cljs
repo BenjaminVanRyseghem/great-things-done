@@ -1,13 +1,13 @@
 (ns gtd.db
   (:require [gtd.crypto :as crypto]
-            [gtd.keytar :as keytar]
             [gtd.platform :as platform]
             [utils.core :as utils]
+            [utils.keychain :as keychain]
             [node.fs :as fs]))
 
 (defn- encrypt-task
   [task]
-  (let [password         (keytar/get-password "great-things-done"
+  (let [password         (keychain/get-password "great-things-done"
                                               (platform/logged-user))
         encrypted-string (crypto/encrypt (utils/clj->json task)
                                          password)]
@@ -15,7 +15,7 @@
 
 (defn- decrypt-task
   [encrypted-string]
-  (let [password (keytar/get-password "great-things-done"
+  (let [password (keychain/get-password "great-things-done"
                                       (platform/logged-user))
         task     (utils/json->clj (crypto/decrypt encrypted-string
                                             password))]

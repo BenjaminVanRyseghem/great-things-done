@@ -9,6 +9,10 @@
     </head>
     <body>
         <script>
+            module.paths.push(process.env["PWD"] + '/node_modules');
+        </script>
+
+        <script>
             var remote = require("remote");
             var globalShortcut = remote.require('global-shortcut');
             var ret = globalShortcut.register('ctrl+x', function() {

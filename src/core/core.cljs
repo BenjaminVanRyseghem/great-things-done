@@ -3,7 +3,7 @@
             [gtd.crypto :as crypto]
             [gtd.db :as db]
             [gtd.import-db :as import-db]
-            [gtd.keytar :as keytar]
+;;             [gtd.keychain :as keychain]
             [gtd.state :as state]
             [gtd.integration :as integration]
             [gtd.platform :as platform]
