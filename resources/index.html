@@ -8,39 +8,16 @@
         <script type="text/javascript" src="./lib/bootstrap/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <script>
-            module.paths.push(process.env["PWD"] + '/node_modules');
-        </script>
-
-        <script>
-            var remote = require("remote");
-            var globalShortcut = remote.require('global-shortcut');
-            var ret = globalShortcut.register('ctrl+x', function() {
-                console.log('ctrl+x is pressed');
-                gtd.integration.js_get_current_app_data(function(data) {
-                    data.forEach(function(each) {
-                        console.log(each);
-                    })
-                });
-            });
-        </script>
-
+        <script type="text/javascript" src="http://localhost:3449/helpers/fix-node_modules.js"></script>
 
         <script type="text/javascript" src="http://localhost:3449/helpers/import.js"></script>
+        <script type="text/javascript" src="http://localhost:3449/helpers/global-shortcut.js"></script>
+        <script type="text/javascript" src="http://localhost:3449/helpers/tooltip.js"></script>
 
         <script type="text/javascript" src="http://localhost:3449/webjars/react/0.12.0/react-with-addons.js"></script>
         <script type="text/javascript" src="http://localhost:3449/js/out/goog/base.js"></script>
         <script type="text/javascript" src="http://localhost:3449/js/gtd-core.js"></script>
         <script type="text/javascript">goog.require('core.core')</script>
 
-        <!--     Initialize tooltips     -->
-        <script>
-            window.installTooltip = function() {
-                $('[data-toggle="tooltip"]').tooltip()
-            };
-            $(function () {
-                window.installTooltip();
-            })
-        </script>
     </body>
 </html>
