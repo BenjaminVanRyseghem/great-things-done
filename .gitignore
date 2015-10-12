@@ -11,8 +11,9 @@ node_modules
 *.iml
 *.ipr
 *.iws
-resources/public/js
-resources/main.js
 .nrepl-port
 electron
 *.log
+
+resources/js/
+resources/css/
