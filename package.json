@@ -1,7 +1,7 @@
 {
   "name": "great-things-done",
   "version": "0.0.0",
-  "main": "resources/main.js",
+  "main": "resources/js/main.js",
   "description": "",
   "devDependencies": {
     "electron-prebuilt": "^0.33.7",

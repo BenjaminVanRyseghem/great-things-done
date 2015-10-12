@@ -16,11 +16,11 @@
             [lein-figwheel "0.4.1"]
             [lein-less "1.7.5"]]
   :source-paths ["src/tools"]
-  :clean-targets ^{:protect false} [:target-path "resources/public/js/out"]
+  :clean-targets ^{:protect false} [:target-path "resources/js/out"]
   :cljsbuild {:builds
               [{:id "atom-dev"
                 :source-paths ["src/atom"]
-                :compiler {:output-to "resources/main.js"
+                :compiler {:output-to "resources/js/main.js"
                            :optimizations :simple
                            :pretty-print true
                            :cache-analysis true}}
@@ -32,16 +32,16 @@
                                "src/repl/"
                                "src/ui/"
                                "src/core/"]
-                :compiler {:output-dir "resources/public/js/out"
-                           :output-to "resources/public/js/gtd-core.js"
+                :compiler {:output-dir "resources/js/out"
+                           :output-to "resources/js/gtd-core.js"
                            :optimizations :none
                            ; :pretty-print true
                            :source-map true
                            :cache-analysis true}}]}
-  :less {:source-paths ["resources/public/less"]
-         :target-path "resources/public/css"}
-  :figwheel {:http-server-root "public"
+  :less {:source-paths ["resources/less"]
+         :target-path "resources/css"}
+  :figwheel {:http-server-root ""
              :ring-handler figwheel-middleware/app
              :server-port 3449
-             :css-dirs ["resources/public/css"]}
+             :css-dirs ["resources/css"]}
   :hooks [leiningen.less])
