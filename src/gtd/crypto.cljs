@@ -1,8 +1,10 @@
 (ns gtd.crypto
-  "Encryption/Decryption node modulde based on https://gist.github.com/chris-rock/993d8a22c7138d1f0d2e#file-crypto-ctr-js")
+  "Encryption/Decryption node module based on https://gist.github.com/chris-rock/993d8a22c7138d1f0d2e#file-crypto-ctr-js")
 
-(def ^:private remote (js/require "remote"))
-(def ^:private crypto (.require remote "crypto"))
+(def ^{:private true
+       :no-doc true} remote (js/require "remote"))
+(def ^{:private true
+       :no-doc true} crypto (.require remote "crypto"))
 
 ;; function encrypt(text){
 ;;   var cipher = crypto.createCipher(algorithm,password)

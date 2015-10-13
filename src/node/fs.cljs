@@ -2,7 +2,8 @@
 
 ;; TODO: improve comments
 
-(def ^:private fs (js/require "fs"))
+(def ^{:private true
+       :no-doc true} fs (js/require "fs"))
 
 ;; ===========
 ;;

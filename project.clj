@@ -11,7 +11,9 @@
                  [org.webjars/react "0.13.3"]
                  [reagent "0.5.1"]
                  [ring/ring-core "1.4.0"]]
-  :plugins [[lein-cljsbuild "1.1.0"]
+  :plugins [[funcool/codeina "0.3.0"
+             :exclusions [org.clojure/clojure]]
+            [lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1" :exclusions [[org.clojure/tools.reader]
                                                 [org.codehaus.plexus/plexus-utils]
                                                 [org.clojure/clojure]]]
@@ -68,6 +70,15 @@
              :ring-handler figwheel-middleware/app
              :server-port 3449
              :css-dirs ["resources/css"]}
+  :codeina {:project {:name "Great Things Done"}
+            :reader  :clojurescript
+            :sources ["src/node/"
+                      "src/utils/"
+                      "src/gtd/"
+                      "src/repl/"
+                      "src/ui/"]
+            :src-uri "https://github.com/BenjaminVanRyseghem/great-things-done/blob/master/"
+            :src-uri-prefix "#L"}
   :aliases {"dev"  ["do"
                     ["clean"]
                     ["cljsbuild" "once" "electron-dev"]
