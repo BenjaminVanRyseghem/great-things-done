@@ -16,15 +16,33 @@
             [lein-figwheel "0.4.1"]
             [lein-less "1.7.5"]]
   :source-paths ["src/tools"]
-  :clean-targets ^{:protect false} [:target-path "resources/js/out"]
+  :clean-targets ^{:protect false} [:target-path "resources/js/main.js" "resources/js/out" "resources/js/gtd.js"]
   :cljsbuild {:builds
-              [{:id "atom-dev"
+              [{:id "electron"
                 :source-paths ["src/atom"]
                 :compiler {:output-to "resources/js/main.js"
                            :optimizations :simple
                            :pretty-print true
                            :cache-analysis true}}
-               {:id "great-things-done"
+               {:id "electron-dev"
+                :source-paths ["src/dev/"
+                               "src/atom"]
+                :compiler {:output-to "resources/js/main.js"
+                           :optimizations :simple
+                           :pretty-print true
+                           :cache-analysis true}}
+               {:id "gtd"
+                :source-paths ["src/node/"
+                               "src/utils/"
+                               "src/gtd/"
+                               "src/repl/"
+                               "src/ui/"
+                               "src/core/"]
+                :compiler {:main core.core
+                           :output-to "resources/js/gtd.js"
+                           :optimizations :whitespace
+                           :pretty-print false}}
+               {:id "gtd-dev"
                 :figwheel true
                 :source-paths ["src/node/"
                                "src/utils/"
@@ -32,10 +50,12 @@
                                "src/repl/"
                                "src/ui/"
                                "src/core/"]
-                :compiler {:output-dir "resources/js/out"
-                           :output-to "resources/js/gtd-core.js"
+                :compiler {:main core.core
+                           :asset-path "js/out"
+                           :output-dir "resources/js/out"
+                           :output-to "resources/js/gtd.js"
                            :optimizations :none
-                           ; :pretty-print true
+                           :pretty-print true
                            :source-map true
                            :cache-analysis true}}]}
   :less {:source-paths ["resources/less"]
@@ -44,4 +64,14 @@
              :ring-handler figwheel-middleware/app
              :server-port 3449
              :css-dirs ["resources/css"]}
-  :hooks [leiningen.less])
+  :hooks [leiningen.less]
+  :aliases {"dev"   ["do"
+                     ["clean"]
+                     ["cljsbuild" "once" "electron-dev"]
+                     ["cljsbuild" "once" "gtd-dev"]
+                     ["less" "once"]]
+            "prod" ["do"
+                    ["clean"]
+                    ["cljsbuild" "once" "electron"]
+                    ["cljsbuild" "once" "gtd"]
+                    ["less" "once"]]})

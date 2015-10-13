@@ -12,8 +12,10 @@
                                   :height 600
                                   :show false
                                   :title-bar-style "hidden-inset"})))
-  ;; Path is relative to the compiled js file (main.js in our case)
-  (.loadUrl @main-window "http://localhost:3449/index.html?id=Inbox")
+
+  (if (.-isDev js/global)
+    (.loadUrl @main-window "http://localhost:3449/index.html?id=Inbox")
+    (.loadUrl @main-window (str "file://" (js* "__dirname") "/../index.html?id=Inbox")))
 
   ;; Hide the window until it's loaded to avoid the flash effect
   ;; described here (https://github.com/atom/electron/issues/861)

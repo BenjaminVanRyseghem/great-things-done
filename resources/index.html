@@ -9,16 +9,25 @@
         <script type="text/javascript" src="./lib/bootstrap/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <script type="text/javascript" src="http://localhost:3449/webjars/react/0.12.0/react-with-addons.js"></script>
-        <script type="text/javascript" src="http://localhost:3449/helpers/fix-node_modules.js"></script>
+        <script>
+            (function(){
+                if(!require("remote").getGlobal("global").isDev){
+                    return;
+                }
 
-        <script type="text/javascript" src="http://localhost:3449/helpers/import.js"></script>
-        <script type="text/javascript" src="http://localhost:3449/helpers/global-shortcut.js"></script>
-        <script type="text/javascript" src="http://localhost:3449/helpers/tooltip.js"></script>
-        <script type="text/javascript" src="http://localhost:3449/js/out/goog/base.js"></script>
-        <script type="text/javascript" src="http://localhost:3449/js/gtd-core.js"></script>
+                var s = document.createElement("script");
+                s.type = "text/javascript";
+                s.src = "./js/out/goog/base.js";
+                $("body").append(s);
+            })();
+        </script>
+        <script type="text/javascript" src="./webjars/react/0.12.0/react-with-addons.js"></script>
+        <script type="text/javascript" src="./helpers/fix-node_modules.js"></script>
 
-        <script type="text/javascript" src="http://localhost:3449/helpers/util.js"></script>
-        <script type="text/javascript">goog.require('core.core')</script>
+        <script type="text/javascript" src="./helpers/import.js"></script>
+        <script type="text/javascript" src="./helpers/global-shortcut.js"></script>
+        <script type="text/javascript" src="./helpers/tooltip.js"></script>
+        <script type="text/javascript" src="./js/gtd.js"></script>
+        <script type="text/javascript" src="./helpers/util.js"></script>
     </body>
 </html>

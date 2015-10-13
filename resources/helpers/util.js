@@ -1,5 +1,4 @@
 (function(){
-  debugger;
   var util = {};
 
   util.getURLParameters = function() {

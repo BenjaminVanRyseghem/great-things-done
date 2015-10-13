@@ -4,6 +4,7 @@
   "main": "resources/js/main.js",
   "description": "",
   "devDependencies": {
+    "electron-packager": "^5.1.0",
     "electron-prebuilt": "^0.33.7",
     "electron-rebuild": "^1.0.1",
     "grunt": "^0.4.5",

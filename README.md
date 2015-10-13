@@ -10,10 +10,14 @@ foreman start &
 
 In separate terminal run:
 
-- `lein cljsbuild auto atom-dev`
-- `lein clean && lein cljsbuild once && rlwrap lein trampoline figwheel great-things-done`
+- `lein cljsbuild auto electron`
+- `lein clean && lein cljsbuild once && rlwrap lein trampoline figwheel dev`
 - `lein less auto`
 - and finally `./electron/Electron.app/Contents/MacOS/Electron .`
+
+# Buid for prod
+
+    lein prod
 
 ## License
 
