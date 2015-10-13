@@ -11,12 +11,16 @@
                  [org.webjars/react "0.13.3"]
                  [reagent "0.5.1"]
                  [ring/ring-core "1.4.0"]]
-
   :plugins [[lein-cljsbuild "1.1.0"]
-            [lein-figwheel "0.4.1"]
+            [lein-figwheel "0.4.1" :exclusions [[org.clojure/tools.reader]
+                                                [org.codehaus.plexus/plexus-utils]
+                                                [org.clojure/clojure]]]
             [lein-less "1.7.5"]]
   :source-paths ["src/tools"]
-  :clean-targets ^{:protect false} [:target-path "resources/js/main.js" "resources/js/out" "resources/js/gtd.js"]
+  :clean-targets ^{:protect false} [:target-path
+                                    "resources/js/main.js"
+                                    "resources/js/out"
+                                    "resources/js/gtd.js"]
   :cljsbuild {:builds
               [{:id "electron"
                 :source-paths ["src/atom"]
@@ -64,12 +68,11 @@
              :ring-handler figwheel-middleware/app
              :server-port 3449
              :css-dirs ["resources/css"]}
-  :hooks [leiningen.less]
-  :aliases {"dev"   ["do"
-                     ["clean"]
-                     ["cljsbuild" "once" "electron-dev"]
-                     ["cljsbuild" "once" "gtd-dev"]
-                     ["less" "once"]]
+  :aliases {"dev"  ["do"
+                    ["clean"]
+                    ["cljsbuild" "once" "electron-dev"]
+                    ["cljsbuild" "once" "gtd-dev"]
+                    ["less" "once"]]
             "prod" ["do"
                     ["clean"]
                     ["cljsbuild" "once" "electron"]
