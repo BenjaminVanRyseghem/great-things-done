@@ -11,7 +11,8 @@
                  [org.clojure/clojurescript "1.7.122"]
                  [org.webjars/react "0.13.3"]
                  [reagent "0.5.1"]
-                 [ring/ring-core "1.4.0"]]
+                 [ring/ring-core "1.4.0"]
+                 [secretary "1.2.3"]]
   :plugins [[funcool/codeina "0.3.0"
              :exclusions [org.clojure/clojure]]
             [lein-cljsbuild "1.1.0"]
@@ -40,14 +41,14 @@
                            :cache-analysis true}}
                {:id "gtd"
                 :source-paths ["src/front/"]
-                :compiler {:main "app.core"
+                :compiler {:main "gtd.core"
                            :output-to "resources/js/gtd.js"
                            :optimizations :whitespace
                            :pretty-print false}}
                {:id "gtd-dev"
                 :source-paths ["src/front/"]
                 :figwheel true
-                :compiler {:main "app.core"
+                :compiler {:main "gtd.core"
                            :asset-path "js/out"
                            :output-dir "resources/js/out"
                            :output-to "resources/js/gtd.js"

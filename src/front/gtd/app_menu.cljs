@@ -28,7 +28,7 @@
                                            {:type "separator"}
                                            {:label "Quit"
                                             :accelerator "Command+Q"
-                                            :click #(js/app.quit)}]}
+                                            :click #(.quit app)}]}
                                 {:label "Edit"
                                  :submenu [
                                            {:label "Undo"

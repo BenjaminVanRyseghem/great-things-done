@@ -22,22 +22,31 @@
        (str ratio "% complete")]]]))
 
 (defn- menu-item-component
-  [title id icon]
+  [& {:keys [project-id title item-id icon]}]
   (if icon
-    [:li.menu-item.clearfix
-     {:id (str "item-" id)}
+    [:li
+     {:id (str "item-" item-id)
+      :class (if (= project-id item-id)
+               "menu-item clearfix selected"
+               "menu-item clearfix")}
      [:h5
       [:i
        {:class (str "fa fa-fw fa-lg fa-" icon)}]
       title]]
-    [:li.menu-item.clearfix
-     {:id (str "item-" id)}
+    [:li
+     {:id (str "item-" item-id)
+      :class (if (= project-id item-id)
+               "menu-item clearfix selected"
+               "menu-item clearfix")}
      [:h5 title]]))
 
 (defn- menu-project-item-component
-  [title id completion]
-  [:li.menu-item.clearfix
-   {:id (str "item-" id)}
+  [& {:keys [project-id title item-id completion]}]
+  [:li
+   {:id (str "item-" item-id)
+    :class (if (= project-id item-id)
+               "menu-item clearfix selected"
+               "menu-item clearfix")}
    [:h5
     [:i
      {:class "fa fa-fw fa-lg fa-cube"}]
@@ -45,15 +54,15 @@
    [completion-bar
     (:done completion)
     (:total completion)]
-;;    [completion-bar
-;;     92
-;;     100]
+   ;;    [completion-bar
+   ;;     92
+   ;;     100]
    ])
 
 (defn- menu-item-stacked-component
-  [title id base icon]
+  [& {:keys [project-id title item-id base icon]}]
   [:li.menu-item.clearfix
-   {:id (str "item-" id)}
+   {:id (str "item-" item-id)}
    [:h5
     [:span.fa-stack.fa-lg.fa-fw
      [:i
@@ -63,82 +72,89 @@
     title]])
 
 (defn- menu-project-section-component
-  [items]
+  [& {:keys [project-id items]}]
   [:div#section-active-projects.menu-section
    [:h4 "Active projects"]
    [:ul.menu-items
     (for [i items]
       [menu-project-item-component
-       (:title i)
-       (:id i)
-       (:completion i)])]])
+       :project-id project-id
+       :title (:title i)
+       :item-id (:id i)
+       :completion (:completion i)])]])
 
 (defn- menu-section-component
-  [title id items]
+  [& {:keys [project-id title section-id items]}]
   [:div.menu-section
-   {:id (str "section-" id)}
+   {:id (str "section-" section-id)}
    [:h4 title]
    [:ul.menu-items
     (for [i items]
       (if (:stacked i)
         [menu-item-stacked-component
-         (:title i)
-         (:id i)
-         (:base i)
-         (:icon i)]
+         :project-id project-id
+         :title (:title i)
+         :item-id (:id i)
+         :base (:base i)
+         :icon (:icon i)]
         [menu-item-component
-         (:title i)
-         (:id i)
-         (:icon i)]))]])
+         :project-id project-id
+         :title (:title i)
+         :item-id (:id i)
+         :icon (:icon i)]))]])
 
-(defn- plain-menu-component []
+(defn- plain-menu-component
+  [project-id]
+  (js/console.log (str "rendered ID:" project-id))
   [:div
    {:class (str "menu " js/process.platform)}
    [:div#menu-container
     [menu-section-component
-     "Collect"
-     "collect"
-     [{:title "Inbox"
-       :id "inbox"
-       :icon "inbox"}]]
+     :project-id project-id
+     :title "Collect"
+     :section-id "collect"
+     :items [{:title "Inbox"
+              :id "Inbox"
+              :icon "inbox"}]]
     [menu-section-component
-     "Focus"
-     "focus"
-     [{:title "Today"
-       :id "today"
-       :icon "star"}
-      {:title "Next"
-       :id "next"
-       :icon "server fa-rotate-180"}
-      {:title "Scheduled"
-       :id "scheduled"
-       :stacked true
-       :base "calendar-o"
-       :icon "repeat"}
-      {:title "Someday"
-       :id "someday"
-       :icon "archive"}
-      {:title "Projects"
-       :id "projects"
-       :icon "cubes"}]]
+     :project-id project-id
+     :title "Focus"
+     :section-id "focus"
+     :items [{:title "Today"
+              :id "today"
+              :icon "star"}
+             {:title "Next"
+              :id "next"
+              :icon "server fa-rotate-180"}
+             {:title "Scheduled"
+              :id "scheduled"
+              :stacked true
+              :base "calendar-o"
+              :icon "repeat"}
+             {:title "Someday"
+              :id "someday"
+              :icon "archive"}
+             {:title "Projects"
+              :id "projects"
+              :icon "cubes"}]]
     [menu-project-section-component
      ;;     (doall (map (fn [p]
      ;;                   {:title (:name p)
      ;;                    :id (:id p)
      ;;                    :completion (state/completion-for p)})
      ;;                 (vals @state/projects)))
-     (doall (map (fn [p]
-                   {:title (str "Project " p)
-                    :id (str "project-" p)
-                    :key (str "project-" p)
-                    :completion {:done p
-                                 :total 100}})
-                 (range 1 101)))
+     :project-id project-id
+     :items (doall (map (fn [p]
+                          {:title (str "Project " p)
+                           :id (str "project-" p)
+                           :key (str "project-" p)
+                           :completion {:done p
+                                        :total 100}})
+                        (range 1 101)))
      ]]])
 
 (def menu-component
   (with-meta plain-menu-component
     {:component-did-mount
      #(.perfectScrollbar ($ :#menu-container)
-                         (clj->js {:suppressScrollX true}))}
-    ))
+                         (clj->js {:suppressScrollX true}))}))

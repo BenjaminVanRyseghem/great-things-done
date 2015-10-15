@@ -1,24 +1,17 @@
-(ns app.core
+(ns gtd.core
   (:require [gtd.app-menu :as app-menu]
             [gtd.crypto :as crypto]
             [gtd.db :as db]
             [gtd.import-db :as import-db]
-;;             [gtd.keychain :as keychain]
             [gtd.state :as state]
             [gtd.integration :as integration]
             [gtd.platform :as platform]
             [repl.core :as repl]
             [ui.core :as ui]
-            ))
+            [ui.routes :as routes]
+            [utils.keychain :as keychain]))
 
 (enable-console-print!)
-
-;; Initialize figwheel websocket
-;; (fw/watch-and-reload
-;;   :websocket-url   "ws://localhost:3449/figwheel-ws"
-;;   :jsload-callback (fn []
-;;                      (.installTooltip js/window)
-;;                      (print "reloaded")))
 
 ;; Ensures all necessary folders and files are present
 (db/ensure-structure)
@@ -89,4 +82,4 @@
 
 
 ;; Finally render the app
-(ui/render-core)
+(routes/init)

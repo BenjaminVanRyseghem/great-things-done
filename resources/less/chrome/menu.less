@@ -25,7 +25,7 @@
   }
 
   #menu-container {
-    padding: @menu-padding;
+    padding: 0;
     position: relative;
     width: 100%;
     height: 100%;
@@ -38,15 +38,18 @@
         color: @menu-section-color;
         margin: 0;
         font-weight: 300;
+        padding: @menu-padding;
       }
       .menu-items {
         margin: 10px 0 0 0;
+        padding: 0;
 
         .menu-item {
           position: relative;
           list-style: none;
-          margin-left: -20px;
-          margin-top: 8px;
+          padding: @menu-padding-item-v @menu-padding-h;
+          padding-left: 30px + @menu-padding-h;
+          padding-right: @completion-bar-width + @menu-padding-h + 4px;
 
           h5 {
             float: left;
@@ -63,15 +66,19 @@
 
           .completion-bar {
             position: absolute;
-            height: @menu-item-height;
+            height: @menu-item-height - 1px;
             width: @completion-bar-width;
-            top: 2px;
-            right: 0;
+            top: 5px;
+            right: @menu-padding-h;
             margin: 0;
 
             border: 1px solid #000;
             border-radius: 4px;
             background-color: @progress-bar-background-color;
+          }
+
+          &.selected {
+            background-color: #444;
           }
         }
       }
@@ -80,5 +87,5 @@
 }
 
 .menu.darwin {
-  padding-top: 40px;
+  padding-top: 36px;
 }
