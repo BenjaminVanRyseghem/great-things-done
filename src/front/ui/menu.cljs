@@ -1,8 +1,13 @@
 (ns ui.menu
   (:use [jayq.core :only [$]])
-  (:require [reagent.core :as reagent :refer [atom]]
-            [gtd.state :as state]
+  (:require [gtd.state :as state]
+            [reagent.core :as reagent :refer [atom]]
+            [secretary.core :as secretary]
             [utils.core :as utils]))
+
+(defn- goto
+  [route]
+  (secretary/dispatch! route))
 
 (defn- completion-bar
   [done total]
@@ -22,13 +27,14 @@
        (str ratio "% complete")]]]))
 
 (defn- menu-item-component
-  [& {:keys [project-id title item-id icon]}]
+  [& {:keys [project-id route title item-id icon]}]
   (if icon
     [:li
      {:id (str "item-" item-id)
       :class (if (= project-id item-id)
                "menu-item clearfix selected"
-               "menu-item clearfix")}
+               "menu-item clearfix")
+      :on-click #(goto route)}
      [:h5
       [:i
        {:class (str "fa fa-fw fa-lg fa-" icon)}]
@@ -37,16 +43,18 @@
      {:id (str "item-" item-id)
       :class (if (= project-id item-id)
                "menu-item clearfix selected"
-               "menu-item clearfix")}
+               "menu-item clearfix")
+      :on-click #(goto route)}
      [:h5 title]]))
 
 (defn- menu-project-item-component
   [& {:keys [project-id title item-id completion]}]
   [:li
    {:id (str "item-" item-id)
+    :on-click #(goto (str "/project/" item-id))
     :class (if (= project-id item-id)
-               "menu-item clearfix selected"
-               "menu-item clearfix")}
+             "menu-item clearfix selected"
+             "menu-item clearfix")}
    [:h5
     [:i
      {:class "fa fa-fw fa-lg fa-cube"}]
@@ -60,9 +68,10 @@
    ])
 
 (defn- menu-item-stacked-component
-  [& {:keys [project-id title item-id base icon]}]
+  [& {:keys [project-id route title item-id base icon]}]
   [:li.menu-item.clearfix
-   {:id (str "item-" item-id)}
+   {:id (str "item-" item-id)
+    :on-click #(goto route)}
    [:h5
     [:span.fa-stack.fa-lg.fa-fw
      [:i
@@ -93,12 +102,14 @@
       (if (:stacked i)
         [menu-item-stacked-component
          :project-id project-id
+         :route (:route i)
          :title (:title i)
          :item-id (:id i)
          :base (:base i)
          :icon (:icon i)]
         [menu-item-component
          :project-id project-id
+         :route (:route i)
          :title (:title i)
          :item-id (:id i)
          :icon (:icon i)]))]])
@@ -115,6 +126,7 @@
      :section-id "collect"
      :items [{:title "Inbox"
               :id "Inbox"
+              :route "/inbox"
               :icon "inbox"}]]
     [menu-section-component
      :project-id project-id
