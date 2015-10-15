@@ -6,6 +6,7 @@
   :dependencies [[com.lucasbradstreet/cljs-uuid-utils "1.0.2"]
                  [figwheel "0.4.1"]
                  [funcool/cuerdas "0.6.0"]
+                 [jayq "2.5.4"]
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.122"]
                  [org.webjars/react "0.13.3"]

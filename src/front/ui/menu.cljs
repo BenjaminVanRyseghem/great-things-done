@@ -1,4 +1,5 @@
 (ns ui.menu
+  (:use [jayq.core :only [$]])
   (:require [reagent.core :as reagent :refer [atom]]
             [gtd.state :as state]
             [utils.core :as utils]))
@@ -90,46 +91,54 @@
          (:id i)
          (:icon i)]))]])
 
-(defn menu-component []
+(defn- plain-menu-component []
   [:div
    {:class (str "menu " js/process.platform)}
-   [menu-section-component
-    "Collect"
-    "collect"
-    [{:title "Inbox"
-      :id "inbox"
-      :icon "inbox"}]]
-   [menu-section-component
-    "Focus"
-    "focus"
-    [{:title "Today"
-      :id "today"
-      :icon "star"}
-     {:title "Next"
-      :id "next"
-      :icon "server fa-rotate-180"}
-     {:title "Scheduled"
-      :id "scheduled"
-      :stacked true
-      :base "calendar-o"
-      :icon "repeat"}
-     {:title "Someday"
-      :id "someday"
-      :icon "archive"}
-     {:title "Projects"
-      :id "projects"
-      :icon "cubes"}]]
-   [menu-project-section-component
-;;     (doall (map (fn [p]
-;;                   {:title (:name p)
-;;                    :id (:id p)
-;;                    :completion (state/completion-for p)})
-;;                 (vals @state/projects)))
-    (doall (map (fn [p]
-                  (js/console.log p)
-                  {:title (str "Project " p)
-                   :id (str "project-" p)
-                   :completion {:done p
-                                :total 100}})
-                (range 1 101)))
-    ]])
+   [:div#menu-container
+    [menu-section-component
+     "Collect"
+     "collect"
+     [{:title "Inbox"
+       :id "inbox"
+       :icon "inbox"}]]
+    [menu-section-component
+     "Focus"
+     "focus"
+     [{:title "Today"
+       :id "today"
+       :icon "star"}
+      {:title "Next"
+       :id "next"
+       :icon "server fa-rotate-180"}
+      {:title "Scheduled"
+       :id "scheduled"
+       :stacked true
+       :base "calendar-o"
+       :icon "repeat"}
+      {:title "Someday"
+       :id "someday"
+       :icon "archive"}
+      {:title "Projects"
+       :id "projects"
+       :icon "cubes"}]]
+    [menu-project-section-component
+     ;;     (doall (map (fn [p]
+     ;;                   {:title (:name p)
+     ;;                    :id (:id p)
+     ;;                    :completion (state/completion-for p)})
+     ;;                 (vals @state/projects)))
+     (doall (map (fn [p]
+                   {:title (str "Project " p)
+                    :id (str "project-" p)
+                    :key (str "project-" p)
+                    :completion {:done p
+                                 :total 100}})
+                 (range 1 101)))
+     ]]])
+
+(def menu-component
+  (with-meta plain-menu-component
+    {:component-did-mount
+     #(.perfectScrollbar ($ :#menu-container)
+                         (clj->js {:suppressScrollX true}))}
+    ))
