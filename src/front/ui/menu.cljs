@@ -5,7 +5,8 @@
 
 (defn- completion-bar
   [done total]
-  (let [ratio (str (/ (* done 100) total))]
+  (let [ratio (str (.ceil js/Math
+                          (/ (* done 100) total)))]
     [:div.completion-bar.progress
      {:title (str done "/" total)
       :data-toggle "tooltip"
@@ -15,9 +16,7 @@
        :role "progressbar"
        :aria-valuenow ratio
        :aria-valuemin 0
-       :aria-valuemax 100
-;;        :style {:width (str ratio "%")}
-       }
+       :aria-valuemax 100}
       [:span.sr-only
        (str ratio "% complete")]]]))
 
@@ -42,12 +41,12 @@
     [:i
      {:class "fa fa-fw fa-lg fa-cube"}]
     title]
-   ;;    [completion-bar
-   ;;     (:done completion)
-   ;;     (:total completion)]
    [completion-bar
-    92
-    100]
+    (:done completion)
+    (:total completion)]
+;;    [completion-bar
+;;     92
+;;     100]
    ])
 
 (defn- menu-item-stacked-component
@@ -121,8 +120,16 @@
       :id "projects"
       :icon "cubes"}]]
    [menu-project-section-component
+;;     (doall (map (fn [p]
+;;                   {:title (:name p)
+;;                    :id (:id p)
+;;                    :completion (state/completion-for p)})
+;;                 (vals @state/projects)))
     (doall (map (fn [p]
-                  {:title (:name p)
-                   :id (:id p)
-                   :completion (state/completion-for p)})
-                (vals @state/projects)))]])
+                  (js/console.log p)
+                  {:title (str "Project " p)
+                   :id (str "project-" p)
+                   :completion {:done p
+                                :total 100}})
+                (range 1 101)))
+    ]])

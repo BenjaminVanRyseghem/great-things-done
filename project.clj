@@ -25,38 +25,28 @@
                                     "resources/js/gtd.js"]
   :cljsbuild {:builds
               [{:id "electron"
-                :source-paths ["src/atom"]
+                :source-paths ["src/electron/electron/"]
                 :compiler {:output-to "resources/js/main.js"
                            :optimizations :simple
                            :pretty-print true
                            :cache-analysis true}}
                {:id "electron-dev"
-                :source-paths ["src/dev/"
-                               "src/atom"]
+                :source-paths ["src/electron/dev/"
+                               "src/electron/electron/"]
                 :compiler {:output-to "resources/js/main.js"
                            :optimizations :simple
                            :pretty-print true
                            :cache-analysis true}}
                {:id "gtd"
-                :source-paths ["src/node/"
-                               "src/utils/"
-                               "src/gtd/"
-                               "src/repl/"
-                               "src/ui/"
-                               "src/core/"]
-                :compiler {:main core.core
+                :source-paths ["src/front/"]
+                :compiler {:main "app.core"
                            :output-to "resources/js/gtd.js"
                            :optimizations :whitespace
                            :pretty-print false}}
                {:id "gtd-dev"
+                :source-paths ["src/front/"]
                 :figwheel true
-                :source-paths ["src/node/"
-                               "src/utils/"
-                               "src/gtd/"
-                               "src/repl/"
-                               "src/ui/"
-                               "src/core/"]
-                :compiler {:main core.core
+                :compiler {:main "app.core"
                            :asset-path "js/out"
                            :output-dir "resources/js/out"
                            :output-to "resources/js/gtd.js"
@@ -72,11 +62,11 @@
              :css-dirs ["resources/css"]}
   :codeina {:project {:name "Great Things Done"}
             :reader  :clojurescript
-            :sources ["src/node/"
-                      "src/utils/"
-                      "src/gtd/"
-                      "src/repl/"
-                      "src/ui/"]
+            :sources ["src/node"
+                      "src/utils"
+                      "src/gtd"
+                      "src/repl"
+                      "src/ui"]
             :src-uri "https://github.com/BenjaminVanRyseghem/great-things-done/blob/master/"
             :src-uri-prefix "#L"}
   :aliases {"dev"  ["do"

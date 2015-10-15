@@ -1,4 +1,4 @@
-(ns core.core
+(ns app.core
   (:require [gtd.app-menu :as app-menu]
             [gtd.crypto :as crypto]
             [gtd.db :as db]
@@ -9,16 +9,16 @@
             [gtd.platform :as platform]
             [repl.core :as repl]
             [ui.core :as ui]
-            [figwheel.client :as fw]))
+            ))
 
 (enable-console-print!)
 
 ;; Initialize figwheel websocket
-(fw/watch-and-reload
-  :websocket-url   "ws://localhost:3449/figwheel-ws"
-  :jsload-callback (fn []
-                     (.installTooltip js/window)
-                     (print "reloaded")))
+;; (fw/watch-and-reload
+;;   :websocket-url   "ws://localhost:3449/figwheel-ws"
+;;   :jsload-callback (fn []
+;;                      (.installTooltip js/window)
+;;                      (print "reloaded")))
 
 ;; Ensures all necessary folders and files are present
 (db/ensure-structure)
