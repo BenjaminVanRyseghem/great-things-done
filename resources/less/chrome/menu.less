@@ -40,6 +40,7 @@
         font-weight: 300;
         padding: @menu-padding;
       }
+
       .menu-items {
         margin: 10px 0 0 0;
         padding: 0;
@@ -55,17 +56,44 @@
           h5 {
             float: left;
             font-size: @menu-item-height;
+            font-weight: normal;
+            margin: 0;
+            position:relative;
+            z-index: 20;
+
+            // Text ellipsis
+            width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
 
             i.fa {
               margin-right: 8px;
               vertical-align: middle;
             }
 
-            font-weight: normal;
-            margin: 0;
+            .hide-bar {
+              display: none;
+            }
+
+            &.overflow:hover {
+              width: 200px;
+
+              .hide-bar {
+                display: block;
+                height: @menu-section-height + 1px;
+                position: absolute;
+                background-image: url(../img/debut_dark.png);
+                width: 56px;
+                right: 0;
+                top: 0;
+                z-index: -1;
+              }
+            }
           }
 
           .completion-bar {
+            z-index: 0;
             position: absolute;
             height: @menu-item-height - 1px;
             width: @completion-bar-width;
@@ -80,6 +108,13 @@
 
           &.selected {
             background-color: #444;
+
+            h5.overflow:hover {
+              .hide-bar {
+                background-color: #444;
+                background-image: none;
+              }
+            }
           }
         }
       }

@@ -22,5 +22,17 @@
     return query_string;
   }
 
+  util.stringWidth = function(string, font) {
+    var f = font || '12px arial',
+        o = $('<div>' + string + '</div>')
+    .css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden', 'font': f})
+    .appendTo($('body')),
+        w = o.width();
+
+    o.remove();
+
+    return w;
+  }
+
   window.util = util;
 })()

@@ -5,6 +5,7 @@
             [secretary.core :as secretary]
             [utils.core :as utils]))
 
+(def ^:private max-title-witdh 140)
 (defn- goto
   [route]
   (secretary/dispatch! route))
@@ -56,8 +57,13 @@
              "menu-item clearfix selected"
              "menu-item clearfix")}
    [:h5
+    {:class (if (> (utils/string-width title)
+                   max-title-witdh)
+              "overflow"
+              "")}
     [:i
      {:class "fa fa-fw fa-lg fa-cube"}]
+    [:div.hide-bar]
     title]
    [completion-bar
     (:done completion)
@@ -157,7 +163,7 @@
      ;;                 (vals @state/projects)))
      :project-id project-id
      :items (doall (map (fn [p]
-                          {:title (str "Project " p)
+                          {:title (str "Project Project Project Project " p)
                            :id (str "project-" p)
                            :key (str "project-" p)
                            :completion {:done p
