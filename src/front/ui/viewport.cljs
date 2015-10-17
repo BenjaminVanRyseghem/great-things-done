@@ -77,13 +77,32 @@
        [render-tasks-for tasks]))])
 
 (defmethod viewport-container-component :default [id]
-  [:div.viewport-container
-   {:id (str "viewport-project-" id)}
-   (let [project (state/get-project-by-id id)
-         tasks   (:tasks project)]
+  (let [project (state/get-project-by-id id)
+        tasks   (:tasks project)]
+    [:div.viewport-container
+     {:id (str "viewport-project-" id)}
+     [:div.project-info
+      [:div
+       {:class (if (:today project)
+                 "name today"
+                 "name"
+                 )}
+       [:div.input]
+       (:name project)]
+      [:div.tags
+       [:ul
+        (for [tag (:tags project)]
+          [:li "tag"])]]
+      [:div.due-date
+       "(:due-date project)"]
+      [:div.description
+       "(:description project)"
+       ]
+      ]
      (if (empty? tasks)
        [render-empty-project]
-       [render-tasks-for tasks]))])
+       [render-tasks-for tasks])
+     ]))
 
 (defn viewport-component
   [project-id]

@@ -31,8 +31,9 @@
 
 (defn init
   []
-  (secretary/set-config! :prefix "#")
-  (let [h (History.)]
-    (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
-    (doto h (.setEnabled true)))
-  (secretary/dispatch! "/inbox"))
+  (defonce t (do
+               (secretary/set-config! :prefix "#")
+               (let [h (History.)]
+                 (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+                 (doto h (.setEnabled true)))
+               (secretary/dispatch! "/inbox"))))

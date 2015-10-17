@@ -14,6 +14,56 @@
     height: 100%;
     position: relative;
 
+    .project-info {
+      .name {
+        padding: 20px;
+
+        background-color: @project-info-background;
+        border-bottom: 1px solid #222;
+        font-size: 16px;
+
+        .input {
+          float: left;
+          width: 13px;
+          height: 13px;
+          margin-top: 4px;
+          margin-right: 20px;
+
+          border-radius: 3px;
+          box-shadow: inset 0px 0px 2px 0px black;
+          background-color: white;
+        }
+
+        &.today {
+          .input {
+            background-color: @icon-yellow;
+          }
+        }
+      }
+
+      .tags {
+        min-height: 20px;
+        background-color: @project-info-background;
+        border-bottom: 1px solid #222;
+
+        ul {
+          margin: 0
+        }
+      }
+
+      .due-date {
+        min-height: 20px;
+        background-color: @project-info-background;
+        border-bottom: 1px solid #222;
+      }
+
+      .description {
+        min-height: 20px;
+        background-color: @project-info-background;
+        border-bottom: 1px solid #222;
+      }
+    }
+
     .empty-inbox {
       width: 100%;
       position: absolute;
