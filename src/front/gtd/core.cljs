@@ -2,6 +2,7 @@
   (:require [gtd.app-menu :as app-menu]
             [gtd.crypto :as crypto]
             [gtd.db :as db]
+            [gtd.image-service :as image-service]
             [gtd.import-db :as import-db]
             [gtd.settings :as settings]
             [gtd.state :as state]
@@ -26,6 +27,7 @@
 
 ;; Load settings
 (settings/load-settings)
+(image-service/retrieve-empty-photo)
 
 ;; Starts repl
 (defonce repl

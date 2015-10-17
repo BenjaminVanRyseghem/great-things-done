@@ -6,9 +6,11 @@
             [utils.core :as utils]))
 
 (def ^:private max-title-witdh 140)
+
 (defn- goto
   [route]
-  (secretary/dispatch! route))
+  (set! (.-hash js/window.location)
+        route))
 
 (defn- completion-bar
   [done total]

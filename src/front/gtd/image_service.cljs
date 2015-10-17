@@ -1,21 +1,28 @@
 (ns gtd.image-service
-  (:require [gtd.pixabay :as pixabay]
-            [gtd.settings :as settings]
-            [utils.date :as date]))
+  (:require [gtd.settings :as settings]
+            [reagent.core :as reagent :refer [atom]]
+            [utils.date :as date]
+            [utils.pixabay :as pixabay]))
 
-(defn- default-inbox
-  []
+(def ^:private default-inbox
   {:src    "/img/empty-inbox.jpg"
    :author "Todd MacDonald"
    :height 852
    :width  1280
    :url    "https://pixabay.com/en/rocks-cairns-pile-balance-stones-175585/"})
 
-(defn empty-inbox []
-  (if (settings/pixabay :on)
-    (pixabay/get-picture
-     :username (settings/pixabay :credentials :username)
-     :key (settings/pixabay :credentials :key)
-     :query (settings/pixabay :query)
-     :index (date/index-of-today))
-    (default-inbox)))
+(defonce today-image (atom default-inbox))
+
+(defn retrieve-empty-photo
+  []
+  (when (settings/pixabay :on)
+    (pixabay/get-photo :username   (settings/pixabay :credentials :username)
+                       :api-key    (settings/pixabay :credentials :key)
+                       :query      (settings/pixabay :query)
+                       :index      (date/index-of-today)
+                       :on-success (fn [data]
+                                     (reset! today-image data)))))
+
+(defn empty-inbox
+  []
+  @today-image)

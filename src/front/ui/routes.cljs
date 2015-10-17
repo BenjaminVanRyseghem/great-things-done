@@ -1,6 +1,9 @@
 (ns ui.routes
-  (:require [secretary.core :as secretary :refer-macros [defroute]]
-            [ui.core :as core]))
+  (:require [goog.events :as events]
+            [goog.history.EventType :as EventType]
+            [secretary.core :as secretary :refer-macros [defroute]]
+            [ui.core :as core])
+  (:import goog.History))
 
 (defroute "/project/:id" [id]
   (core/render-core id))
@@ -28,4 +31,8 @@
 
 (defn init
   []
+  (secretary/set-config! :prefix "#")
+  (let [h (History.)]
+    (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+    (doto h (.setEnabled true)))
   (secretary/dispatch! "/inbox"))
