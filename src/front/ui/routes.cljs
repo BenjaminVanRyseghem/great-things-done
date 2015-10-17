@@ -6,9 +6,26 @@
   (core/render-core id))
 
 (defroute "/inbox" []
-  (js/console.log "tada")
   (core/render-core "Inbox"))
+
+(defroute "/today" []
+  (core/render-core "today"))
+
+(defroute "/next" []
+  (core/render-core "next"))
+
+(defroute "/scheduled" []
+  (core/render-core "scheduled"))
+
+(defroute "/scheduled" []
+  (core/render-core "scheduled"))
+
+(defroute "/someday" []
+  (core/render-core "someday"))
+
+(defroute "/projects" []
+  (core/render-core "projects"))
 
 (defn init
   []
-  (secretary/dispatch! "/project/project-10"))
+  (secretary/dispatch! "/inbox"))

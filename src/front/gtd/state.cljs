@@ -167,6 +167,7 @@
    :tags        tags
    :tasks   tasks
    :description description
+   :today       false
    :remind-date remind-date
    :due-date    due-date
    :show-before show-before

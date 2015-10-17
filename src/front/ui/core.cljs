@@ -1,18 +1,14 @@
 (ns ui.core
   (:require [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
-            [ui.menu :as menu]))
-
-(defn- viewport-component
-  []
-  [:div.viewport
-   [:p "Viewport"]])
+            [ui.menu :as menu]
+            [ui.viewport :as viewport]))
 
 (defn- chrome-component
   [project-id]
   [:div.container
    [menu/menu-component project-id]
-   [viewport-component]])
+   [viewport/viewport-component project-id]])
 
 (defn render-core
   [project-id]

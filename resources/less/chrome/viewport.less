@@ -1,0 +1,62 @@
+@import "../variables";
+
+.viewport {
+  position: absolute;
+  display: block;
+  height: 100%;
+  right: 0;
+  top: 0;
+  left: @menu-width;
+
+  color: white;
+
+  .viewport-container {
+    height: 100%;
+    position: relative;
+
+    .empty-inbox {
+      width: 100%;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+
+      .image-container {
+        width: 100%;
+        text-align: center;
+
+        .image-cropper {
+          width: @empty-inbox-image-size;
+          height: @empty-inbox-image-size;
+          border-radius: @empty-inbox-image-size / 2;
+
+          overflow: hidden;
+          margin: auto;
+        }
+
+        .image-description{
+          padding-top: 4px;
+          font-size: 11px;
+          color: #aaa;
+
+          a {
+            color: @viewport-link-color;
+
+            &:hover {
+              color: @viewport-link-color-hover;
+              cursor: pointer;
+              text-decoration: none;
+            }
+          }
+        }
+      }
+      .message {
+        text-align: center;
+
+        padding: 30px;
+        font-size: 18px;
+
+        color: white;
+      }
+    }
+  }
+}

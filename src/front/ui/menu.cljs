@@ -75,10 +75,17 @@
 
 (defn- menu-item-stacked-component
   [& {:keys [project-id route title item-id base icon]}]
-  [:li.menu-item.clearfix
+  [:li
    {:id (str "item-" item-id)
-    :on-click #(goto route)}
+    :on-click #(goto route)
+    :class (if (= project-id item-id)
+             "menu-item clearfix selected"
+             "menu-item clearfix")}
    [:h5
+    {:class (if (> (utils/string-width title)
+                   max-title-witdh)
+              "overflow"
+              "")}
     [:span.fa-stack.fa-lg.fa-fw
      [:i
       {:class (str "fa fa-stack-2x fa-" base)}]
@@ -105,20 +112,25 @@
    [:h4 title]
    [:ul.menu-items
     (for [i items]
-      (if (:stacked i)
-        [menu-item-stacked-component
-         :project-id project-id
-         :route (:route i)
-         :title (:title i)
-         :item-id (:id i)
-         :base (:base i)
-         :icon (:icon i)]
-        [menu-item-component
-         :project-id project-id
-         :route (:route i)
-         :title (:title i)
-         :item-id (:id i)
-         :icon (:icon i)]))]])
+      (let [title (:title i)
+            id    (:id i)
+            icon  (:icon i)
+            route (or (:route i)
+                      (str "/" id))]
+        (if (:stacked i)
+          [menu-item-stacked-component
+           :project-id project-id
+           :route route
+           :title title
+           :item-id id
+           :base (:base i)
+           :icon icon]
+          [menu-item-component
+           :project-id project-id
+           :route route
+           :title title
+           :item-id id
+           :icon icon])))]])
 
 (defn- plain-menu-component
   [project-id]
@@ -156,20 +168,12 @@
               :id "projects"
               :icon "cubes"}]]
     [menu-project-section-component
-     ;;     (doall (map (fn [p]
-     ;;                   {:title (:name p)
-     ;;                    :id (:id p)
-     ;;                    :completion (state/completion-for p)})
-     ;;                 (vals @state/projects)))
      :project-id project-id
      :items (doall (map (fn [p]
-                          {:title (str "Project Project Project Project " p)
-                           :id (str "project-" p)
-                           :key (str "project-" p)
-                           :completion {:done p
-                                        :total 100}})
-                        (range 1 101)))
-     ]]])
+                          {:title (:name p)
+                           :id (:id p)
+                           :completion (state/completion-for p)})
+                        (vals @state/projects)))]]])
 
 (def menu-component
   (with-meta plain-menu-component

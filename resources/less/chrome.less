@@ -2,6 +2,7 @@
 @import "./chrome/menu";
 @import "./chrome/icons";
 @import "./chrome/scrollbar";
+@import "./chrome/viewport";
 
 html, body {
   height: 100%;
@@ -10,6 +11,8 @@ html, body {
   padding: 0;
   overflow: hidden;
   background-image: url(../img/navy_blue.png);
+  font-family: 'Open Sans', sans-serif;
+  cursor: default;
 }
 .container {
   position: relative;
@@ -17,15 +20,3 @@ html, body {
   height: 100%;
   width: 100%;
 }
-
-.viewport {
-  position: absolute;
-  display: inline-block;
-  height: 100%;
-  right: 0;
-  top: 0;
-  left: @menu-width;
-
-  color: white;
-}
-
