@@ -65,7 +65,7 @@
   []
   (for-os
    "Mac OS X" (home "Library/Application Support/Great Things Done")
-   :default   (home ".config/great-things-done")))
+   :default   (home (str ".config" separator "great-things-done"))))
 
 (defn ensure-database-path!
   "Ensure that `database-path` exists on disk"
@@ -93,6 +93,13 @@
   (fs/ensure-dir! (str (database-projects-path)
                        separator
                        "Inbox")))
+
+(defn settings-file-path
+  "Return the OS Specific path to the setting file"
+  []
+  (str (config-path)
+       separator
+       "great-things-done.settings"))
 
 (defn logged-user
   []

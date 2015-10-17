@@ -3,6 +3,7 @@
             [gtd.crypto :as crypto]
             [gtd.db :as db]
             [gtd.import-db :as import-db]
+            [gtd.settings :as settings]
             [gtd.state :as state]
             [gtd.integration :as integration]
             [gtd.platform :as platform]
@@ -22,6 +23,9 @@
 
 ;; Initialize menu
 (app-menu/init)
+
+;; Load settings
+(settings/load-settings)
 
 ;; Starts repl
 (defonce repl
@@ -47,16 +51,16 @@
 
 (import-db/import-all-projects!)
 
-(let [projects (vals (state/all-projects))]
-  (js/console.log (count projects))
-  (doseq [project projects]
-    (js/console.log (:name project))))
+;; (let [projects (vals (state/all-projects))]
+;;   (js/console.log (count projects))
+;;   (doseq [project projects]
+;;     (js/console.log (:name project))))
 
-(let [tasks (:tasks (state/inbox))]
-  (doseq [t tasks]
-    (js/console.log (:id t))))
+;; (let [tasks (:tasks (state/inbox))]
+;;   (doseq [t tasks]
+;;     (js/console.log (:id t))))
 
-(js/console.log (:name (state/get-project-by-id "First-Project-56dc33b8-c173-42c5-be31-eef12a83ea49")))
+;; (js/console.log (:name (state/get-project-by-id "First-Project-56dc33b8-c173-42c5-be31-eef12a83ea49")))
 
 ;; (state/register-project "First Project"
 ;;                       :tasks [])
