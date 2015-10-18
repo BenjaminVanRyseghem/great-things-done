@@ -64,6 +64,33 @@
       [render-no-to-do]
       [render-to-dos tasks-to-do])))
 
+(defn- plain-tag-editor
+  [tags]
+  [:input.tag-editor
+   {:id "project-tag-editor"
+    :type "text"}])
+
+(defn tags-changed
+  [project tags]
+  (state/update-project! project
+                         :tags tags))
+
+(defn tag-editor
+  [project]
+  (with-meta plain-tag-editor
+    {:component-did-mount
+     (fn []
+       (.tagEditor  ($ :#project-tag-editor)
+                    "destroy")
+       (.tagEditor  ($ :#project-tag-editor)
+                    (clj->js {:initialTags (:tags project)
+                              :delimiter ",; "
+                              :placeholder "Add tags"
+                              :onChange (fn [field editor tags] (tags-changed project tags))
+                              :autocomplete {:delay 0
+                                             :position {:collision "flip"}
+                                             :source (state/get-tags)}})))}))
+
 (defmulti viewport-container-component ^{:private true
                                          :no-docs true} (fn [id] id))
 
@@ -85,24 +112,19 @@
       [:div
        {:class (if (:today project)
                  "name today"
-                 "name"
-                 )}
+                 "name")}
        [:div.input]
        (:name project)]
       [:div.tags
-       [:ul
-        (for [tag (:tags project)]
-          [:li "tag"])]]
+       [(tag-editor project)
+        (:tags project)]]
       [:div.due-date
        "(:due-date project)"]
       [:div.description
-       "(:description project)"
-       ]
-      ]
+       "(:description project)"]]
      (if (empty? tasks)
        [render-empty-project]
-       [render-tasks-for tasks])
-     ]))
+       [render-tasks-for tasks])]))
 
 (defn viewport-component
   [project-id]

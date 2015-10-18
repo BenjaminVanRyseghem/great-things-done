@@ -1,0 +1,45 @@
+@import "../variables";
+
+ul.tag-editor {
+  background-color: @project-info-background;
+  border: 0 none;
+
+  .tag-editor-tag {
+    background-color: #333;
+    color: white;
+  }
+
+  .tag-editor-tag.active+.tag-editor-delete {
+    display: none;
+    cursor: default;
+
+    i {
+      display: none;
+      cursor: default;
+    }
+  }
+
+  .tag-editor-delete {
+    background-color: #333;
+
+    &:hover {
+      i {
+        color: @icon-red;
+      }
+    }
+
+    i {
+      background: none;
+      display: inline-block;
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: 12px;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      margin-top: -4px;
+
+      &:before {
+        content: "\f00d";
+      }
+    }
+  }
+}

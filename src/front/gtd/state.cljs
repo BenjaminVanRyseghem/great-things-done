@@ -1,7 +1,8 @@
 (ns gtd.state
   (:require [cljs-uuid-utils.core :as uuid]
             [cuerdas.core :as string]
-            [gtd.db :as db]))
+            [gtd.db :as db]
+            [reagent.core :as reagent :refer [atom]]))
 
 (def ^:private task-types ["Task" "SubTask"])
 
@@ -165,7 +166,7 @@
                   "Task"
                   "SubTask")
    :tags        tags
-   :tasks   tasks
+   :tasks       tasks
    :description description
    :today       false
    :remind-date remind-date
@@ -343,6 +344,11 @@
   {:done (count (filter (fn [task] (:done task))
                         (:tasks project)))
    :total (count (:tasks project))})
+
+(defn get-tags
+  []
+  (or (keys @tags)
+      []))
 
 (defn ^:export list-of-projects
   []
