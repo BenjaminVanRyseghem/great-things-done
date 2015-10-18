@@ -110,8 +110,26 @@
   [project]
   (set! (.-innerHTML (.get ($ :#description-output)
                            0))
-        (.parse js/micromarkdown
+        (.toHTML js/markdown
                 (:description project))))
+
+(defn- add-autogrow
+  [input]
+  (.autogrow input
+             (clj->js {:horizontal false})))
+
+(defn- make-editable
+  [project]
+  (.editable ($ :#description-output)
+             (clj->js {:type "textarea"
+                       :action "click"})
+             (clj->js {:onInputCreation add-autogrow
+                       :callback (fn [event]
+                                   (when (= (.-value event)
+                                            (.-old_value event))
+                                     (inject-md project))
+                                   (description-changed project
+                                                        (.-value event)))})))
 
 (defn- description-editor
   [project]
@@ -121,14 +139,7 @@
                             (.attr ($ :#description-output)
                                    "editable-src"
                                    (:description project))
-                            (.editable ($ :#description-output)
-                                       "click"
-                                       (fn [event]
-                                         (when (= (.-value event)
-                                                  (.-old_value event))
-                                           (inject-md project))
-                                         (description-changed project
-                                                              (.-value event)))))}))
+                            (make-editable project))}))
 
 (defmulti viewport-container-component ^{:private true
                                          :no-docs true} (fn [id] id))

@@ -64,6 +64,10 @@
         #description-output {
           height: 100%;
 
+          p:last-child {
+            margin-bottom: 0;
+          }
+
           &.empty[placeholder]:after {
             content: attr(placeholder);
             color: #ccc;
@@ -75,8 +79,10 @@
           }
 
 
-          input {
+          textarea {
             height: 100%;
+            width: 100%;
+            min-height: 20px;
             background-color: @project-info-background;
             border: 0 none;
             box-shadow: none;
