@@ -108,8 +108,7 @@
 
 (defn- inject-md!
   [project]
-  (let [output ($ :#description-output)
-        shell  (js/require "shell")]
+  (let [output ($ :#description-output)]
     (set! (.-innerHTML (.get output
                              0))
           (.toHTML js/markdown
@@ -182,11 +181,14 @@
        [:div.project-name
         (:name project)]]
       [:div.tags
+       [:i.fa.fa-fw.fa-tags]
        [(tag-editor project)
         (:tags project)]]
       [:div.due-date
+       [:i.fa.fa-fw.fa-clock-o]
        "(:due-date project)"]
       [:div.description
+       [:i.fa.fa-fw.fa-pencil-square-o]
        [(description-editor project)
         project]]]
      (if (empty? tasks)

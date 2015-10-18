@@ -7,6 +7,20 @@ ul.tag-editor {
   li {
     line-height: 16px;
     font-size: 12px;
+
+    &:first-child {
+      display: none;
+    }
+
+    &:nth-child(2) {
+      .tag-editor-spacer {
+        display: none;
+      }
+    }
+  }
+
+  .placeholder {
+    padding-left: 0;
   }
 
   .tag-editor-tag {
