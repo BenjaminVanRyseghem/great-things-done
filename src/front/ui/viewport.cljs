@@ -114,7 +114,8 @@
                  "name today"
                  "name")}
        [:div.input]
-       (:name project)]
+       [:div.project-name
+        (:name project)]]
       [:div.tags
        [(tag-editor project)
         (:tags project)]]
