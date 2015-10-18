@@ -106,12 +106,27 @@
              "empty"
              "")}])
 
-(defn- inject-md
+(defn- inject-md!
   [project]
-  (set! (.-innerHTML (.get ($ :#description-output)
-                           0))
-        (.toHTML js/markdown
-                (:description project))))
+  (let [output ($ :#description-output)
+        shell  (js/require "shell")]
+    (set! (.-innerHTML (.get output
+                             0))
+          (.toHTML js/markdown
+                   (:description project)))
+    (doall (for [a ($ "#description-output a")]
+             (.on ($ a)
+                  "click"
+                  (fn [e]
+                    (let [url (.attr ($ a)
+                                     "href")
+                          url (if (= -1 (.indexOf url "://"))
+                                (str "http://" url)
+                                url)]
+                      (.openExternal shell
+                                     url)
+                      (.preventDefault e)
+                      (.stopPropagation e))))))))
 
 (defn- add-autogrow
   [input]
@@ -127,7 +142,7 @@
                        :callback (fn [event]
                                    (when (= (.-value event)
                                             (.-old_value event))
-                                     (inject-md project))
+                                     (inject-md! project))
                                    (description-changed project
                                                         (.-value event)))})))
 
@@ -135,7 +150,7 @@
   [project]
   (with-meta plain-description-editor
     {:component-did-mount (fn []
-                            (inject-md project)
+                            (inject-md! project)
                             (.attr ($ :#description-output)
                                    "editable-src"
                                    (:description project))
