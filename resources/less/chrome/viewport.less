@@ -60,6 +60,33 @@
 
       .description {
         .project-info-mixin();
+
+        #description-output {
+          height: 100%;
+
+          &.empty[placeholder]:after {
+            content: attr(placeholder);
+            color: #ccc;
+            font-weight: lighter;
+          }
+
+          &.empty.pending-edit:after {
+            content: none;
+          }
+
+
+          input {
+            height: 100%;
+            background-color: @project-info-background;
+            border: 0 none;
+            box-shadow: none;
+            padding: 0;
+
+            &:focus {
+              outline: none;
+            }
+          }
+        }
       }
     }
 

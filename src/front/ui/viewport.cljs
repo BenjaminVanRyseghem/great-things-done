@@ -86,10 +86,49 @@
                     (clj->js {:initialTags (:tags project)
                               :delimiter ",; "
                               :placeholder "Add tags"
-                              :onChange (fn [field editor tags] (tags-changed project tags))
+                              :onChange (fn [field editor tags]
+                                          (tags-changed project tags))
                               :autocomplete {:delay 0
                                              :position {:collision "flip"}
                                              :source (state/get-tags)}})))}))
+
+(defn- description-changed
+  [project description]
+  (state/update-project! project
+                         :description description))
+
+(defn- plain-description-editor
+  [project]
+  [:div
+   {:id "description-output"
+    :placeholder "Add a description"
+    :class (if (empty? (:description project))
+             "empty"
+             "")}])
+
+(defn- inject-md
+  [project]
+  (set! (.-innerHTML (.get ($ :#description-output)
+                           0))
+        (.parse js/micromarkdown
+                (:description project))))
+
+(defn- description-editor
+  [project]
+  (with-meta plain-description-editor
+    {:component-did-mount (fn []
+                            (inject-md project)
+                            (.attr ($ :#description-output)
+                                   "editable-src"
+                                   (:description project))
+                            (.editable ($ :#description-output)
+                                       "click"
+                                       (fn [event]
+                                         (when (= (.-value event)
+                                                  (.-old_value event))
+                                           (inject-md project))
+                                         (description-changed project
+                                                              (.-value event)))))}))
 
 (defmulti viewport-container-component ^{:private true
                                          :no-docs true} (fn [id] id))
@@ -122,7 +161,8 @@
       [:div.due-date
        "(:due-date project)"]
       [:div.description
-       "(:description project)"]]
+       [(description-editor project)
+        project]]]
      (if (empty? tasks)
        [render-empty-project]
        [render-tasks-for tasks])]))
