@@ -1,4 +1,5 @@
 @import "../variables";
+@import "../mixins";
 
 .viewport {
   position: absolute;
@@ -15,11 +16,12 @@
     position: relative;
 
     .project-info {
+
       .name {
         padding: 20px;
 
         background-color: @project-info-background;
-        border-bottom: 1px solid #222;
+        border-bottom: 1px solid @project-info-border;
         font-size: 16px;
 
         .input {
@@ -42,9 +44,7 @@
       }
 
       .tags {
-        min-height: 20px;
-        background-color: @project-info-background;
-        border-bottom: 1px solid #222;
+        .project-info-mixin();
 
         ul {
           margin: 0
@@ -52,15 +52,11 @@
       }
 
       .due-date {
-        min-height: 20px;
-        background-color: @project-info-background;
-        border-bottom: 1px solid #222;
+        .project-info-mixin();
       }
 
       .description {
-        min-height: 20px;
-        background-color: @project-info-background;
-        border-bottom: 1px solid #222;
+        .project-info-mixin();
       }
     }
 

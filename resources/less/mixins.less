@@ -1,7 +1,16 @@
+@import "variables";
+
 .generate-completion-color(@start, @end, @n, @i: 1) when (@i =< @n) {
   .completion-bar-@{i} {
     width: percentage(@i/100);
     background-color: mix(@end, @start, percentage(@i/100))
   }
   .generate-completion-color(@start, @end, @n, (@i + 1));
+}
+
+
+.project-info-mixin {
+  min-height: 20px;
+  background-color: @project-info-background;
+  border-bottom: 1px solid @project-info-border;
 }
