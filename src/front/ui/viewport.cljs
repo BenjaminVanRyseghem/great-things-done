@@ -4,6 +4,9 @@
             [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
+            [ui.description-editor :as description-editor]
+            [ui.due-date-picker :as due-date-picker]
+            [ui.tag-editor :as tag-editor]
             [utils.core :as utils]))
 
 (def ^:private empty-inbox-image-size 300)
@@ -64,96 +67,20 @@
       [render-no-to-do]
       [render-to-dos tasks-to-do])))
 
-(defn- plain-tag-editor
-  [tags]
-  [:input.tag-editor
-   {:id "project-tag-editor"
-    :type "text"}])
-
 (defn tags-changed
   [project tags]
   (state/update-project! project
                          :tags tags))
 
-(defn tag-editor
-  [project]
-  (with-meta plain-tag-editor
-    {:component-did-mount
-     (fn []
-       (.tagEditor  ($ :#project-tag-editor)
-                    "destroy")
-       (.tagEditor  ($ :#project-tag-editor)
-                    (clj->js {:initialTags (:tags project)
-                              :delimiter ",; "
-                              :placeholder "Add tags"
-                              :onChange (fn [field editor tags]
-                                          (tags-changed project tags))
-                              :autocomplete {:delay 0
-                                             :position {:collision "flip"}
-                                             :source (state/get-tags)}})))}))
+(defn due-date-changed
+  [project date]
+  (state/update-project! project
+                         :due-date date))
 
 (defn- description-changed
   [project description]
   (state/update-project! project
                          :description description))
-
-(defn- plain-description-editor
-  [project]
-  [:div
-   {:id "description-output"
-    :placeholder "Add a description"
-    :class (if (empty? (:description project))
-             "empty"
-             "")}])
-
-(defn- inject-md!
-  [project]
-  (let [output ($ :#description-output)]
-    (set! (.-innerHTML (.get output
-                             0))
-          (.toHTML js/markdown
-                   (:description project)))
-    (doall (for [a ($ "#description-output a")]
-             (.on ($ a)
-                  "click"
-                  (fn [e]
-                    (let [url (.attr ($ a)
-                                     "href")
-                          url (if (= -1 (.indexOf url "://"))
-                                (str "http://" url)
-                                url)]
-                      (.openExternal shell
-                                     url)
-                      (.preventDefault e)
-                      (.stopPropagation e))))))))
-
-(defn- add-autogrow
-  [input]
-  (.autogrow input
-             (clj->js {:horizontal false})))
-
-(defn- make-editable
-  [project]
-  (.editable ($ :#description-output)
-             (clj->js {:type "textarea"
-                       :action "click"})
-             (clj->js {:onInputCreation add-autogrow
-                       :callback (fn [event]
-                                   (when (= (.-value event)
-                                            (.-old_value event))
-                                     (inject-md! project))
-                                   (description-changed project
-                                                        (.-value event)))})))
-
-(defn- description-editor
-  [project]
-  (with-meta plain-description-editor
-    {:component-did-mount (fn []
-                            (inject-md! project)
-                            (.attr ($ :#description-output)
-                                   "editable-src"
-                                   (:description project))
-                            (make-editable project))}))
 
 (defmulti viewport-container-component ^{:private true
                                          :no-docs true} (fn [id] id))
@@ -182,15 +109,19 @@
         (:name project)]]
       [:div.tags
        [:i.fa.fa-fw.fa-tags]
-       [(tag-editor project)
-        (:tags project)]]
+       [tag-editor/render
+        project
+        tags-changed]]
       [:div.due-date
        [:i.fa.fa-fw.fa-clock-o]
-       "(:due-date project)"]
+       [due-date-picker/render
+        project
+        due-date-changed]]
       [:div.description
        [:i.fa.fa-fw.fa-pencil-square-o]
-       [(description-editor project)
-        project]]]
+       [description-editor/render
+        project
+        description-changed]]]
      (if (empty? tasks)
        [render-empty-project]
        [render-tasks-for tasks])]))

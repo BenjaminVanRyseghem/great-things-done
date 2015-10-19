@@ -8,7 +8,7 @@
 (defn- encrypt-task
   [task]
   (let [password         (keychain/get-password "great-things-done"
-                                              (platform/logged-user))
+                                                (platform/logged-user))
         encrypted-string (crypto/encrypt (utils/clj->json task)
                                          password)]
     encrypted-string))
@@ -16,9 +16,9 @@
 (defn- decrypt-task
   [encrypted-string]
   (let [password (keychain/get-password "great-things-done"
-                                      (platform/logged-user))
+                                        (platform/logged-user))
         task     (utils/json->clj (crypto/decrypt encrypted-string
-                                            password))]
+                                                  password))]
     task))
 
 (defn deserialize-task
@@ -51,6 +51,14 @@
         project    (atom {})]
     (doseq [[k v] info]
       (swap! project assoc k v)
+      (when (and (= (name k) "due-date")
+                 v)
+        (swap! project assoc k (js/Date. (js/parseInt v
+                                                      10))))
+      (when (and (= (name k) "creation-date")
+                 v)
+        (swap! project assoc k (js/Date. (js/parseInt v
+                                                      10))))
       (when (= (name k) "tasks")
         (swap! project assoc k (map #(deserialize-task project-path % callback) v))))
     @project))
@@ -80,9 +88,15 @@
     (fs/ensure-dir! full-path)
     (fs/write-file! (str full-path platform/separator ".project.pgtd")
                     (utils/clj->json (assoc
-                                 project
-                                 :tasks
-                                 (map :id (:tasks project)))))))
+                                       project
+                                       :creation-date
+                                       (.valueOf (:creation-date project))
+                                       :due-date
+                                       (if (:due-date project)
+                                         (.valueOf (:due-date project))
+                                         nil)
+                                       :tasks
+                                       (map :id (:tasks project)))))))
 
 (defn rename-project!
   [project old-id]

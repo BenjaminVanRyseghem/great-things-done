@@ -63,6 +63,43 @@
 
       .due-date {
         .project-info-mixin();
+
+        #project-due-date-picker {
+          background-color: @project-info-background;
+          width: 74px;
+          padding: 0;
+          color: white;
+          border: 0 none;
+          box-shadow: none;
+          line-height: 23px;
+          height: 23px;
+          display: inline-block;
+
+          &.empty {
+            width: 110px;
+          }
+
+          &:focus {
+            outline: none;
+            border: 0 none;
+            box-shadow: none;
+          }
+        }
+
+        #clear-due-date {
+          margin-left: 4px;
+          display: inline-block;
+
+          i.fa {
+            cursor: pointer;
+            position: relative;
+            left: 0;
+
+            &:hover {
+              color: @icon-red;
+            }
+          }
+        }
       }
 
       .description {

@@ -69,11 +69,7 @@
     title]
    [completion-bar
     (:done completion)
-    (:total completion)]
-   ;;    [completion-bar
-   ;;     92
-   ;;     100]
-   ])
+    (:total completion)]])
 
 (defn- menu-item-stacked-component
   [& {:keys [project-id route title item-id base icon]}]

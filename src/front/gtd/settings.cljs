@@ -12,6 +12,11 @@
   ([& args] (get-in (:pixabay @settings)
                     args)))
 
+(defn date-format
+  []
+  (or (:date-format @settings)
+      "mm/dd/yyyy"))
+
 (defn load-settings
   []
   (let [path         (platform/settings-file-path)

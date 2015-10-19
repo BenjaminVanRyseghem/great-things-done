@@ -1,0 +1,73 @@
+@import "../variables";
+
+.datepicker {
+
+  &.dropdown-menu {
+    background-color: @project-info-background;
+    border-color: @date-picker-border-color;
+    color: @date-picker-color;
+
+    th:hover, .day:hover, .month:hover, .year:hover {
+      background-color: @date-picker-hover-color;
+    }
+
+    th.dow:hover {
+      background: none;
+    }
+
+    .old, .new {
+      color: @date-picker-out-of-range-color;
+    }
+
+
+    &.datepicker-orient-bottom {
+      &:before, &:after {
+        border-bottom-color: @date-picker-border-color;
+      }
+    }
+  }
+
+  table tr td.active:hover,
+  table tr td.active:hover:hover,
+  table tr td.active.disabled:hover,
+  table tr td.active.disabled:hover:hover,
+  table tr td.active:active,
+  table tr td.active:hover:active,
+  table tr td.active.disabled:active,
+  table tr td.active.disabled:hover:active,
+  table tr td.active.active,
+  table tr td.active:hover.active,
+  table tr td.active.disabled.active,
+  table tr td.active.disabled:hover.active,
+  table tr td.active.disabled,
+  table tr td.active:hover.disabled,
+  table tr td.active.disabled.disabled,
+  table tr td.active.disabled:hover.disabled,
+  table tr td.active[disabled],
+  table tr td.active:hover[disabled],
+  table tr td.active.disabled[disabled],
+  table tr td.active.disabled:hover[disabled],
+  table tr td span.active:hover,
+  table tr td span.active:hover:hover,
+  table tr td span.active.disabled:hover,
+  table tr td span.active.disabled:hover:hover,
+  table tr td span.active:active,
+  table tr td span.active:hover:active,
+  table tr td span.active.disabled:active,
+  table tr td span.active.disabled:hover:active,
+  table tr td span.active.active,
+  table tr td span.active:hover.active,
+  table tr td span.active.disabled.active,
+  table tr td span.active.disabled:hover.active,
+  table tr td span.active.disabled,
+  table tr td span.active:hover.disabled,
+  table tr td span.active.disabled.disabled,
+  table tr td span.active.disabled:hover.disabled,
+  table tr td span.active[disabled],
+  table tr td span.active:hover[disabled],
+  table tr td span.active.disabled[disabled],
+  table tr td span.active.disabled:hover[disabled]{
+    background-color: #222;
+    background-image: none;
+  }
+}
