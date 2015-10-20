@@ -17,16 +17,26 @@
 }
 
 .input-support {
+  position: relative;
 
   .input.check-box {
+    height: 14px;
+    width: 14px;
+    position: absolute;
+    top: 50%;
+    transform: translate(0 ,-50%);
     float: left;
-    width: 13px;
-    height: 13px;
-    margin-top: 4px;
 
-    border-radius: 3px;
-    box-shadow: inset 0px 0px 2px 0px black;
+    border: 1px solid rgba(0,0,0,0.5);
+    border-radius: 4px;
+    box-shadow: inset 0px 0px 1px 0px rgba(0,0,0,0.5);
     background-color: white;
+
+    &:active {
+      background-color: #eee;
+      border-size: 2px;
+      box-shadow: inset 0px 0px 2px 0px rgba(0,0,0,0.8);
+    }
   }
 
   &.today {
