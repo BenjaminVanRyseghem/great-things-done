@@ -50,6 +50,7 @@
   [:div.todo-container
    [:ul.todos
     (for [task tasks]
+      ^{:key (:id task)}
       [:li.todo
        [:p (:name task)]])]])
 

@@ -97,6 +97,7 @@
    [:h4 "Active projects"]
    [:ul.menu-items
     (for [i items]
+      ^{:key (:id i)}
       [menu-project-item-component
        :project-id project-id
        :title (:title i)
@@ -116,6 +117,7 @@
             route (or (:route i)
                       (str "/" id))]
         (if (:stacked i)
+          ^{:key (:id i)}
           [menu-item-stacked-component
            :project-id project-id
            :route route
@@ -123,6 +125,7 @@
            :item-id id
            :base (:base i)
            :icon icon]
+          ^{:key (:id i)}
           [menu-item-component
            :project-id project-id
            :route route
@@ -132,7 +135,6 @@
 
 (defn- plain-menu-component
   [project-id]
-  (js/console.log (str "rendered ID:" project-id))
   [:div
    {:class (str "menu " js/process.platform)}
    [:div#menu-container

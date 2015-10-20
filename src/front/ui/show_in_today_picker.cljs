@@ -8,10 +8,12 @@
   [:div
    "Show in Today:"
    [:select#days-select.show-tick
+    {:value "A"}
     [:option
-     {:selected true}
+     {:value "A"}
      "on date"]
     [:option
+     {:value "B"}
      "days before"]]])
 
 (defn- plain-today-picker-with-days
@@ -24,10 +26,12 @@
      :data-placement "top"}
     (:show-before project)]
    [:select#days-select.show-tick
+    {:value "B"}
     [:option
+     {:value "A"}
      "on date"]
     [:option
-     {:selected true}
+     {:value "B"}
      "days before"]]])
 
 (defn- plain-empty-today-picker
