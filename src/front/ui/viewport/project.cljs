@@ -36,7 +36,7 @@
    "Time to add tasks"])
 
 (defmethod viewport/viewport-container-component :default
-  [id]
+  [id task-id]
   (let [project (state/get-project-by-id id)
         tasks   (:tasks project)]
     [:div.viewport-container
@@ -69,4 +69,4 @@
         description-changed]]]
      (if (empty? tasks)
        [render-empty-project]
-       [viewport/render-tasks-for tasks])]))
+       [viewport/render-tasks-for tasks task-id])]))

@@ -35,7 +35,7 @@
       "Your Inbox is empty"]]))
 
 (defmethod viewport/viewport-container-component "Inbox"
-  [_]
+  [_ id]
   [:div.viewport-container
    {:id (str "viewport-inbox")}
    (let [inbox (state/inbox)
