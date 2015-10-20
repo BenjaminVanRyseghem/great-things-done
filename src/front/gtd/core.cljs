@@ -11,6 +11,8 @@
             [repl.core :as repl]
             [ui.core :as ui]
             [ui.routes :as routes]
+            [ui.viewport.inbox] ;; Force its loading
+            [ui.viewport.project] ;; Force its loading
             [utils.keychain :as keychain]))
 
 (enable-console-print!)
