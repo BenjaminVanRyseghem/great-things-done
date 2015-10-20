@@ -64,41 +64,83 @@
       .due-date {
         .project-info-mixin();
 
-        #project-due-date-picker {
-          background-color: @project-info-background;
-          width: 74px;
-          padding: 0;
-          color: white;
-          border: 0 none;
-          box-shadow: none;
-          line-height: @project-info-height - 2px;
-          height: @project-info-height - 2px;
+        .date-picker {
           display: inline-block;
 
-          &.empty {
-            width: 110px;
-          }
-
-          &:focus {
-            outline: none;
+          #project-due-date-picker {
+            background-color: @project-info-background;
+            width: 74px;
+            padding: 0;
+            color: white;
             border: 0 none;
             box-shadow: none;
+            line-height: @project-info-height - 2px;
+            height: @project-info-height - 2px;
+            display: inline-block;
+
+            &.empty {
+              width: 110px;
+            }
+
+            &:focus {
+              outline: none;
+              border: 0 none;
+              box-shadow: none;
+            }
+          }
+
+          #clear-due-date {
+            display: inline-block;
+            margin-left: 4px;
+            height: @project-info-height - 2px;
+
+            i.fa {
+              cursor: pointer;
+              position: relative;
+              left: 0;
+
+              &:hover {
+                color: @icon-red;
+              }
+            }
           }
         }
 
-        #clear-due-date {
-          margin-left: 4px;
+        .today-picker {
           display: inline-block;
-          height: @project-info-height - 2px;
+          margin-left: 20px;
 
-          i.fa {
-            cursor: pointer;
-            position: relative;
-            left: 0;
+          .show-before {
+            #days-input {
+              display: inline-block;
 
-            &:hover {
-              color: @icon-red;
+              width: 28px;
+              height: 22px;
+              line-height: 22px;
+              margin-left: 6px;
+
+              text-align: right;
+
+              input {
+                width: 28px !important;
+                height: 22px;
+                background-color: @project-info-background;
+                text-align: right;
+                border: 0 none;
+
+                &:focus {
+                  outline: none;
+                }
+              }
             }
+
+            .bootstrap-select {
+              margin-left: 4px;
+            }
+          }
+
+          .bootstrap-select {
+            margin-left: 6px;
           }
         }
       }

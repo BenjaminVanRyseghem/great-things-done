@@ -1,0 +1,80 @@
+@import "../variables";
+
+.bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+  width: 110px;
+  margin-top: -3px;
+
+  &.show-tick {
+    li.selected a span.check-mark {
+      right: 5px;
+    }
+  }
+
+  .dropdown-menu.open {
+    width: 110px;
+    padding: 0;
+    background-color: @project-info-background;
+    border-color: @bootstrap-select-border-color;
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+    li a {
+      background-color: @project-info-background;
+      color: white;
+      padding: 3px 5px;
+
+      &:focus {
+        outline: none !important;
+      }
+
+      &:hover {
+        background-color: @date-picker-hover-color;
+      }
+
+      .glyphicon-ok {
+        /*     Replace Glyphicon with Font Awesome     */
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+
+        &:before {
+          content: "\f00c";
+        }
+      }
+    }
+  }
+
+  button.dropdown-toggle {
+    position: relative;
+    padding: 5px;
+
+    height: @project-info-height - 1px;
+    background-color: @project-info-background;
+    border-color: @bootstrap-select-border-color;
+
+    border-radius: 0;
+    border-top: 0 none;
+    border-bottom: 0 none;
+
+    color: white;
+
+    &:focus {
+      outline: none !important;
+    }
+
+    .filter-option {
+      position: absolute;
+      left: 5px;
+      top: 0;
+      line-height: 22px;
+    }
+
+    .caret {
+      right: 5px;
+      line-height: 22px;
+      transform: translate(0,25%);
+    }
+  }
+}

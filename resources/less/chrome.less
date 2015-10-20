@@ -14,9 +14,19 @@ html, body {
   font-family: 'Open Sans', sans-serif;
   cursor: default;
 }
+
 .container {
   position: relative;
   display: inline-block;
   height: 100%;
   width: 100%;
+
+  .tooltip-inner {
+    background-color: @tooltip-background-color;
+    color: @tooltip-color;
+  }
+
+  .tooltip-arrow {
+    border-top-color: @tooltip-background-color !important;
+  }
 }

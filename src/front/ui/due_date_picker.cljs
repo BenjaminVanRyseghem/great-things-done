@@ -4,11 +4,11 @@
             [reagent.core :as reagent :refer [atom]]))
 
 
-(defn- plain-description-editor
+(defn- plain-due-date-picker
   [project]
   (let [text (.format (.moment js/window
                                (:due-date project))
-                      "MM/DD/YYYY")]
+                      (settings/date-format))]
     [:div
      [:input.form-control
       {:id "project-due-date-picker"
@@ -17,7 +17,7 @@
      [:div#clear-due-date
       [:i.fa.fa-times]]]))
 
-(defn- plain-empty-description-editor
+(defn- plain-empty-due-date-picker
   [project]
   [:div
    [:input
@@ -28,8 +28,8 @@
 (defn build
   [project callback]
   (with-meta (if (:due-date project)
-               plain-description-editor
-               plain-empty-description-editor)
+               plain-due-date-picker
+               plain-empty-due-date-picker)
     {:component-did-mount (fn []
                             (.click ($ :#clear-due-date)
                                     (fn []
@@ -37,8 +37,7 @@
                                                    "clearDates")))
                             (.on (.datepicker ($ :#project-due-date-picker)
                                               (clj->js {:todayBtn  "linked",
-                                                        :autoclose true
-                                                        :format    (settings/date-format)}))
+                                                        :autoclose true}))
                                  "changeDate"
                                  (fn [e]
                                    (callback project
@@ -46,5 +45,6 @@
 
 (defn render
   [project callback]
-  [(build project
-          callback) project])
+  [:div.date-picker
+   [(build project
+          callback) project]])

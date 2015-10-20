@@ -6,6 +6,7 @@
             [secretary.core :as secretary]
             [ui.description-editor :as description-editor]
             [ui.due-date-picker :as due-date-picker]
+            [ui.show-in-today-picker :as show-in-today-picker]
             [ui.tag-editor :as tag-editor]
             [utils.core :as utils]))
 
@@ -67,15 +68,20 @@
       [render-no-to-do]
       [render-to-dos tasks-to-do])))
 
-(defn tags-changed
+(defn- tags-changed
   [project tags]
   (state/update-project! project
                          :tags tags))
 
-(defn due-date-changed
+(defn- due-date-changed
   [project date]
   (state/update-project! project
                          :due-date date))
+
+(defn- show-before-changed
+  [project days]
+  (state/update-project! project
+                         :show-before days))
 
 (defn- description-changed
   [project description]
@@ -85,7 +91,8 @@
 (defmulti viewport-container-component ^{:private true
                                          :no-docs true} (fn [id] id))
 
-(defmethod viewport-container-component "Inbox" [_]
+(defmethod viewport-container-component "Inbox"
+  [_]
   [:div.viewport-container
    {:id (str "viewport-inbox")}
    (let [inbox (state/inbox)
@@ -94,7 +101,8 @@
        [render-empty-inbox]
        [render-tasks-for tasks]))])
 
-(defmethod viewport-container-component :default [id]
+(defmethod viewport-container-component :default
+  [id]
   (let [project (state/get-project-by-id id)
         tasks   (:tasks project)]
     [:div.viewport-container
@@ -116,7 +124,10 @@
        [:i.fa.fa-fw.fa-clock-o]
        [due-date-picker/render
         project
-        due-date-changed]]
+        due-date-changed]
+       [show-in-today-picker/render
+        project
+        show-before-changed]]
       [:div.description
        [:i.fa.fa-fw.fa-pencil-square-o]
        [description-editor/render

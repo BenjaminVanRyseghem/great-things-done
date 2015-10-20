@@ -15,7 +15,7 @@
 (defn date-format
   []
   (or (:date-format @settings)
-      "mm/dd/yyyy"))
+      "MM/DD/YYYY"))
 
 (defn load-settings
   []

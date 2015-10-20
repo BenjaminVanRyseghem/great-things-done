@@ -176,5 +176,7 @@
 (def menu-component
   (with-meta plain-menu-component
     {:component-did-mount
-     #(.perfectScrollbar ($ :#menu-container)
-                         (clj->js {:suppressScrollX true}))}))
+     (fn []
+       (.tooltip ($ "[data-toggle='tooltip']"))
+       (.perfectScrollbar ($ :#menu-container)
+                          (clj->js {:suppressScrollX true})))}))

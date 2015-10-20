@@ -15,8 +15,7 @@
                  [cljsjs/react-with-addons "0.13.3-0"]
                  [ring/ring-core "1.4.0"]
                  [secretary "1.2.3"]]
-  :plugins [[funcool/codeina "0.3.0"
-             :exclusions [org.clojure/clojure]]
+  :plugins [[funcool/codeina "0.3.0" :exclusions [org.clojure/clojure]]
             [lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1" :exclusions [[org.clojure/tools.reader]
                                                 [org.codehaus.plexus/plexus-utils]

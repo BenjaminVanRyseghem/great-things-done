@@ -38,6 +38,30 @@
       (callback @task))
     @task))
 
+(defmulti deserialize-project-value (fn [k _ _ _] (name k)))
+
+(defmethod deserialize-project-value "due-date"
+  [_ v _ _]
+  (js/Date. (js/parseInt v
+                         10)))
+(defmethod deserialize-project-value "creation-date"
+  [_ v _ _]
+  (js/Date. (js/parseInt v
+                         10)))
+
+(defmethod deserialize-project-value "show-before"
+  [_ v _ _]
+  (js/parseInt v
+               10))
+
+(defmethod deserialize-project-value "tasks"
+  [_ v project-path callback]
+  (map #(deserialize-task project-path % callback) v))
+
+(defmethod deserialize-project-value :default
+  [k v _ _]
+  v)
+
 (defn deserialize-project
   [path & [callback]]
   (let [project-path (str (platform/database-projects-path)
@@ -50,17 +74,10 @@
         info       (utils/json->clj string)
         project    (atom {})]
     (doseq [[k v] info]
-      (swap! project assoc k v)
-      (when (and (= (name k) "due-date")
-                 v)
-        (swap! project assoc k (js/Date. (js/parseInt v
-                                                      10))))
-      (when (and (= (name k) "creation-date")
-                 v)
-        (swap! project assoc k (js/Date. (js/parseInt v
-                                                      10))))
-      (when (= (name k) "tasks")
-        (swap! project assoc k (map #(deserialize-task project-path % callback) v))))
+      (swap! project assoc k (deserialize-project-value k
+                                                        v
+                                                        project-path
+                                                        callback)))
     @project))
 
 (defn serialize-task!
