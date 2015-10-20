@@ -8,11 +8,30 @@
   .generate-completion-color(@start, @end, @n, (@i + 1));
 }
 
-
 .project-info-mixin {
   position: relative;
   min-height: @project-info-height;
   background-color: @project-info-background;
   border-bottom: 1px solid @project-info-border;
   padding-left: 50px;
+}
+
+.input-support {
+
+  .input.check-box {
+    float: left;
+    width: 13px;
+    height: 13px;
+    margin-top: 4px;
+
+    border-radius: 3px;
+    box-shadow: inset 0px 0px 2px 0px black;
+    background-color: white;
+  }
+
+  &.today {
+    .input.check-box {
+      background-color: @icon-yellow;
+    }
+  }
 }
