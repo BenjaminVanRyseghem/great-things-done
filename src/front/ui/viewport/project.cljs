@@ -30,6 +30,11 @@
   (state/update-project! project
                          :description description))
 
+(defn- project-done
+  [project]
+  (state/update-project! project
+                         :done true))
+
 (defn- render-empty-project
   []
   [:div.empty-project
@@ -46,7 +51,8 @@
        {:class (if (:today project)
                  "name today"
                  "name")}
-       [:div.input]
+       [:div.input.check-box
+        {:on-click #(project-done project)}]
        [:div.project-name
         (:name project)]]
       [:div.tags
