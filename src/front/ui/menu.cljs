@@ -7,11 +7,6 @@
 
 (def ^:private max-title-witdh 140)
 
-(defn- goto
-  [route]
-  (set! (.-hash js/window.location)
-        route))
-
 (defn- completion-bar
   [done total]
   (let [ratio (str (.ceil js/Math
@@ -37,7 +32,7 @@
       :class (if (= project-id item-id)
                "menu-item clearfix selected"
                "menu-item clearfix")
-      :on-click #(goto route)}
+      :on-click #(utils/goto route)}
      [:h5
       [:i
        {:class (str "fa fa-fw fa-lg fa-" icon)}]
@@ -47,14 +42,14 @@
       :class (if (= project-id item-id)
                "menu-item clearfix selected"
                "menu-item clearfix")
-      :on-click #(goto route)}
+      :on-click #(utils/goto route)}
      [:h5 title]]))
 
 (defn- menu-project-item-component
   [& {:keys [project-id title item-id completion]}]
   [:li
    {:id (str "item-" item-id)
-    :on-click #(goto (str "/project/" item-id))
+    :on-click #(utils/goto (str "/project/" item-id))
     :class (if (= project-id item-id)
              "menu-item clearfix selected"
              "menu-item clearfix")}
@@ -75,7 +70,7 @@
   [& {:keys [project-id route title item-id base icon]}]
   [:li
    {:id (str "item-" item-id)
-    :on-click #(goto route)
+    :on-click #(utils/goto route)
     :class (if (= project-id item-id)
              "menu-item clearfix selected"
              "menu-item clearfix")}

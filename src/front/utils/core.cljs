@@ -29,3 +29,8 @@
   []
   (let [parameters (get-url-parameters)]
     (:id parameters)))
+
+(defn goto
+  [route]
+  (set! (.-hash js/window.location)
+        route))
