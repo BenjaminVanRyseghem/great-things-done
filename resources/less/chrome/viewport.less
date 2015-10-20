@@ -71,8 +71,8 @@
           color: white;
           border: 0 none;
           box-shadow: none;
-          line-height: 23px;
-          height: 23px;
+          line-height: @project-info-height - 2px;
+          height: @project-info-height - 2px;
           display: inline-block;
 
           &.empty {
@@ -89,6 +89,7 @@
         #clear-due-date {
           margin-left: 4px;
           display: inline-block;
+          height: @project-info-height - 2px;
 
           i.fa {
             cursor: pointer;
