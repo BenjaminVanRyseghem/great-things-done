@@ -173,7 +173,7 @@
                           {:title (:name p)
                            :id (:id p)
                            :completion (state/completion-for p)})
-                        (vals @state/projects)))]]])
+                        (vals @state/active-projects)))]]])
 
 (def menu-component
   (with-meta plain-menu-component

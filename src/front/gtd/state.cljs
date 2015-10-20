@@ -15,7 +15,6 @@
 (defonce ^:private active-projects    (atom {}))
 (defonce ^:private completed-projects (atom {}))
 (defonce ^:private tasks              (atom {}))
-(defonce ^:private active-tasks       (atom {}))
 (defonce ^:private repeating-tasks    (atom {}))
 (defonce ^:private completed-tasks    (atom {}))
 (defonce ^:private tags               (atom {}))
@@ -60,11 +59,15 @@
   [entity atom-map]
   (swap! atom-map assoc (:id entity) entity))
 
-(defn- is-project
+(defn- deregister-entity-in
+  [entity atom-map]
+  (swap! atom-map dissoc (:id entity) entity))
+
+(defn- is-project?
   [entity]
   (= (:type entity) "Project"))
 
-(defn- is-task
+(defn- is-task?
   [entity]
   (boolean (not-empty (filter #{(:type entity)} task-types))))
 
@@ -82,12 +85,9 @@
            (= (get-in task [:repeating :type])
               "pattern"))
     (register-entity-in task repeating-tasks)
-    (do
-      (when (:done task)
-        (register-entity-in task completed-tasks))
-      (when (:active task)
-        (register-entity-in task active-tasks))
-      (register-entity-in task tasks)))
+    (when (:done task)
+      (register-entity-in task completed-tasks)))
+  (register-entity-in task tasks)
   (register-tags! task :tasks))
 
 (defn- store-project!
@@ -96,9 +96,11 @@
     (reset! inbox-project project)
     (do
       (register-entity-in project projects)
-      (if (:done project)
-        (register-entity-in project completed-projects)
+      (when (:done project)
+        (register-entity-in project completed-projects))
+      (when (:active project)
         (register-entity-in project active-projects))
+      (register-entity-in project projects)
       (register-tags! project :projects))))
 
 (defn- get-parent
@@ -121,9 +123,9 @@
 
 (defn- install-entity!
   [entity]
-  (when (is-project entity)
+  (when (is-project? entity)
     (install-project entity))
-  (when (is-task entity)
+  (when (is-task? entity)
     (install-task entity)))
 
 (defn get-task-by-id
@@ -148,12 +150,12 @@
 
 (defn- new-task
   [task-name project parent tags tasks description remind-date due-date show-before repeating done]
-  (when (and (is-project parent)
+  (when (and (is-project? parent)
              (not= (:id parent)
                    (:id project)))
     ;; Ensure that parent is not another project if parent is a project
     (throw (js/Error. (str "`parent` and `project` can't be different if parent is a project"))))
-  (when (and (is-task parent)
+  (when (and (is-task? parent)
              (not= (get-in parent [:project :id])
                    (:id project)))
     ;; Ensure that parent is in the same project if parent is a task
@@ -162,7 +164,7 @@
    :id          (build-id task-name)
    :project     (select-keys project [:name :id])
    :parent      (:id parent)
-   :type        (if (is-project parent)
+   :type        (if (is-project? parent)
                   "Task"
                   "SubTask")
    :tags        tags
@@ -258,6 +260,8 @@
     (if (even? (count body))
       (let [tmp-task (atom (merge task args))]
         (doseq [[k v] args]
+          (when (= (name k) "done")
+            )
           (when (= (name k) "id")
             (throw (js/Error. "`id` can not be updated!")))
           (when (= (name k) "project")
@@ -285,14 +289,14 @@
             (let [parent (get-parent task)
                   project-id (get-in task [:project :id])]
               ;; When new parent is a project
-              (when (is-project v)
+              (when (is-project? v)
                 (swap! tmp-task assoc :project v)
                 ;; When the task was in a different project
                 (when (not= (:id v)
                             project-id)
                   (db/remove-task! task)))
               ;; When new parent is a task
-              (when (is-task v)
+              (when (is-task? v)
                 (swap! tmp-task assoc :project (:project v))
                 ;; When the task was in a different project
                 (when (not= (get-in v [:project :id])
@@ -315,6 +319,39 @@
         (install-task @tmp-task))
       (throw (js/Error. "Wrong number of arguments. `body` has to have an even number of elements")))))
 
+(defmulti update-project-value (fn [k v p tmp] (name k)))
+
+(defmethod update-project-value :default
+  [_ v _ _]
+  v)
+
+(defmethod update-project-value "id"
+  [_ _ _ _]
+  (throw (js/Error. "`id` can not be updated!")))
+
+(defmethod update-project-value "name"
+  [_ v project tmp-project]
+  (swap! tmp-project assoc :id (build-id v))
+  (db/rename-project! (assoc @tmp-project
+                        :name v)
+                      (:id project))
+  v)
+
+(defmethod update-project-value "active"
+  [_ v project tmp-project]
+  (if v
+    (register-entity-in @tmp-project active-projects)
+    (deregister-entity-in @tmp-project active-projects))
+  v)
+
+(defmethod update-project-value "done"
+  [_ v project tmp-project]
+  (register-entity-in @tmp-project completed-projects)
+  (swap! tmp-project assoc :active (update-project-value :active
+                                                         false
+                                                         project
+                                                         tmp-project))
+  v)
 
 (defn update-project!
   [project & body]
@@ -324,13 +361,10 @@
     (if (even? (count body))
       (let [tmp-project (atom project)]
         (doseq [[k v] args]
-          (when (= (name k) "id")
-            (throw (js/Error. "`id` can not be updated!")))
-          (swap! tmp-project assoc (keyword k) v)
-          (when (= (name k) "name")
-            (swap! tmp-project assoc :id (build-id v))
-            (db/rename-project! @tmp-project
-                                (:id project))))
+          (swap! tmp-project assoc (keyword k) (update-project-value k
+                                                                     v
+                                                                     project
+                                                                     tmp-project)))
         (install-project @tmp-project))
       (throw (js/Error. "Wrong number of arguments. `body` has to have an even number of elements")))))
 
@@ -344,9 +378,11 @@
 
 (defn completion-for
   [project]
-  {:done (count (filter (fn [task] (:done task))
-                        (:tasks project)))
-   :total (count (:tasks project))})
+  (let [tasks (map #(get-task-by-id (:id %))
+                   (:tasks project))]
+    {:done (count (filter (fn [task] (:done task))
+                          tasks))
+     :total (count tasks)}))
 
 (defn get-tags
   []
