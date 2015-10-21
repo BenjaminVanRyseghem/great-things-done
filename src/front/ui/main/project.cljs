@@ -45,36 +45,38 @@
   (let [project (state/get-project-by-id id)
         tasks   (:tasks project)]
     [:div.main-container
-     {:id (str "main-project-" id)}
-     [:div.project-info
-      [:div
-       {:class (if (:today project)
-                 "name today"
-                 "name")}
-       [:div.input.check-box
-        {:on-click #(project-done project)}]
-       [:div.project-name
-        (:name project)]]
-      [:div.tags
-       [:i.fa.fa-fw.fa-tags]
-       [tag-editor/render
-        project
-        tags-changed]]
-      [:div.due-date
-       [:i.fa.fa-fw.fa-clock-o]
-       [due-date-picker/render
-        project
-        due-date-changed]
-       [show-in-today-picker/render
-        project
-        show-before-changed]]
-      [:div.description
-       [:i.fa.fa-fw.fa-pencil-square-o]
-       [description-editor/render
-        project
-        description-changed]]]
-     (if (empty? tasks)
-       [render-empty-project]
-       [main/render-tasks-for
-        project
-        tasks])]))
+     [:div.main-viewport
+      {:id (str "main-project-" id)}
+      [:div.project-info
+       [:div
+        {:class (if (:today project)
+                  "name today"
+                  "name")}
+        [:div.input.check-box
+         {:on-click #(project-done project)}]
+        [:div.project-name
+         (:name project)]]
+       [:div.tags
+        [:i.fa.fa-fw.fa-tags]
+        [tag-editor/render
+         project
+         tags-changed]]
+       [:div.due-date
+        [:i.fa.fa-fw.fa-clock-o]
+        [due-date-picker/render
+         project
+         due-date-changed]
+        [show-in-today-picker/render
+         project
+         show-before-changed]]
+       [:div.description
+        [:i.fa.fa-fw.fa-pencil-square-o]
+        [description-editor/render
+         project
+         description-changed]]]
+      (if (empty? tasks)
+        [render-empty-project]
+        [main/render-tasks-for
+         project
+         tasks])]
+     [main/main-toolbar-component id]]))

@@ -69,7 +69,7 @@
   [:div
    [:div.toggle-hide-done
     {:on-click #(state/update-project! project
-                                      :hide-done true)}
+                                       :hide-done true)}
     "Hide done"]
    [:ul.dones
     (doall (for [task tasks]
@@ -121,6 +121,36 @@
                           (clj->js {:suppressScrollX true})))}))
 
 (defmulti main-container-component (fn [id] id))
+
+(defmulti main-toolbar-component (fn [id] id))
+
+(defmethod main-toolbar-component :default
+  [_]
+  [:div.main-toolbar
+   [:div.toolbar-container
+    [:div.items
+     [:div.group.left
+      [:div.item.new
+       [:div.icon
+        [:i.fa.fa-plus]]
+       "New"]]
+     [:div.group.right
+      [:div.item.resolve
+       [:div.icon
+        [:i.fa.fa-check]]
+       "Resolve"]
+      [:div.item.today
+       [:div.icon
+        [:i.fa.fa-star-o]]
+       "Today"]
+      [:div.item.move
+       [:div.icon
+        [:i.fa.fa-arrow-right]]
+       "Move"]]]
+    [:div.search
+     [:div.search-container
+      [:input
+       {:placeholder "Search"}]]]]])
 
 (defn main-component
   [project-id]
