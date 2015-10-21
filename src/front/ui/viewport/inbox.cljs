@@ -42,4 +42,7 @@
          tasks (:tasks inbox)]
      (if (empty? tasks)
        [render-empty-inbox]
-       [viewport/render-tasks-for tasks]))])
+       [viewport/render-tasks-for
+        tasks
+        id
+        inbox]))])

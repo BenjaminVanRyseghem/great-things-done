@@ -5,13 +5,13 @@
             [ui.viewport :as viewport]))
 
 (defn- chrome-component
-  [project-id task-id]
+  [project-id]
   [:div.container
    [menu/menu-component project-id]
-   [viewport/viewport-component project-id task-id]])
+   [viewport/viewport-component project-id]])
 
 (defn render-core
-  [project-id task-id]
+  [project-id]
   (reagent/render
-   [chrome-component project-id task-id]
+   [chrome-component project-id]
    (.-body js/document)))

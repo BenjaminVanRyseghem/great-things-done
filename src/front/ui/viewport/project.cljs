@@ -75,4 +75,7 @@
         description-changed]]]
      (if (empty? tasks)
        [render-empty-project]
-       [viewport/render-tasks-for tasks task-id])]))
+       [viewport/render-tasks-for
+        project
+        tasks
+        task-id])]))

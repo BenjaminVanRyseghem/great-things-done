@@ -6,31 +6,28 @@
   (:import goog.History))
 
 (defroute "/project/:id" [id]
-  (core/render-core id nil))
-
-(defroute "/project/:id/task/:task" [id task]
-  (core/render-core id task))
+  (core/render-core id))
 
 (defroute "/inbox" []
-  (core/render-core "Inbox" nil))
+  (core/render-core "Inbox"))
 
 (defroute "/today" []
-  (core/render-core "today" nil))
+  (core/render-core "today"))
 
 (defroute "/next" []
-  (core/render-core "next" nil))
+  (core/render-core "next"))
 
 (defroute "/scheduled" []
-  (core/render-core "scheduled" nil))
+  (core/render-core "scheduled"))
 
 (defroute "/scheduled" []
-  (core/render-core "scheduled" nil))
+  (core/render-core "scheduled"))
 
 (defroute "/someday" []
-  (core/render-core "someday" nil))
+  (core/render-core "someday"))
 
 (defroute "/projects" []
-  (core/render-core "projects" nil))
+  (core/render-core "projects"))
 
 (defn init
   []

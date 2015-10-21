@@ -6,23 +6,30 @@
 (def ^{:private true
        :no-docs true} shell (js/require "shell"))
 
+(defonce ^:private selected-task (atom nil))
+(defonce ^:private active-task (atom nil))
+
 (defn- build-to-do-class
-  [task task-id]
-  (let [css-class "todo "
+  [task selected-task]
+  (let [css-class "todo"
         css-class (if (= (:id task)
-                         task-id)
-                    (str css-class "selected ")
+                         (:id selected-task))
+                    (str css-class " selected")
                     css-class)
         css-class (if (:today task)
-                    (str css-class "today ")
+                    (str css-class " today")
                     css-class)]
     css-class))
 
 (defn render-todo
-  [task task-id]
-  [:li.todo
+  [task]
+
+  [:li
    {:class (build-to-do-class task
-                              task-id)}
+                              @selected-task)
+    :on-click (fn [e]
+                (reset! selected-task task)
+                (.stopPropagation e))}
    [:div.input.check-box
     {:on-click (fn []
                  (state/update-task! task
@@ -30,21 +37,23 @@
    [:p (:name task)]])
 
 (defn- render-to-dos
-  [tasks task-id]
-  [:div.todo-container
+  [tasks]
+  [:div
    [:ul.todos
     (doall (for [task tasks]
              ^{:key (:id task)}
              [render-todo
-              task
-              task-id]))]])
+              task]))]])
 
 (defn render-done
-  [task task-id]
-  [:li.todo
+  [task]
+  [:li
    {:class (build-to-do-class task
-                              task-id)}
-   [:div.input.check-box
+                              @selected-task)
+    :on-click (fn [e]
+                (reset! selected-task task)
+                (.stopPropagation e))}
+   [:div.input.check-box.checked
     {:on-click (fn []
                  (state/update-task! task
                                      :done false))}]
@@ -56,22 +65,32 @@
    "NO to do"])
 
 (defn- render-dones
-  [tasks task-id]
-  [:div.done-container
-   [:ul.doness
+  [project tasks]
+  [:div
+   [:div.toggle-hide-done
+    {:on-click #(state/update-project! project
+                                      :hide-done true)}
+    "Hide done"]
+   [:ul.dones
     (doall (for [task tasks]
              ^{:key (:id task)}
              [render-done
-              task
-              task-id]))]])
+              task]))]])
 
 (defn- render-no-done
   []
   [:div.no-done-container
    "NO done"])
 
+(defn- render-hidden-done
+  [project dones]
+  [:div.toggle-hide-done
+   {:on-click #(state/update-project! project
+                                      :hide-done false)}
+   (str (count dones) " more done...")])
+
 (defn plain-render-tasks-for
-  [tasks task-id]
+  [project tasks]
   (let [ts          (map #(state/get-task-by-id (:id %))
                          tasks)
         tasks-done  (filter #(:done %)
@@ -79,16 +98,20 @@
         tasks-to-do (remove #(:done %)
                             ts)]
     [:div#tasks-container
-     [:div
-      "To Do"
+     [:div.todo-container
       (if (empty? tasks-to-do)
         [render-no-to-do]
-        [render-to-dos tasks-to-do task-id])]
-     [:div
-      "Done"
-      (if (empty? tasks-done)
-        [render-no-done]
-        [render-dones tasks-done task-id])]]))
+        [render-to-dos tasks-to-do])]
+     [:div.done-container
+      (if (:hide-done project)
+        [render-hidden-done
+         project
+         tasks-done]
+        (if (empty? tasks-done)
+          [render-no-done]
+          [render-dones
+           project
+           tasks-done]))]]))
 
 (def ^:private render-tasks-for
   (with-meta plain-render-tasks-for
@@ -100,8 +123,8 @@
 (defmulti viewport-container-component (fn [id _] id))
 
 (defn viewport-component
-  [project-id task-id]
+  [project-id]
   [:div.viewport
+   {:on-click #(reset! selected-task nil)}
    [viewport-container-component
-    project-id
-    task-id]])
+    project-id]])
