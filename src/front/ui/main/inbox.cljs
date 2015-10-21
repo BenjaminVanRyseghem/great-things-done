@@ -1,8 +1,8 @@
-(ns ui.viewport.inbox
+(ns ui.main.inbox
   (:require [gtd.image-service :as image]
             [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
-            [ui.viewport :as viewport]))
+            [ui.main :as main]))
 
 (def ^:private empty-inbox-image-size 300)
 (def ^{:private true
@@ -34,15 +34,14 @@
      [:div.message
       "Your Inbox is empty"]]))
 
-(defmethod viewport/viewport-container-component "Inbox"
-  [_ id]
-  [:div.viewport-container
-   {:id (str "viewport-inbox")}
+(defmethod main/main-container-component "Inbox"
+  [_]
+  [:div.main-container
+   {:id (str "main-inbox")}
    (let [inbox (state/inbox)
          tasks (:tasks inbox)]
      (if (empty? tasks)
        [render-empty-inbox]
-       [viewport/render-tasks-for
-        tasks
-        id
-        inbox]))])
+       [main/render-tasks-for
+        inbox
+        tasks]))])

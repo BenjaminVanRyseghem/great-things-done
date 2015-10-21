@@ -1,7 +1,7 @@
 @import "../variables";
 @import "../mixins";
 
-.viewport {
+.main {
   position: absolute;
   display: block;
   height: 100%;
@@ -11,7 +11,7 @@
 
   color: white;
 
-  .viewport-container {
+  .main-container {
     height: 100%;
     position: relative;
 
@@ -194,10 +194,10 @@
           color: #aaa;
 
           a {
-            color: @viewport-link-color;
+            color: @main-link-color;
 
             &:hover {
-              color: @viewport-link-color-hover;
+              color: @main-link-color-hover;
               cursor: pointer;
               text-decoration: none;
             }
@@ -215,6 +215,8 @@
     }
 
     #tasks-container {
+      margin-top: 6px;
+
       .toggle-hide-done {
         margin-left: 4px;
         font-weight: 300;

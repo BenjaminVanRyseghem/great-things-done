@@ -2,13 +2,13 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
             [ui.menu :as menu]
-            [ui.viewport :as viewport]))
+            [ui.main :as main]))
 
 (defn- chrome-component
   [project-id]
   [:div.container
    [menu/menu-component project-id]
-   [viewport/viewport-component project-id]])
+   [main/main-component project-id]])
 
 (defn render-core
   [project-id]

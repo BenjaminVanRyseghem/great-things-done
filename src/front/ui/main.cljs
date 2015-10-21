@@ -1,4 +1,4 @@
-(ns ui.viewport
+(ns ui.main
   (:use [jayq.core :only [$]])
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]))
@@ -120,11 +120,11 @@
        (.perfectScrollbar ($ :#tasks-container)
                           (clj->js {:suppressScrollX true})))}))
 
-(defmulti viewport-container-component (fn [id _] id))
+(defmulti main-container-component (fn [id] id))
 
-(defn viewport-component
+(defn main-component
   [project-id]
-  [:div.viewport
+  [:div.main
    {:on-click #(reset! selected-task nil)}
-   [viewport-container-component
+   [main-container-component
     project-id]])

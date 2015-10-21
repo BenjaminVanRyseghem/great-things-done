@@ -1,11 +1,11 @@
-(ns ui.viewport.project
+(ns ui.main.project
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [ui.description-editor :as description-editor]
             [ui.due-date-picker :as due-date-picker]
             [ui.show-in-today-picker :as show-in-today-picker]
             [ui.tag-editor :as tag-editor]
-            [ui.viewport :as viewport]))
+            [ui.main :as main]))
 
 (def ^{:private true
        :no-docs true} shell (js/require "shell"))
@@ -40,12 +40,12 @@
   [:div.empty-project
    "Time to add tasks"])
 
-(defmethod viewport/viewport-container-component :default
-  [id task-id]
+(defmethod main/main-container-component :default
+  [id]
   (let [project (state/get-project-by-id id)
         tasks   (:tasks project)]
-    [:div.viewport-container
-     {:id (str "viewport-project-" id)}
+    [:div.main-container
+     {:id (str "main-project-" id)}
      [:div.project-info
       [:div
        {:class (if (:today project)
@@ -75,7 +75,6 @@
         description-changed]]]
      (if (empty? tasks)
        [render-empty-project]
-       [viewport/render-tasks-for
+       [main/render-tasks-for
         project
-        tasks
-        task-id])]))
+        tasks])]))
