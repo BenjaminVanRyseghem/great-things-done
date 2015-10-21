@@ -37,7 +37,15 @@
                                                    "clearDates")))
                             (.on (.datepicker ($ :#project-due-date-picker)
                                               (clj->js {:todayBtn  "linked",
-                                                        :autoclose true}))
+                                                        :autoclose true
+                                                        :format {:toDisplay (fn [d _ _]
+                                                                              (.format (.moment js/window
+                                                                                                (js/Date. d))
+                                                                                       (settings/date-format)))
+                                                                 :toValue (fn [d, f, t]
+                                                                            (js/Date. (.format (.moment js/window
+                                                                                                        d
+                                                                                                        (settings/date-format)))))}}))
                                  "changeDate"
                                  (fn [e]
                                    (callback project
