@@ -215,22 +215,59 @@
     }
 
     #tasks-container {
+      .toggle-hide-done {
+        margin-left: 4px;
+        font-weight: 300;
+        color: #aaa;
+
+        cursor: pointer;
+      }
+
       ul {
         margin: 8px 0;
         padding: 0;
 
         li {
-          background-color: #777;
           list-style: none;
           margin: 4px;
           padding: 6px 8px;
           border-radius: 4px;
-
           .input-support();
+
+          &.selected {
+            background-color: mix(@icon-blue, #777);
+          }
 
           p {
             margin: 0 0 0 20px;
           }
+        }
+      }
+
+      .todo-container {
+        li {
+          background-color: @todo-background;
+          color: @todo-color;
+          list-style: none;
+
+          &.selected {
+            background-color: mix(@icon-blue, @todo-background);
+          }
+
+        }
+      }
+
+      .done-container{
+        margin-top: 30px;
+
+        li {
+          background-color: @done-background;
+          color: @done-color;
+
+          &.selected {
+            background-color: mix(@icon-blue, @done-background);
+          }
+
         }
       }
     }
