@@ -2,7 +2,8 @@
   (:require [cljs-uuid-utils.core :as uuid]
             [cuerdas.core :as string]
             [gtd.db :as db]
-            [reagent.core :as reagent :refer [atom]]))
+            [reagent.core :as reagent :refer [atom]]
+            [utils.date :as date]))
 
 (def ^:private task-types ["Task" "SubTask"])
 
@@ -49,11 +50,6 @@
   (str (normalize-path entity-name)
        "-"
        (generate-uuid)))
-
-(defn- now-as-milliseconds
-  "Return the current time as a string"
-  []
-  (str (.now js/Date)))
 
 (defn- register-entity-in
   [entity atom-map]
@@ -160,36 +156,40 @@
                    (:id project)))
     ;; Ensure that parent is in the same project if parent is a task
     (throw (js/Error. (str "`parent` has to be a task of `project` if parent is a task"))))
-  {:name        task-name
-   :id          (build-id task-name)
-   :project     (select-keys project [:name :id])
-   :parent      (:id parent)
-   :type        (if (is-project? parent)
-                  "Task"
-                  "SubTask")
-   :tags        tags
-   :tasks       tasks
-   :description description
-   :today       false
-   :remind-date remind-date
-   :due-date    due-date
-   :show-before show-before
-   :repeating   repeating
-   :done        done})
+  {:name                   task-name
+   :id                     (build-id task-name)
+   :project                (select-keys project [:name :id])
+   :parent                 (:id parent)
+   :type                   (if (is-project? parent)
+                             "Task"
+                             "SubTask")
+   :tags                   tags
+   :tasks                  tasks
+   :description            description
+   :today                  false
+   :remind-date            remind-date
+   :due-date               due-date
+   :creation-date          (date/now)
+   :last-modification-time (date/now)
+   :show-before            show-before
+   :repeating              repeating
+   :done                   done})
 
 (defn- new-project
-  [project-name tags tasks description due-date show-before active done]
-  {:name          project-name
-   :id            (build-id project-name)
-   :type          "Project"
-   :tags          tags
-   :tasks         tasks
-   :description   description
-   :creation-date (now-as-milliseconds)
-   :due-date      due-date
-   :show-before   show-before
-   :active        active
-   :done          done})
+  [project-name tags tasks description due-date show-before active hide-done done]
+  {:name                   project-name
+   :id                     (build-id project-name)
+   :type                   "Project"
+   :tags                   tags
+   :tasks                  tasks
+   :description            description
+   :creation-date          (date/now)
+   :last-modification-time (date/now)
+   :due-date               due-date
+   :show-before            show-before
+   :active                 active
+   :hide-done              hide-done
+   :done                   done})
 
 (defn inbox
   []
@@ -233,13 +233,14 @@
     task))
 
 (defn register-project
-  [project-name & {:keys [tags tasks description due-date show-before active]
+  [project-name & {:keys [tags tasks description due-date show-before hide-done active]
                    :or   {tags        []
                           tasks       []
                           description ""
                           due-date    nil
                           show-before 0
-                          active      true}}]
+                          active      true
+                          hide-done   true}}]
   (install-project (new-project project-name
                                 tags
                                 tasks
@@ -247,6 +248,7 @@
                                 due-date
                                 show-before
                                 active
+                                hide-done
                                 false)))
 
 

@@ -2,6 +2,7 @@
   (:require [gtd.crypto :as crypto]
             [gtd.platform :as platform]
             [utils.core :as utils]
+            [utils.date :as date]
             [utils.keychain :as keychain]
             [node.fs :as fs]))
 
@@ -21,6 +22,36 @@
                                                   password))]
     task))
 
+(defmulti deserialize-task-value (fn [k _ _] (name k)))
+
+(defmethod deserialize-task-value "due-date"
+  [_ v _]
+  (js/Date. (js/parseInt v
+                         10)))
+
+(defmethod deserialize-task-value "last-modification-time"
+  [_ v _]
+  (js/Date. (js/parseInt v
+                         10)))
+
+(defmethod deserialize-task-value "creation-date"
+  [_ v _]
+  (js/Date. (js/parseInt v
+                         10)))
+
+(defmethod deserialize-task-value "show-before"
+  [_ v _]
+  (js/parseInt v
+               10))
+
+(defmethod deserialize-task-value "tasks"
+  [_ v path]
+  (map #(deserialize-task path %) v))
+
+(defmethod deserialize-task-value :default
+  [k v _]
+  v)
+
 (defn deserialize-task
   [path task-id & [callback]]
   (let [task-path (str path
@@ -31,9 +62,7 @@
         info      (decrypt-task string)
         task      (atom {})]
     (doseq [[k v] info]
-      (swap! task assoc k v)
-      (when (= (name k) "tasks")
-        (swap! task assoc k (map #(deserialize-task path %) v))))
+      (swap! task assoc k (deserialize-task-value k v path)))
     (when callback
       (callback @task))
     @task))
@@ -44,6 +73,12 @@
   [_ v _ _]
   (js/Date. (js/parseInt v
                          10)))
+
+(defmethod deserialize-project-value "last-modification-time"
+  [_ v _ _]
+  (js/Date. (js/parseInt v
+                         10)))
+
 (defmethod deserialize-project-value "creation-date"
   [_ v _ _]
   (js/Date. (js/parseInt v
@@ -91,6 +126,8 @@
                            project-id)
         string        (encrypt-task (assoc
                                       task
+                                      :last-modification-time
+                                      (date/now-as-milliseconds)
                                       :tasks
                                       (map :id (:tasks task))))]
     (fs/ensure-dir! full-path)
@@ -106,6 +143,8 @@
     (fs/write-file! (str full-path platform/separator ".project.pgtd")
                     (utils/clj->json (assoc
                                        project
+                                       :last-modification-time
+                                       (date/now-as-milliseconds)
                                        :creation-date
                                        (.valueOf (:creation-date project))
                                        :due-date
