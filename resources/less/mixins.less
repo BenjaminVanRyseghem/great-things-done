@@ -16,10 +16,18 @@
   padding-left: 50px;
 }
 
+.font-awesome {
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
 .input-support {
   position: relative;
 
   .input.check-box {
+    z-index: 0;
     height: 14px;
     width: 14px;
     position: absolute;
@@ -27,6 +35,7 @@
     transform: translate(0 ,-50%);
     float: left;
 
+    cursor: pointer;
     border: 1px solid rgba(0,0,0,0.5);
     border-radius: 4px;
     box-shadow: inset 0px 0px 1px 0px rgba(0,0,0,0.5);
@@ -36,6 +45,18 @@
       background-color: #eee;
       border-size: 2px;
       box-shadow: inset 0px 0px 2px 0px rgba(0,0,0,0.8);
+    }
+
+    &.checked {
+      background-color: #6D6D6D;
+
+      &:before {
+        .font-awesome();
+        content: '\f00c';
+        color: #333;
+        position: absolute;
+        top: -1px;
+      }
     }
   }
 

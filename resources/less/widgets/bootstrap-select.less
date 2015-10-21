@@ -1,4 +1,5 @@
 @import "../variables";
+@import "../mixins";
 
 .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
   width: 110px;
@@ -34,10 +35,7 @@
 
       .glyphicon-ok {
         /*     Replace Glyphicon with Font Awesome     */
-        font: normal normal normal 14px/1 FontAwesome;
-        font-size: inherit;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
+        .font-awesome();
 
         &:before {
           content: "\f00c";
