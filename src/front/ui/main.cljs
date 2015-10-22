@@ -127,9 +127,10 @@
   [:div
    {:class (str "item " css-class)}
    [:div.icon
+    {:title text}
     [:i
      {:class (str "fa fa-" icon)}]]
-   text])
+   [:span.text text]])
 
 (defn- render-left-group
   [items]
