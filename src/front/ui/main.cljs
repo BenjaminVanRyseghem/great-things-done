@@ -21,20 +21,51 @@
                     css-class)]
     css-class))
 
-(defn render-todo
+(defn- plain-build-to-to-name-editor
+  [task]
+  [:div.name
+   {:id (str "todo-name-" (:id task))
+    :placeholder "Add a name"
+    :class (if (empty? (:name task))
+             "empty"
+             "")}
+   (:name task)])
+
+(defn- build-to-do-name-editor
+  [task callback]
+  (with-meta plain-build-to-to-name-editor
+    {:component-did-mount #(.editable ($ (str "#todo-name-" (:id task)))
+                                     "click"
+                                     (clj->js {:callback (fn [event]
+                                                           (if (empty? (.-value event))
+                                                             (.html (.-target event)
+                                                                    (.-old_value event))
+                                                             (callback task
+                                                                       (.-value event))))}))}))
+
+(defn- change-task-name
+  [task new-name]
+  (state/update-task! task
+                      :name new-name))
+
+(defn- render-todo
   [task]
 
   [:li
    {:class (build-to-do-class task
                               @selected-task)
+    :id (str "todo-" (:id task))
     :on-click (fn [e]
-                (reset! selected-task task)
-                (.stopPropagation e))}
+                (when (= (.-target e)
+                         (.get ($ (str "#todo-" (:id task)))
+                               0))
+                  (reset! selected-task task)))}
    [:div.input.check-box
-    {:on-click (fn []
-                 (state/update-task! task
-                                     :done true))}]
-   [:p (:name task)]])
+    {:on-click #(state/update-task! task
+                                    :done true)}]
+   [(build-to-do-name-editor task
+                             change-task-name)
+    task]])
 
 (defn- render-to-dos
   [tasks]
@@ -50,14 +81,16 @@
   [:li
    {:class (build-to-do-class task
                               @selected-task)
+    :id (str "done-" (:id task))
     :on-click (fn [e]
-                (reset! selected-task task)
-                (.stopPropagation e))}
+                (when (= (.-target e)
+                         (.get ($ (str "#done-" (:id task)))
+                               0))
+                  (reset! selected-task task)))}
    [:div.input.check-box.checked
-    {:on-click (fn []
-                 (state/update-task! task
-                                     :done false))}]
-   [:p (:name task)]])
+    {:on-click #(state/update-task! task
+                                    :done false)}]
+   [:div.name (:name task)]])
 
 (defn- render-no-to-do
   []
@@ -122,10 +155,20 @@
 
 (defmulti main-container-component (fn [id] id))
 
+(defn- new-task
+  [project]
+  (let [task (state/register-task ""
+                                  :project project
+
+                                  ;;; should parent be the selected task?
+                                  :parent project)]
+    (reset! selected-task task)))
+
 (defn- render-toolbar-action
-  [text css-class icon]
+  [text css-class icon function]
   [:div
-   {:class (str "item " css-class)}
+   {:class (str "item " css-class)
+    :on-click function}
    [:div.icon
     {:title text}
     [:i
@@ -140,36 +183,42 @@
             [render-toolbar-action
              (:text item)
              (:css-class item)
-             (:icon item)]))])
+             (:icon item)
+             (:function item)]))])
 
 (defn- render-right-group
   [items]
   [:div.group.right
    {:class (if @selected-task
-                ""
-                "disabled")}
+             ""
+             "disabled")}
    (doall (for [item items]
             ^{:key (:text item)}
             [render-toolbar-action
              (:text item)
              (:css-class item)
-             (:icon item)]))])
+             (:icon item)
+             (:function item)]))])
 
 (defn- render-toolbar-groups
-  []
+  [project]
   [:div.items
    [render-left-group [{:text "New"
                         :css-class "new"
-                        :icon "plus"}]]
+                        :icon "plus"
+                        :function #(new-task project)}]]
    [render-right-group [{:text "Resolve"
-                        :css-class "resolve"
-                        :icon "check"}
-                       {:text "Not Today"
-                        :css-class "today"
-                        :icon "star-o"}
-                       {:text "Move"
-                        :css-class "move"
-                        :icon "arrow-right"}]]])
+                         :css-class "resolve"
+                         :icon "check"
+                         :function #()}
+                        {:text "Not Today"
+                         :css-class "today"
+                         :icon "star-o"
+                         :function #()}
+                        {:text "Move"
+                         :css-class "move"
+                         :icon "arrow-right"
+                         :function #()}]]])
 
 (defn- render-toolbar-search
   []
@@ -180,18 +229,22 @@
     [:input
      {:placeholder "Search"}]]])
 
-(defmulti main-toolbar-component (fn [id] id))
+(defmulti main-toolbar-component (fn [id _] id))
 
 (defmethod main-toolbar-component :default
-  [_]
+  [_ project]
   [:div.main-toolbar
    [:div.toolbar-container
-    [render-toolbar-groups]
+    [render-toolbar-groups project]
     [render-toolbar-search]]])
 
 (defn main-component
   [project-id]
   [:div.main
-   {:on-click #(reset! selected-task nil)}
+   {:on-click (fn [e]
+                (when (= (.-target e)
+                         (.get ($ :#tasks-container)
+                               0))
+                  (reset! selected-task nil)))}
    [main-container-component
     project-id]])

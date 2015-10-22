@@ -223,6 +223,7 @@
 
       #tasks-container {
         margin-top: 6px;
+        height: 100%;
 
         .toggle-hide-done {
           margin-left: 4px;
@@ -243,12 +244,12 @@
             border-radius: 4px;
             .input-support();
 
-            &.selected {
-              background-color: mix(@icon-blue, #777);
-            }
-
-            p {
+            div.name {
               margin: 0 0 0 20px;
+
+              input {
+                witdh: auto !important;
+              }
             }
           }
         }
@@ -259,8 +260,44 @@
             color: @todo-color;
             list-style: none;
 
+            div.name {
+              height: 24px;
+              line-height: 24px;
+              display: inline-block;
+
+              &.empty[placeholder]:after {
+                content: attr(placeholder);
+                color: #ccc;
+                font-weight: lighter;
+              }
+
+              &.pending-edit{
+                display: block;
+                margin-right: 20px;
+
+                &.empty:after {
+                  content: none;
+                }
+              }
+
+              input {
+                height: 24px;
+                border: 0 none;
+                padding: 0;
+                background-color: transparent;
+
+                &:focus {
+                  outline: none;
+                }
+              }
+            }
+
             &.selected {
               background-color: mix(@icon-blue, @todo-background);
+
+              div.name.empty[placeholder]:after {
+                color: #444;
+              }
             }
 
           }

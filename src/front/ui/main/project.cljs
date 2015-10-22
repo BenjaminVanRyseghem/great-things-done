@@ -79,4 +79,4 @@
         [main/render-tasks-for
          project
          tasks])]
-     [main/main-toolbar-component id]]))
+     [main/main-toolbar-component id project]]))
