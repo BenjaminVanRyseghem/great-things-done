@@ -36,7 +36,7 @@
                       (.stopPropagation e))))))))
 
 (defn- add-autogrow
-  [input]
+  [input _]
   (.autosize js/window
              input))
 
