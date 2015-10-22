@@ -207,7 +207,7 @@
   @tasks)
 
 (defn register-task
-  [task-name {:keys [project parent tags tasks description remind-date due-date show-before repeating]
+  [task-name & {:keys [project parent tags tasks description remind-date due-date show-before repeating]
               :or   {project     (inbox)
                      parent      (inbox)
                      tags        []
