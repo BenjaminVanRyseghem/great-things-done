@@ -299,10 +299,24 @@
         .items {
           height: 100%;
           position: relative;
-          margin-right: 150px;
+          margin-right: @toolbar-search-width + 10px;
 
           .group {
             position: absolute;
+
+            &.disabled {
+              color: #666;
+
+              .item {
+                cursor: default;
+
+                .icon {
+                  .fa-star-o, .fa-check, .fa-arrow-right {
+                    color: #666;
+                  }
+                }
+              }
+            }
 
             &.left {
               left: 0;
@@ -320,27 +334,73 @@
             .item {
               display: inline-block;
               padding: 8px;
+              width: 82px;
               margin: 0 2px;
+              text-align: center;
+              font-weight: 300;
+              cursor: pointer;
 
               .icon {
-                text-align: center;
                 font-size: 18px;
                 margin-bottom: 4px;
+
+                .fa-plus {
+                  color: white;
+                }
+
+                .fa-star-o {
+                  color: @icon-yellow;
+                }
+
+                .fa-check {
+                  color: @icon-green;
+                }
+
+                .fa-arrow-right {
+                  color: @icon-brown;
+                }
               }
             }
-
           }
         }
 
         .search {
-          width: 150px;
+          width: @toolbar-search-width;
           height: 100%;
           float: right;
 
           .search-container {
             position: absolute;
             top: 50%;
+            right: 0;
             transform: translate(0, -50%);
+
+            .icon {
+              padding: 0 4px 0 0;
+              float: left;
+              background-color: @selection-background;
+              border: 1px solid @project-info-border;
+              border-right: 0 none;
+
+              i {
+                color: #999;
+                line-height: @searchbar-height - 2px;
+                padding: 0 8px;
+              }
+            }
+
+            input {
+              cursor: pointer;
+              height: @searchbar-height;
+              border: 1px solid @project-info-border;
+              border-left: 0 none;
+              width: @toolbar-search-width - 34px;
+              background-color: @selection-background;
+
+              &:focus{
+               outline: none;
+              }
+            }
           }
         }
       }

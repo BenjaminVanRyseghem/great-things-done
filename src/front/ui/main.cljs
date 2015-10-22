@@ -67,7 +67,7 @@
 (defn- render-dones
   [project tasks]
   [:div
-   [:div.toggle-hide-done
+   [:span.toggle-hide-done
     {:on-click #(state/update-project! project
                                        :hide-done true)}
     "Hide done"]
@@ -84,7 +84,7 @@
 
 (defn- render-hidden-done
   [project dones]
-  [:div.toggle-hide-done
+  [:span.toggle-hide-done
    {:on-click #(state/update-project! project
                                       :hide-done false)}
    (str (count dones) " more done...")])
@@ -122,35 +122,71 @@
 
 (defmulti main-container-component (fn [id] id))
 
+(defn- render-toolbar-action
+  [text css-class icon]
+  [:div
+   {:class (str "item " css-class)}
+   [:div.icon
+    [:i
+     {:class (str "fa fa-" icon)}]]
+   text])
+
+(defn- render-left-group
+  [items]
+  [:div.group.left
+   (doall (for [item items]
+            ^{:key (:text item)}
+            [render-toolbar-action
+             (:text item)
+             (:css-class item)
+             (:icon item)]))])
+
+(defn- render-right-group
+  [items]
+  [:div.group.right
+   {:class (if @selected-task
+                ""
+                "disabled")}
+   (doall (for [item items]
+            ^{:key (:text item)}
+            [render-toolbar-action
+             (:text item)
+             (:css-class item)
+             (:icon item)]))])
+
+(defn- render-toolbar-groups
+  []
+  [:div.items
+   [render-left-group [{:text "New"
+                        :css-class "new"
+                        :icon "plus"}]]
+   [render-right-group [{:text "Resolve"
+                        :css-class "resolve"
+                        :icon "check"}
+                       {:text "Not Today"
+                        :css-class "today"
+                        :icon "star-o"}
+                       {:text "Move"
+                        :css-class "move"
+                        :icon "arrow-right"}]]])
+
+(defn- render-toolbar-search
+  []
+  [:div.search
+   [:div.search-container
+    [:div.icon
+     [:i.fa.fa-search]]
+    [:input
+     {:placeholder "Search"}]]])
+
 (defmulti main-toolbar-component (fn [id] id))
 
 (defmethod main-toolbar-component :default
   [_]
   [:div.main-toolbar
    [:div.toolbar-container
-    [:div.items
-     [:div.group.left
-      [:div.item.new
-       [:div.icon
-        [:i.fa.fa-plus]]
-       "New"]]
-     [:div.group.right
-      [:div.item.resolve
-       [:div.icon
-        [:i.fa.fa-check]]
-       "Resolve"]
-      [:div.item.today
-       [:div.icon
-        [:i.fa.fa-star-o]]
-       "Today"]
-      [:div.item.move
-       [:div.icon
-        [:i.fa.fa-arrow-right]]
-       "Move"]]]
-    [:div.search
-     [:div.search-container
-      [:input
-       {:placeholder "Search"}]]]]])
+    [render-toolbar-groups]
+    [render-toolbar-search]]])
 
 (defn main-component
   [project-id]
