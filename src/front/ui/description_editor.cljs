@@ -6,21 +6,21 @@
        :no-docs true} shell (js/require "shell"))
 
 (defn- plain-description-editor
-  [project]
+  [entity]
   [:div
    {:id "description-output"
     :placeholder "Add a description"
-    :class (if (empty? (:description project))
+    :class (if (empty? (:description entity))
              "empty"
              "")}])
 
 (defn- inject-md!
-  [project]
+  [entity]
   (let [output ($ :#description-output)]
     (set! (.-innerHTML (.get output
                              0))
           (.toHTML js/markdown
-                   (:description project)))
+                   (:description entity)))
     (doall (for [a ($ "#description-output a")]
              (.on ($ a)
                   "click"
@@ -41,7 +41,7 @@
              input))
 
 (defn- make-editable
-  [project callback]
+  [entity callback]
   (.editable ($ :#description-output)
              (clj->js {:type "textarea"
                        :action "click"})
@@ -49,22 +49,22 @@
                        :callback (fn [event]
                                    (when (= (.-value event)
                                             (.-old_value event))
-                                     (inject-md! project))
-                                   (callback project
+                                     (inject-md! entity))
+                                   (callback entity
                                              (.-value event)))})))
 
 (defn- build
-  [project callback]
+  [entity callback]
   (with-meta plain-description-editor
     {:component-did-mount (fn []
-                            (inject-md! project)
+                            (inject-md! entity)
                             (.attr ($ :#description-output)
                                    "editable-src"
-                                   (:description project))
-                            (make-editable project
+                                   (:description entity))
+                            (make-editable entity
                                            callback))}))
 
 (defn render
-  [project callback]
-  [(build project
-          callback) project])
+  [entity callback]
+  [(build entity
+          callback) entity])

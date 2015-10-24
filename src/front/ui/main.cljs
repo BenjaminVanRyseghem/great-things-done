@@ -21,28 +21,6 @@
                     css-class)]
     css-class))
 
-(defn- plain-build-to-to-name-editor
-  [task]
-  [:div.name
-   {:id (str "todo-name-" (:id task))
-    :placeholder "Add a name"
-    :class (if (empty? (:name task))
-             "empty"
-             "")}
-   (:name task)])
-
-(defn- build-to-do-name-editor
-  [task callback]
-  (with-meta plain-build-to-to-name-editor
-    {:component-did-mount #(.editable ($ (str "#todo-name-" (:id task)))
-                                     "click"
-                                     (clj->js {:callback (fn [event]
-                                                           (if (empty? (.-value event))
-                                                             (.html (.-target event)
-                                                                    (.-old_value event))
-                                                             (callback task
-                                                                       (.-value event))))}))}))
-
 (defn- change-task-name
   [task new-name]
   (state/update-task! task
@@ -63,9 +41,7 @@
    [:div.input.check-box
     {:on-click #(state/update-task! task
                                     :done true)}]
-   [(build-to-do-name-editor task
-                             change-task-name)
-    task]])
+   (:name task)])
 
 (defn- render-to-dos
   [tasks]

@@ -33,8 +33,19 @@
 
           .input-support();
 
-          .project-name {
+          .entity-name {
             margin-left: 30px;
+
+            input {
+              height: 22px;
+              background-color: transparent;
+              border: 0 none;
+              padding: 0;
+
+              &:focus {
+                outline: none;
+              }
+            }
           }
 
         }
@@ -117,8 +128,9 @@
                 input {
                   width: 28px !important;
                   height: 22px;
-                  background-color: @project-info-background;
+                  background-color: transparent;
                   text-align: right;
+                  padding: 0;
                   border: 0 none;
 
                   &:focus {

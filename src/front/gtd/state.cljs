@@ -55,7 +55,7 @@
   [entity atom-map]
   (swap! atom-map assoc (:id entity) entity))
 
-(defn- deregister-entity-in
+(defn- unregister-entity-in
   [entity atom-map]
   (swap! atom-map dissoc (:id entity) entity))
 
@@ -75,6 +75,16 @@
                              :tasks    (atom {})}))
     (swap! (get-in @tags [tag entry-type]) assoc (:id entry) entry)))
 
+(defn unregister-tags!
+  [entry entry-type]
+  (doseq [tag (:tags entry)]
+    (when (contains? @tags tag)
+      (swap! (get-in @tags [tag entry-type]) dissoc (:id entry))
+      (when (every? (fn [a]
+                      (empty? (deref a)))
+                    (vals (get @tags tag)))
+        (swap! tags dissoc tag)))))
+
 (defn- store-task!
   [task]
   (if (and (:repeating task)
@@ -92,12 +102,11 @@
     (reset! inbox-project project)
     (do
       (register-entity-in project projects)
+      (register-tags! project :projects)
       (when (:done project)
         (register-entity-in project completed-projects))
       (when (:active project)
-        (register-entity-in project active-projects))
-      (register-entity-in project projects)
-      (register-tags! project :projects))))
+        (register-entity-in project active-projects)))))
 
 (defn- get-parent
   [task]
@@ -232,6 +241,14 @@
     (install-project (assoc project :tasks (conj (:tasks project) task)))
     task))
 
+(defn unregister-task
+  [task]
+  (unregister-entity-in task tasks)
+  (unregister-entity-in task repeating-tasks)
+  (unregister-entity-in task completed-tasks)
+  (unregister-tags! task :tasks)
+  task)
+
 (defn register-project
   [project-name & {:keys [tags tasks description due-date show-before hide-done active]
                    :or   {tags        []
@@ -251,6 +268,13 @@
                                 hide-done
                                 false)))
 
+(defn unregister-project
+  [project]
+  (unregister-entity-in project projects)
+  (unregister-entity-in project active-projects)
+  (unregister-entity-in project completed-projects)
+  (unregister-tags! project :projects)
+  project)
 
 (defn update-task!
   "This function is thought in the way only one property is changed at a time"
@@ -337,13 +361,20 @@
   (db/rename-project! (assoc @tmp-project
                         :name v)
                       (:id project))
+  (unregister-project project)
   v)
 
 (defmethod update-project-value "active"
   [_ v project tmp-project]
   (if v
     (register-entity-in @tmp-project active-projects)
-    (deregister-entity-in @tmp-project active-projects))
+    (unregister-entity-in @tmp-project active-projects))
+  v)
+
+(defmethod update-project-value "tags"
+  [_ v project tmp-project]
+    (unregister-tags! project :projects)
+    (register-tags! project :projects)
   v)
 
 (defmethod update-project-value "done"
@@ -388,8 +419,9 @@
 
 (defn get-tags
   []
-  (or (keys @tags)
-      []))
+  (if (nil? (keys @tags))
+    []
+    (keys @tags)))
 
 (defn ^:export list-of-projects
   []
