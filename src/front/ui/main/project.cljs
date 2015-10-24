@@ -3,8 +3,7 @@
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [ui.entity-editor :as entity-editor]
-            [ui.main :as main]
-            [utils.core :as utils]))
+            [ui.main :as main]))
 
 (def ^{:private true
        :no-docs true} shell (js/require "shell"))
@@ -16,15 +15,12 @@
 
 (defn- render-main-container
   [id]
+  (let [project (state/get-project-by-id id)
+        tasks   (:tasks project)]
   (reagent/create-class
    {:component-did-mount (fn []
                            (.perfectScrollbar ($ :.main-viewport)
                                               (clj->js {:suppressScrollX true})))
-    ;;       :should-component-update (fn [nextProps nextState]
-    ;;                                  (js* "console.log(this.props)")
-    ;;                                  (js* "console.log(nextProps )")
-    ;;                                  (js* "debugger;")
-    ;;                                  (not (nil? project)))
     :reagent-render (fn [id]
                       (let [project (state/get-project-by-id id)
                             tasks   (:tasks project)]
@@ -37,22 +33,14 @@
                              project
                              "project-info"
                              state/update-project!
-                             #(utils/goto (str "/project/"
-                                               (:id %)))
-                             ]
+                             #(str "/project/"
+                                   (:id %))]
                             (if (empty? tasks)
                               [render-empty-project]
                               [main/render-tasks-for
                                project
                                tasks])]
-                           [main/main-toolbar-component id project]])))}))
-
-;; (def ^:private render-main-container
-;;   (with-meta plain-render-main-container
-;;     {:component-did-mount
-;;      (fn []
-;;        (.perfectScrollbar ($ :.main-viewport)
-;;                           (clj->js {:suppressScrollX true})))}))
+                           [main/main-toolbar-component id project]])))})))
 
 (defmethod main/main-container-component :default
   [id]

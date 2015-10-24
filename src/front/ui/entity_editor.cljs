@@ -5,13 +5,16 @@
             [ui.due-date-picker :as due-date-picker]
             [ui.name-editor :as name-editor]
             [ui.show-in-today-picker :as show-in-today-picker]
-            [ui.tag-editor :as tag-editor]))
+            [ui.tag-editor :as tag-editor]
+            [secretary.core :as secretary]
+            [utils.core :as utils]))
 
 (defn- name-changed
-  [entity new-name update-fn when-renamed]
+  [entity new-name update-fn url-builder]
   (let [new-entity (update-fn entity
-                              :name new-name)]
-    (when-renamed new-entity)))
+                              :name new-name
+                              :callback #(secretary/dispatch! (url-builder %)))]
+    (utils/goto (url-builder new-entity))))
 
 (defn- tags-changed
   [entity tags update-fn]
@@ -39,7 +42,7 @@
              :done true))
 
 (defn render
-  [entity css-class update-fn when-renamed]
+  [entity css-class update-fn url-builder]
   [:div
    {:class css-class}
    [:div
@@ -50,7 +53,7 @@
      {:on-click #(completion-changed entity update-fn)}]
     [name-editor/render
      entity
-     #(name-changed %1 %2 update-fn when-renamed)]]
+     #(name-changed %1 %2 update-fn url-builder)]]
    [:div.tags
     [:i.fa.fa-fw.fa-tags]
     [tag-editor/render

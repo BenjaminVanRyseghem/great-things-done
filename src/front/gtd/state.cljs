@@ -348,37 +348,39 @@
 (defmulti update-project-value (fn [k v p tmp] (name k)))
 
 (defmethod update-project-value :default
-  [_ v _ _]
+  [_ v _ _ _]
   v)
 
 (defmethod update-project-value "id"
-  [_ _ _ _]
+  [_ _ _ _ _]
   (throw (js/Error. "`id` can not be updated!")))
 
 (defmethod update-project-value "name"
-  [_ v project tmp-project]
+  [_ v project tmp-project callback]
   (swap! tmp-project assoc :id (build-id v))
   (db/rename-project! (assoc @tmp-project
                         :name v)
                       (:id project))
+  (when-not (nil? callback)
+    (callback @tmp-project))
   (unregister-project project)
   v)
 
 (defmethod update-project-value "active"
-  [_ v project tmp-project]
+  [_ v project tmp-project _]
   (if v
     (register-entity-in @tmp-project active-projects)
     (unregister-entity-in @tmp-project active-projects))
   v)
 
 (defmethod update-project-value "tags"
-  [_ v project tmp-project]
+  [_ v project tmp-project _]
     (unregister-tags! project :projects)
     (register-tags! project :projects)
   v)
 
 (defmethod update-project-value "done"
-  [_ v project tmp-project]
+  [_ v project tmp-project _]
   (register-entity-in @tmp-project completed-projects)
   (swap! tmp-project assoc :active (update-project-value :active
                                                          false
@@ -388,16 +390,22 @@
 
 (defn update-project!
   [project & body]
-  (let [args (into []
+  (let [map-args (into {}
+                       (map vec
+                            (partition 2 body)))
+        args (into []
                    (map #(into [] %)
                         (partition 2 body)))]
     (if (even? (count body))
       (let [tmp-project (atom project)]
         (doseq [[k v] args]
-          (swap! tmp-project assoc (keyword k) (update-project-value k
-                                                                     v
-                                                                     project
-                                                                     tmp-project)))
+          (when-not (= k
+                       :callback)
+            (swap! tmp-project assoc (keyword k) (update-project-value k
+                                                                       v
+                                                                       project
+                                                                       tmp-project
+                                                                       (:callback map-args)))))
         (install-project @tmp-project))
       (throw (js/Error. "Wrong number of arguments. `body` has to have an even number of elements")))))
 
