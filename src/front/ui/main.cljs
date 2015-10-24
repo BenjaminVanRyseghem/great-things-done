@@ -122,7 +122,7 @@
                                       :hide-done false)}
    (str (count dones) " more done...")])
 
-(defn plain-render-tasks-for
+(defn render-tasks-for
   [project tasks]
   (let [ts          (map #(state/get-task-by-id (:id %))
                          tasks)
@@ -145,13 +145,6 @@
           [render-dones
            project
            tasks-done]))]]))
-
-(def ^:private render-tasks-for
-  (with-meta plain-render-tasks-for
-    {:component-did-mount
-     (fn []
-       (.perfectScrollbar ($ :#tasks-container)
-                          (clj->js {:suppressScrollX true})))}))
 
 (defmulti main-container-component (fn [id] id))
 

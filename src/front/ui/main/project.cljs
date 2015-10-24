@@ -1,4 +1,5 @@
 (ns ui.main.project
+  (:use [jayq.core :only [$]])
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [ui.description-editor :as description-editor]
@@ -40,7 +41,8 @@
   [:div.empty-project
    "Time to add tasks"])
 
-(defmethod main/main-container-component :default
+
+(defn- plain-render-main-container
   [id]
   (let [project (state/get-project-by-id id)
         tasks   (:tasks project)]
@@ -80,3 +82,14 @@
          project
          tasks])]
      [main/main-toolbar-component id project]]))
+
+(def ^:private render-main-container
+  (with-meta plain-render-main-container
+    {:component-did-mount
+     (fn []
+       (.perfectScrollbar ($ :.main-viewport)
+                          (clj->js {:suppressScrollX true})))}))
+
+(defmethod main/main-container-component :default
+  [id]
+  [render-main-container id])
