@@ -16,7 +16,7 @@
   [path & [callback]]
   (if callback
     (.exists fs path callback)
-    (.existsSync fs (clj->js path))))
+    (.existsSync fs path)))
 
 (defn mkdir!
   "mkdir(2). `mode` defaults to `0777`. If `callback` is provided, the execution is asynchronous and `callback` is invoked with no arguments other than a possible exception."

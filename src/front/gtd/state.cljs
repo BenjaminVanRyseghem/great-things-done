@@ -276,6 +276,18 @@
   (unregister-tags! project :projects)
   project)
 
+(defn- update-task-project
+  "Only to use when the project change name"
+  [task new-project old-id]
+  (let [new-task (assoc task :project (select-keys new-project
+                                                   [:name :id]))
+        new-task (if (= (:parent task)
+                        old-id)
+                   (assoc new-task :parent (:id new-project))
+                   new-task)]
+    (install-task new-task)
+    new-task))
+
 (defn update-task!
   "This function is thought in the way only one property is changed at a time"
   [task & body]
@@ -316,7 +328,8 @@
                   project-id (get-in task [:project :id])]
               ;; When new parent is a project
               (when (is-project? v)
-                (swap! tmp-task assoc :project v)
+                (swap! tmp-task assoc :project (select-keys v
+                                                            [:name :id]))
                 ;; When the task was in a different project
                 (when (not= (:id v)
                             project-id)
@@ -358,9 +371,13 @@
 (defmethod update-project-value "name"
   [_ v project tmp-project callback]
   (swap! tmp-project assoc :id (build-id v))
-  (db/rename-project! (assoc @tmp-project
-                        :name v)
+  (swap! tmp-project assoc :name v)
+  (db/rename-project! @tmp-project
                       (:id project))
+  (doseq [task (:tasks project)]
+    (update-task-project task
+                         @tmp-project
+                         (:id project)))
   (when-not (nil? callback)
     (callback @tmp-project))
   (unregister-project project)

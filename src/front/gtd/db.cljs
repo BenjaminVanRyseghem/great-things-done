@@ -26,8 +26,11 @@
 
 (defmethod deserialize-task-value "due-date"
   [_ v _]
-  (js/Date. (js/parseInt v
-                         10)))
+  (let [number (js/parseInt v
+                            10)]
+    (if (js/isNaN number)
+      nil
+      (js/Date. number))))
 
 (defmethod deserialize-task-value "last-modification-time"
   [_ v _]
@@ -43,10 +46,6 @@
   [_ v _]
   (js/parseInt v
                10))
-
-(defmethod deserialize-task-value "tasks"
-  [_ v path]
-  (map #(deserialize-task path %) v))
 
 (defmethod deserialize-task-value :default
   [k v _]
@@ -66,6 +65,10 @@
     (when callback
       (callback @task))
     @task))
+
+(defmethod deserialize-task-value "tasks"
+  [_ v path]
+  (map #(deserialize-task path %) v))
 
 (defmulti deserialize-project-value (fn [k _ _ _] (name k)))
 
