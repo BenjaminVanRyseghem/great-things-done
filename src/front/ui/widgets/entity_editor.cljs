@@ -33,7 +33,7 @@
              :done true))
 
 (defn render
-  [entity css-class update-fn name-editor]
+  [entity css-class update-fn name-editor & [on-enter]]
   [:div.entity-editor
    {:class css-class}
    [:div.name
@@ -46,12 +46,14 @@
     [:i.icon.fa.fa-fw.fa-tags]
     [tag-editor/render
      entity
-     #(tags-changed %1 %2 update-fn)]]
+     #(tags-changed %1 %2 update-fn)
+     on-enter]]
    [:div.due-date
     [:i.icon.fa.fa-fw.fa-clock-o]
     [due-date-picker/render
      entity
-     #(due-date-changed %1 %2 update-fn)]
+     #(due-date-changed %1 %2 update-fn)
+     on-enter]
     [show-in-today-picker/render
      entity
      #(show-before-changed %1 %2 update-fn)]]

@@ -7,6 +7,7 @@
   [entity]
   [:div.entity-name
    {:id (str "entity-name-" (:id entity))
+    :tab-index 0
     :placeholder "Add a name"
     :class (if (empty? (:name entity))
              "empty"
@@ -16,7 +17,7 @@
 (defn- make-editable
   [entity callback]
   (.editable ($ (str "#entity-name-" (:id entity)))
-             "click"
+             "focus"
              (clj->js {:callback (fn [event]
                                    (if (empty? (.-value event))
                                      (.html (.-target event)
@@ -33,6 +34,6 @@
                                           callback)}))
 
 (defn render
-  [entity callback]
+  [entity callback & [on-enter]]
   [(build entity
           callback) entity])

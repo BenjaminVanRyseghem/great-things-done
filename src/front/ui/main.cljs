@@ -35,23 +35,30 @@
                       match)
       false)))
 
-(defn- change-task-name
-  [task new-name]
-  (state/update-task! task
-                      :name new-name))
-
 (defn- render-todo
   [task]
   (let [editing (atom false)
-        handler (atom nil)]
+        handler (atom nil)
+        changes (atom {})
+        update  (fn [task & [k v]]
+                  (swap! changes assoc k v))
+        close  (fn []
+                 (reset! changes {})
+                 (reset! editing false)
+                 (.off ($ js/document)
+                       "click"
+                       @handler))
+        save    (fn []
+                  (let [_task (atom task)]
+                    (doseq [[k v] @changes]
+                      (reset! _task (state/update-task! @_task
+                                                        k v))))
+                  (close))]
     (reset! handler (fn [e]
                       (when-not (has-as-parent? (.-target e)
                                                 (.getElementById js/document
                                                                  (str "todo-" (:id task))))
-                        (reset! editing false)
-                        (.off ($ js/document)
-                              "click"
-                              @handler))))
+                        (save))))
     (reagent/create-class
      {:component-did-mount #()
       :reagent-render (fn [task]
@@ -62,18 +69,26 @@
                           :id (str "todo-" (:id task))
                           :on-click #(reset! selected-task task)
                           :on-double-click (fn []
-                                             (reset! editing true)
-                                             (.removeAllRanges (.getSelection js/document))
-                                             (.on ($ js/document)
-                                                  "click"
-                                                  @handler))}
+                                             (when-not @editing
+                                               (reset! editing true)
+                                               (.removeAllRanges (.getSelection js/document))
+                                               (.on ($ js/document)
+                                                    "keydown"
+                                                    #(when (= (.-keyCode %)
+                                                              27) ; Escape
+                                                       (close)))
+                                               (.on ($ js/document)
+                                                    "click"
+                                                    @handler)))}
                          (if @editing
                            [entity-editor/render
                             task
                             "task-info"
-                            state/update-task!
+                            update
                             #(name-editor/render task
-                                                 change-task-name)]
+                                                 (fn [t n]
+                                                   (update t :name n)))
+                            #(js/alert "ENTER!")]
                            [:div
                             [:div.input.check-box
                              {:on-click #(state/update-task! task
@@ -248,9 +263,15 @@
   [project-id]
   [:div.main
    {:on-click (fn [e]
-                (when (= (.-target e)
-                         (.get ($ :#tasks-container)
-                               0))
+                (when (or (has-as-parent? (.-target e)
+                                          (.get ($ :.project-info)
+                                                0))
+                          (= (.-target e)
+                             (.get ($ :#tasks-container)
+                                   0))
+                          (= (.-target e)
+                             (.get ($ :.main-viewport)
+                                   0)))
                   (reset! selected-task nil)))}
    [main-container-component
     project-id]])

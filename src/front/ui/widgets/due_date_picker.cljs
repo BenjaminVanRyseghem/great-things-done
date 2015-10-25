@@ -32,11 +32,23 @@
      :class "due-date-picker empty"}]])
 
 (defn build
-  [entity callback]
+  [entity callback on-enter]
   (with-meta (if (:due-date entity)
                plain-due-date-picker
                plain-empty-due-date-picker)
     {:component-did-mount (fn []
+                            (.on ($ (str "#entity-due-date-picker-" (:id entity)))
+                                 "keydown"
+                                 (fn [e]
+                                   (when (and (= (.-keyCode e)
+                                                 13)
+                                              (= (.-length ($ :.dropdown-menu.datepicker-dropdown))
+                                                 0)
+                                              (on-enter)))
+                                   (when (= (.-keyCode e)
+                                            8)
+                                     (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
+                                                  "clearDates"))))
                             (.click ($ (str "#clear-due-date-" (:id entity)))
                                     (fn []
                                       (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
@@ -44,6 +56,7 @@
                             (.on (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
                                               (clj->js {:todayBtn  "linked",
                                                         :autoclose true
+                                                        :keyboardNavigation true
                                                         :format {:toDisplay (fn [d _ _]
                                                                               (.format (.moment js/window
                                                                                                 (js/Date. d))
@@ -58,7 +71,8 @@
                                              (.-date e)))))}))
 
 (defn render
-  [entity callback]
+  [entity callback & [on-enter]]
   [:div.date-picker
    [(build entity
-          callback) entity]])
+           callback
+           on-enter) entity]])

@@ -9,6 +9,7 @@
   [entity]
   [:div.description-output
    {:id (str "description-output" (:id entity))
+    :tab-index 0
     :placeholder "Add a description"
     :class (when (empty? (:description entity))
              "empty")}])
@@ -44,7 +45,7 @@
   [entity callback]
   (.editable ($ (str "#description-output" (:id entity)))
              (clj->js {:type "textarea"
-                       :action "click"})
+                       :action "focus"})
              (clj->js {:onInputCreation add-autogrow
                        :callback (fn [event]
                                    (when (= (.-value event)

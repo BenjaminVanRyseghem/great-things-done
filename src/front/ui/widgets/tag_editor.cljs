@@ -10,23 +10,26 @@
     :type "text"}])
 
 (defn- build
-  [entity callback]
+  [entity callback on-enter]
   (with-meta plain-tag-editor
     {:component-did-mount
      (fn []
-       (.tagEditor  ($ (str "#entity-tag-editor" (:id entity)))
-                    "destroy")
-       (.tagEditor  ($ (str "#entity-tag-editor" (:id entity)))
-                    (clj->js {:initialTags (:tags entity)
-                              :delimiter ",; "
-                              :placeholder "Add tags"
-                              :onChange (fn [field editor tags]
-                                          (callback entity tags))
-                              :autocomplete {:delay 0
-                                             :position {:collision "flip"}
-                                             :source (state/get-tags)}})))}))
+       (let [input ($ (str "#entity-tag-editor" (:id entity)))]
+         (.tagEditor  input
+                      "destroy")
+         (.tagEditor  input
+                      (clj->js {:initialTags (:tags entity)
+                                :delimiter ",; "
+                                :placeholder "Add tags"
+                                :onChange (fn [field editor tags]
+                                            (callback entity tags))
+                                :onEnter  on-enter
+                                :autocomplete {:delay 0
+                                               :position {:collision "flip"}
+                                               :source (state/get-tags)}}))))}))
 
 (defn render
-  [entity callback]
+  [entity callback & [on-enter]]
   [(build entity
-          callback) entity])
+          callback
+          on-enter) entity])
