@@ -36,8 +36,9 @@
 
 (defn- add-autogrow
   [input _]
-  (.autosize js/window
-             input))
+  (js/setTimeout #(.autosize js/window
+                             input)
+                 0))
 
 (defn- make-editable
   [entity callback]
