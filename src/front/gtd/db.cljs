@@ -74,8 +74,11 @@
 
 (defmethod deserialize-project-value "due-date"
   [_ v _ _]
-  (js/Date. (js/parseInt v
-                         10)))
+  (let [number (js/parseInt v
+                            10)]
+    (if (js/isNaN number)
+      nil
+      (js/Date. number))))
 
 (defmethod deserialize-project-value "last-modification-time"
   [_ v _ _]
@@ -131,6 +134,12 @@
                                       task
                                       :last-modification-time
                                       (date/now-as-milliseconds)
+                                      :creation-date
+                                      (.valueOf (:creation-date task))
+                                      :due-date
+                                      (if (:due-date task)
+                                        (.valueOf (:due-date task))
+                                        nil)
                                       :tasks
                                       (map :id (:tasks task))))]
     (fs/ensure-dir! full-path)
