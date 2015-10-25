@@ -5,37 +5,43 @@
 
 
 (defn- plain-due-date-picker
-  [project]
-  (let [text (.format (.moment js/window
-                               (:due-date project))
-                      (settings/date-format))]
+  [entity]
+  (let [due-date (:due-date entity)
+        text     (if due-date
+                   (.format (.moment js/window
+                                     (:due-date entity))
+                            (settings/date-format))
+                   "")]
     [:div
-     [:input.form-control
-      {:id "project-due-date-picker"
+     [:input
+      {:id (str "entity-due-date-picker-" (:id entity))
+       :class "form-control due-date-picker"
        :placeholder "Add a due date"
        :value text}]
-     [:div#clear-due-date
+     [:div
+      {:id (str "clear-due-date-" (:id entity))
+       :class "clear-due-date"}
       [:i.fa.fa-times]]]))
 
 (defn- plain-empty-due-date-picker
-  [project]
+  [entity]
   [:div
    [:input
-    {:id "project-due-date-picker"
+    {:id (str "entity-due-date-picker-" (:id entity))
      :placeholder "Add a due date"
-     :class "empty"}]])
+     :class "due-date-picker empty"}]])
 
 (defn build
-  [project callback]
-  (with-meta (if (:due-date project)
+  [entity callback]
+  (with-meta (if (:due-date entity)
                plain-due-date-picker
                plain-empty-due-date-picker)
     {:component-did-mount (fn []
-                            (.click ($ :#clear-due-date)
+                            (.click ($ (str "#clear-due-date-" (:id entity)))
                                     (fn []
-                                      (.datepicker ($ :#project-due-date-picker)
+                                      (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
                                                    "clearDates")))
-                            (.on (.datepicker ($ :#project-due-date-picker)
+                            (.on (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
                                               (clj->js {:todayBtn  "linked",
                                                         :autoclose true
                                                         :format {:toDisplay (fn [d _ _]
@@ -48,11 +54,11 @@
                                                                                                         (settings/date-format)))))}}))
                                  "changeDate"
                                  (fn [e]
-                                   (callback project
+                                   (callback entity
                                              (.-date e)))))}))
 
 (defn render
-  [project callback]
+  [entity callback]
   [:div.date-picker
-   [(build project
-          callback) project]])
+   [(build entity
+          callback) entity]])

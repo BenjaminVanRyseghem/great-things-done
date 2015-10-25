@@ -4,10 +4,11 @@
             [reagent.core :as reagent :refer [atom]]))
 
 (defn- plain-today-picker
-  [project]
+  [entity]
   [:div
    "Show in Today:"
-   [:select#days-select.show-tick
+   [:select.show-tick
+    {:id (str "days-select-" (:id entity))}
     {:value "A"}
     [:option
      {:value "A"}
@@ -17,16 +18,19 @@
      "days before"]]])
 
 (defn- plain-today-picker-with-days
-  [project]
+  [entity]
   [:div.show-before
    "Show in Today:"
-   [:div#days-input
-    {:title "Click to edit"
+   [:div
+    {:id (str "days-input-" (:id entity))
+     :class "days-input"
+     :title "Click to edit"
      :data-toggle "tooltip"
      :data-placement "top"}
-    (:show-before project)]
-   [:select#days-select.show-tick
-    {:value "B"}
+    (:show-before entity)]
+   [:select.show-tick
+    {:id (str "days-select-" (:id entity))
+     :value "B"}
     [:option
      {:value "A"}
      "on date"]
@@ -35,19 +39,19 @@
      "days before"]]])
 
 (defn- plain-empty-today-picker
-  [project]
+  [entity]
   [:div.empty])
 
 (defn build
-  [project callback]
-  (with-meta (if (:due-date project)
-               (if (zero? (:show-before project))
+  [entity callback]
+  (with-meta (if (:due-date entity)
+               (if (zero? (:show-before entity))
                  plain-today-picker
                  plain-today-picker-with-days)
                plain-empty-today-picker)
     {:component-did-mount (fn []
-                            (.tooltip ($ :#days-input))
-                            (.editable ($ :#days-input)
+                            (.tooltip ($ (str "#days-input-" (:id entity))))
+                            (.editable ($ (str "#days-input-" (:id entity)))
                                        "click"
                                        (clj->js {:callback (fn [event]
                                                              (let [days (js/parseInt (.-value event)
@@ -55,10 +59,10 @@
                                                                (if (js/isNaN days)
                                                                  (.html (.-target event)
                                                                         (.-old_value event))
-                                                                 (callback project
+                                                                 (callback entity
                                                                            (js/parseInt (.-value event)
                                                                                         10)))))}))
-                            (let [select ($ :#days-select)]
+                            (let [select ($ (str "#days-select-" (:id entity)))]
                               (.selectpicker select)
                               (.change select
                                        (fn []
@@ -69,11 +73,11 @@
                                                            "on date")
                                                       0
                                                       1)]
-                                           (callback project
+                                           (callback entity
                                                      days))))))}))
 
 (defn render
-  [project callback]
+  [entity callback]
   [:div.today-picker
-   [(build project
-           callback) project]])
+   [(build entity
+           callback) entity]])

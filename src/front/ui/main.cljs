@@ -1,25 +1,39 @@
 (ns ui.main
   (:use [jayq.core :only [$]])
   (:require [gtd.state :as state]
-            [reagent.core :as reagent :refer [atom]]))
+            [reagent.core :as reagent :refer [atom]]
+            [ui.entity-editor :as entity-editor]
+            [ui.name-editor :as name-editor]))
 
 (def ^{:private true
        :no-docs true} shell (js/require "shell"))
 
 (defonce ^:private selected-task (atom nil))
-(defonce ^:private active-task (atom nil))
 
 (defn- build-to-do-class
-  [task selected-task]
+  [task selected-task & [editing]]
   (let [css-class "todo"
         css-class (if (= (:id task)
                          (:id selected-task))
                     (str css-class " selected")
                     css-class)
+        css-class (if editing
+                    (str css-class " editing")
+                    css-class)
         css-class (if (:today task)
                     (str css-class " today")
                     css-class)]
     css-class))
+
+(defn- has-as-parent?
+  [node match]
+  (if (= node
+         match)
+    true
+    (if (.-parentNode node)
+      (has-as-parent? (.-parentNode node)
+                      match)
+      false)))
 
 (defn- change-task-name
   [task new-name]
@@ -28,20 +42,43 @@
 
 (defn- render-todo
   [task]
-
-  [:li
-   {:class (build-to-do-class task
-                              @selected-task)
-    :id (str "todo-" (:id task))
-    :on-click (fn [e]
-                (when (= (.-target e)
-                         (.get ($ (str "#todo-" (:id task)))
-                               0))
-                  (reset! selected-task task)))}
-   [:div.input.check-box
-    {:on-click #(state/update-task! task
-                                    :done true)}]
-   (:name task)])
+  (let [editing (atom false)
+        handler (atom nil)]
+    (reset! handler (fn [e]
+                      (when-not (has-as-parent? (.-target e)
+                                                (.getElementById js/document
+                                                                 (str "todo-" (:id task))))
+                        (reset! editing false)
+                        (.off ($ js/document)
+                              "click"
+                              @handler))))
+    (reagent/create-class
+     {:component-did-mount #()
+      :reagent-render (fn [task]
+                        [:li
+                         {:class (build-to-do-class task
+                                                    @selected-task
+                                                    @editing)
+                          :id (str "todo-" (:id task))
+                          :on-click #(reset! selected-task task)
+                          :on-double-click (fn []
+                                             (reset! editing true)
+                                             (.removeAllRanges (.getSelection js/document))
+                                             (.on ($ js/document)
+                                                  "click"
+                                                  @handler))}
+                         (if @editing
+                           [entity-editor/render
+                            task
+                            "task-info"
+                            state/update-task!
+                            #(name-editor/render task
+                                                 change-task-name)]
+                           [:div
+                            [:div.input.check-box
+                             {:on-click #(state/update-task! task
+                                                             :done true)}]
+                            [:div.name (:name task)]])])})))
 
 (defn- render-to-dos
   [tasks]

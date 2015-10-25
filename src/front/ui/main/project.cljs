@@ -2,11 +2,23 @@
   (:use [jayq.core :only [$]])
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
+            [secretary.core :as secretary]
             [ui.entity-editor :as entity-editor]
-            [ui.main :as main]))
+            [ui.name-editor :as name-editor]
+            [ui.main :as main]
+            [utils.core :as utils]))
 
 (def ^{:private true
        :no-docs true} shell (js/require "shell"))
+
+(defn- name-changed
+  [entity new-name]
+  (let [url-builder #(str "/project/"
+                          (:id %))
+        new-entity  (state/update-project! entity
+                                          :name new-name
+                                          :callback #(secretary/dispatch! (url-builder %)))]
+    (utils/goto (url-builder new-entity))))
 
 (defn- render-empty-project
   []
@@ -33,8 +45,8 @@
                              project
                              "project-info"
                              state/update-project!
-                             #(str "/project/"
-                                   (:id %))]
+                             #(name-editor/render project
+                                                  name-changed)]
                             (if (empty? tasks)
                               [render-empty-project]
                               [main/render-tasks-for
