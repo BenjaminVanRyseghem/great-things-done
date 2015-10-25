@@ -12,25 +12,18 @@
   }
 
   .dropdown-menu.open {
+    border-color: @bootstrap-select-border-color;
     width: 110px;
     padding: 0;
-    background-color: @project-info-background;
-    border-color: @bootstrap-select-border-color;
     margin-top: 0;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 
     li a {
-      background-color: @project-info-background;
-      color: white;
       padding: 3px 5px;
 
       &:focus {
         outline: none !important;
-      }
-
-      &:hover {
-        background-color: @date-picker-hover-color;
       }
 
       .glyphicon-ok {
@@ -49,14 +42,11 @@
     padding: 5px;
 
     height: @project-info-height - 1px;
-    background-color: @project-info-background;
-    border-color: @bootstrap-select-border-color;
+    background-color: transparent;
 
     border-radius: 0;
     border-top: 0 none;
     border-bottom: 0 none;
-
-    color: white;
 
     &:focus {
       outline: none !important;

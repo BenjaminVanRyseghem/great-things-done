@@ -4,29 +4,29 @@
             [reagent.core :as reagent :refer [atom]]))
 
 (defn- plain-tag-editor
-  []
+  [entity]
   [:input.tag-editor
-   {:id "project-tag-editor"
+   {:id (str "entity-tag-editor" (:id entity))
     :type "text"}])
 
 (defn- build
-  [project callback]
+  [entity callback]
   (with-meta plain-tag-editor
     {:component-did-mount
      (fn []
-       (.tagEditor  ($ :#project-tag-editor)
+       (.tagEditor  ($ (str "#entity-tag-editor" (:id entity)))
                     "destroy")
-       (.tagEditor  ($ :#project-tag-editor)
-                    (clj->js {:initialTags (:tags project)
+       (.tagEditor  ($ (str "#entity-tag-editor" (:id entity)))
+                    (clj->js {:initialTags (:tags entity)
                               :delimiter ",; "
                               :placeholder "Add tags"
                               :onChange (fn [field editor tags]
-                                          (callback project tags))
+                                          (callback entity tags))
                               :autocomplete {:delay 0
                                              :position {:collision "flip"}
                                              :source (state/get-tags)}})))}))
 
 (defn render
-  [project callback]
-  [(build project
-          callback)])
+  [entity callback]
+  [(build entity
+          callback) entity])

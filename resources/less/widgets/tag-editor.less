@@ -1,8 +1,8 @@
 @import "../variables";
 
 ul.tag-editor {
-  background-color: @project-info-background;
   border: 0 none;
+  background: transparent;
 
   li {
     line-height: 16px;
@@ -21,6 +21,13 @@ ul.tag-editor {
 
   .placeholder {
     padding-left: 0;
+
+    div {
+      font-weight: lighter;
+      font-family: "Open Sans", sans-serif;
+      font-size: 14px;
+      padding: 0;
+    }
   }
 
   .tag-editor-tag {

@@ -8,12 +8,47 @@
   .generate-completion-color(@start, @end, @n, (@i + 1));
 }
 
-.project-info-mixin {
+.descrition-placeholder(@color) {
+  .description-output.empty[placeholder]:after {
+    color: @color;
+  }
+}
+
+.bootstrap-select-mixin(@color, @bg-color, @border-color, @hover-color) {
+  .dropdown-menu.open {
+    border-color: @border-color;
+    li a {
+      background-color: @bg-color;
+      color: @color;
+
+      &:hover {
+        background-color: @hover-color;
+      }
+    }
+  }
+  button.dropdown-toggle {
+    border-color: @border-color;
+    color: @color;
+  }
+}
+
+.info-mixin {
   position: relative;
   min-height: @project-info-height;
+}
+
+.project-info-mixin {
+ .info-mixin();
+  padding-left: 50px;
   background-color: @project-info-background;
   border-bottom: 1px solid @project-info-border;
-  padding-left: 50px;
+}
+
+.task-info-mixin {
+ .info-mixin();
+  padding-left: 30px;
+  background-color: transparent;
+  border-bottom: 1px solid @todo-editing-border;
 }
 
 .font-awesome {

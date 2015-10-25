@@ -1,0 +1,146 @@
+#tasks-container {
+  margin-top: 6px;
+
+  .toggle-hide-done {
+    margin-left: 4px;
+    font-weight: 300;
+    color: #aaa;
+
+    cursor: pointer;
+  }
+
+  ul.tasks {
+    margin: 8px 0;
+    padding: 0;
+
+    li.todo {
+      list-style: none;
+      margin: 4px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      .input-support();
+
+      div.name {
+        margin: 0 0 0 20px;
+
+        input {
+          witdh: auto !important;
+        }
+      }
+    }
+  }
+
+  .todo-container {
+
+    li.todo {
+      background-color: @todo-background;
+      color: @todo-color;
+      list-style: none;
+
+      div.name {
+        height: 24px;
+        line-height: 24px;
+        display: inline-block;
+
+        &.empty[placeholder]:after {
+          content: attr(placeholder);
+          color: #ccc;
+          font-weight: lighter;
+        }
+
+        &.pending-edit{
+          display: block;
+          margin-right: 20px;
+
+          &.empty:after {
+            content: none;
+          }
+        }
+
+        input {
+          height: 24px;
+          border: 0 none;
+          padding: 0;
+          background-color: transparent;
+
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+
+      &.selected {
+        background-color: @todo-selected-background;
+
+        div.name.empty[placeholder]:after {
+          color: #444;
+        }
+      }
+
+      &.editing {
+        .descrition-placeholder(#444444);
+
+        .tags {
+          border-top: 1px solid @todo-editing-border;
+        }
+
+        .tags, .due-date, .description {
+          .task-info-mixin();
+        }
+
+        .bootstrap-select-mixin(@todo-color, @todo-selected-background, @todo-editing-border, darken(@todo-selected-background, 10%));
+
+        margin-top: 6px;
+        margin-bottom: 6px;
+        padding: 0;
+
+        ul.tag-editor {
+          .placeholder {
+            color: #444444;
+            font-weight: lighter;
+          }
+          .tag-editor-delete {
+            background-color: #7CB7DE;
+          }
+
+          .tag-editor-tag {
+            color: black;
+            background-color: #7CB7DE;
+          }
+        }
+
+        .entity-name {
+          margin-left: 20px;
+        }
+
+        i.icon.fa {
+          left: 8px;
+          color: #444444;
+        }
+
+        div.name {
+          margin-left: 8px;
+          margin-bottom: 6px;
+          margin-top: 6px;
+        }
+
+        .description {
+          border-bottom: 0 none;
+        }
+      }
+    }
+  }
+
+  .done-container{
+    margin-top: 30px;
+
+    li.todo {
+      background-color: @done-background;
+      color: @done-color;
+
+      &.selected {
+        background-color: mix(@icon-blue, @done-background);
+      }
+    }
+  }
+}

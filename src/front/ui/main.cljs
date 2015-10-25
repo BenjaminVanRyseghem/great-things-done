@@ -83,7 +83,7 @@
 (defn- render-to-dos
   [tasks]
   [:div
-   [:ul.todos
+   [:ul.tasks.todos
     (doall (for [task tasks]
              ^{:key (:id task)}
              [render-todo
@@ -117,7 +117,7 @@
     {:on-click #(state/update-project! project
                                        :hide-done true)}
     "Hide done"]
-   [:ul.dones
+   [:ul.tasks.dones
     (doall (for [task tasks]
              ^{:key (:id task)}
              [render-done

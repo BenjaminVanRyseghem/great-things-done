@@ -1,0 +1,28 @@
+.project-info {
+  i.fa {
+    color: #ccc;
+  }
+
+  .descrition-placeholder(#ccc);
+  .tags, .due-date, .description {
+    .project-info-mixin();
+  }
+
+  .name {
+    font-size: 16px;
+
+    padding: 20px;
+    background-color: @project-info-background;
+    border-bottom: 1px solid @project-info-border;
+  }
+
+  ul.tag-editor {
+    background-color: @project-info-background;
+  }
+
+  .due-date .date-picker .due-date-picker {
+    color: white;
+  }
+
+  .bootstrap-select-mixin(white, @project-info-background, @bootstrap-select-border-color, @date-picker-hover-color);
+}
