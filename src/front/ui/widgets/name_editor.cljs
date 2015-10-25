@@ -1,4 +1,4 @@
-(ns ui.name-editor
+(ns ui.widgets.name-editor
   (:use [jayq.core :only [$]])
   (:require [reagent.core :as reagent :refer [atom]]))
 

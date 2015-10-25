@@ -1,4 +1,4 @@
-(ns ui.tag-editor
+(ns ui.widgets.tag-editor
   (:use [jayq.core :only [$]])
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]))

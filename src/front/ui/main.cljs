@@ -2,8 +2,8 @@
   (:use [jayq.core :only [$]])
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
-            [ui.entity-editor :as entity-editor]
-            [ui.name-editor :as name-editor]))
+            [ui.widgets.entity-editor :as entity-editor]
+            [ui.widgets.name-editor :as name-editor]))
 
 (def ^{:private true
        :no-docs true} shell (js/require "shell"))

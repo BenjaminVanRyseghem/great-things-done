@@ -8,19 +8,22 @@
 
 (defn- encrypt-task
   [task]
-  (let [password         (keychain/get-password "great-things-done"
-                                                (platform/logged-user))
-        encrypted-string (crypto/encrypt (utils/clj->json task)
-                                         password)]
-    encrypted-string))
+;;   (let [password         (keychain/get-password "great-things-done"
+;;                                                 (platform/logged-user))
+;;         encrypted-string (crypto/encrypt (utils/clj->json task)
+;;                                          password)]
+;;     encrypted-string)
+  (utils/clj->json task))
 
 (defn- decrypt-task
   [encrypted-string]
-  (let [password (keychain/get-password "great-things-done"
-                                        (platform/logged-user))
-        task     (utils/json->clj (crypto/decrypt encrypted-string
-                                                  password))]
-    task))
+;;   (let [password (keychain/get-password "great-things-done"
+;;                                         (platform/logged-user))
+;;         task     (utils/json->clj (crypto/decrypt encrypted-string
+;;                                                   password))]
+;;     task)
+  (utils/json->clj encrypted-string)
+  )
 
 (defmulti deserialize-task-value (fn [k _ _] (name k)))
 

@@ -1,11 +1,11 @@
-(ns ui.entity-editor
+(ns ui.widgets.entity-editor
   (:use [jayq.core :only [$]])
   (:require [reagent.core :as reagent :refer [atom]]
-            [ui.description-editor :as description-editor]
-            [ui.due-date-picker :as due-date-picker]
-            [ui.name-editor :as name-editor]
-            [ui.show-in-today-picker :as show-in-today-picker]
-            [ui.tag-editor :as tag-editor]))
+            [ui.widgets.description-editor :as description-editor]
+            [ui.widgets.due-date-picker :as due-date-picker]
+            [ui.widgets.name-editor :as name-editor]
+            [ui.widgets.show-in-today-picker :as show-in-today-picker]
+            [ui.widgets.tag-editor :as tag-editor]))
 
 (defn- tags-changed
   [entity tags update-fn]

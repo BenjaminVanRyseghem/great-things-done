@@ -1,4 +1,4 @@
-(ns ui.due-date-picker
+(ns ui.widgets.due-date-picker
   (:use [jayq.core :only [$]])
   (:require [gtd.settings :as settings]
             [reagent.core :as reagent :refer [atom]]))

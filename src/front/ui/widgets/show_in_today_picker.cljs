@@ -1,4 +1,4 @@
-(ns ui.show-in-today-picker
+(ns ui.widgets.show-in-today-picker
   (:use [jayq.core :only [$]])
   (:require [gtd.settings :as settings]
             [reagent.core :as reagent :refer [atom]]))

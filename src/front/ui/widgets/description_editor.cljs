@@ -1,4 +1,4 @@
-(ns ui.description-editor
+(ns ui.widgets.description-editor
   (:use [jayq.core :only [$]])
   (:require [reagent.core :as reagent :refer [atom]]))
 
@@ -7,16 +7,15 @@
 
 (defn- plain-description-editor
   [entity]
-  [:div
-   {:id "description-output"
+  [:div.description-output
+   {:id (str "description-output" (:id entity))
     :placeholder "Add a description"
-    :class (if (empty? (:description entity))
-             "empty"
-             "")}])
+    :class (when (empty? (:description entity))
+             "empty")}])
 
 (defn- inject-md!
   [entity]
-  (let [output ($ :#description-output)]
+  (let [output ($ (str "#description-output" (:id entity)))]
     (set! (.-innerHTML (.get output
                              0))
           (.toHTML js/markdown
@@ -42,7 +41,7 @@
 
 (defn- make-editable
   [entity callback]
-  (.editable ($ :#description-output)
+  (.editable ($ (str "#description-output" (:id entity)))
              (clj->js {:type "textarea"
                        :action "click"})
              (clj->js {:onInputCreation add-autogrow
@@ -58,7 +57,7 @@
   (with-meta plain-description-editor
     {:component-did-mount (fn []
                             (inject-md! entity)
-                            (.attr ($ :#description-output)
+                            (.attr ($ (str "#description-output" (:id entity)))
                                    "editable-src"
                                    (:description entity))
                             (make-editable entity

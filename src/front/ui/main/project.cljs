@@ -3,8 +3,8 @@
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
-            [ui.entity-editor :as entity-editor]
-            [ui.name-editor :as name-editor]
+            [ui.widgets.entity-editor :as entity-editor]
+            [ui.widgets.name-editor :as name-editor]
             [ui.main :as main]
             [utils.core :as utils]))
 
