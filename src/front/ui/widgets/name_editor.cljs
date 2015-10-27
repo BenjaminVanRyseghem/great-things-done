@@ -15,10 +15,19 @@
    (:name entity)])
 
 (defn- make-editable
-  [entity callback]
+  [entity callback on-enter]
   (.editable ($ (str "#entity-name-" (:id entity)))
              "focus"
-             (clj->js {:callback (fn [event]
+             (clj->js {:onInputCreation (fn [input _]
+                                          (when on-enter
+                                            (.on input
+                                                 "keydown"
+                                                 (fn [e]
+                                                   (when (= (.-keyCode e)
+                                                            13)
+                                                     (.blur input)
+                                                     (on-enter))))))
+                       :callback (fn [event]
                                    (if (empty? (.-value event))
                                      (.html (.-target event)
                                             (.-old_value event))
@@ -28,12 +37,14 @@
                                                  (.-value event)))))})))
 
 (defn- build
-  [entity callback]
+  [entity callback on-enter]
   (with-meta plain-name-editor
     {:component-did-mount #(make-editable entity
-                                          callback)}))
+                                          callback
+                                          on-enter)}))
 
 (defn render
   [entity callback & [on-enter]]
   [(build entity
-          callback) entity])
+          callback
+          on-enter) entity])

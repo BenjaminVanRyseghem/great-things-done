@@ -12,7 +12,9 @@
     :tab-index 0
     :placeholder "Add a description"
     :class (when (empty? (:description entity))
-             "empty")}])
+             "empty")}
+   (or (:description entity)
+       "")])
 
 (defn- inject-md!
   [entity]
@@ -20,7 +22,8 @@
     (set! (.-innerHTML (.get output
                              0))
           (.toHTML js/markdown
-                   (:description entity)))
+                   (.-innerHTML (.get output
+                                      0))))
     (doall (for [a ($ "#description-output a")]
              (.on ($ a)
                   "click"
@@ -36,26 +39,34 @@
                       (.stopPropagation e))))))))
 
 (defn- add-autogrow
-  [input _]
+  [input]
   (js/setTimeout #(.autosize js/window
                              input)
                  0))
 
 (defn- make-editable
-  [entity callback]
+  [entity callback on-enter]
   (.editable ($ (str "#description-output" (:id entity)))
              (clj->js {:type "textarea"
                        :action "focus"})
-             (clj->js {:onInputCreation add-autogrow
+             (clj->js {:onInputCreation (fn [input _]
+                                          (add-autogrow input)
+                                          (when on-enter
+                                            (.on input
+                                                 "keydown"
+                                                 (fn [e]
+                                                   (when (and (= (.-keyCode e)
+                                                                 13)
+                                                              (.-ctrlKey e))
+                                                     (.blur input)
+                                                     (on-enter))))))
                        :callback (fn [event]
-                                   (when (= (.-value event)
-                                            (.-old_value event))
-                                     (inject-md! entity))
+                                   (inject-md! entity)
                                    (callback entity
                                              (.-value event)))})))
 
 (defn- build
-  [entity callback]
+  [entity callback on-enter]
   (with-meta plain-description-editor
     {:component-did-mount (fn []
                             (inject-md! entity)
@@ -63,9 +74,11 @@
                                    "editable-src"
                                    (:description entity))
                             (make-editable entity
-                                           callback))}))
+                                           callback
+                                           on-enter))}))
 
 (defn render
-  [entity callback]
+  [entity callback & [on-enter]]
   [(build entity
-          callback) entity])
+          callback
+          on-enter) entity])

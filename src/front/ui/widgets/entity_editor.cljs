@@ -61,4 +61,5 @@
     [:i.icon.fa.fa-fw.fa-pencil-square-o]
     [description-editor/render
      entity
-     #(description-changed %1 %2 update-fn)]]])
+     #(description-changed %1 %2 update-fn)
+     on-enter]]])

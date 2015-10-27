@@ -87,8 +87,9 @@
                             update
                             #(name-editor/render task
                                                  (fn [t n]
-                                                   (update t :name n)))
-                            #(js/alert "ENTER!")]
+                                                   (update t :name n))
+                                                 save)
+                            save]
                            [:div
                             [:div.input.check-box
                              {:on-click #(state/update-task! task
