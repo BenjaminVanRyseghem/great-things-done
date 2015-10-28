@@ -13,7 +13,8 @@
             [ui.routes :as routes]
             [ui.main.inbox] ;; Force its loading
             [ui.main.project] ;; Force its loading
-            [utils.keychain :as keychain]))
+            [utils.keychain :as keychain]
+            [utils.badge :as badge]))
 
 (enable-console-print!)
 
@@ -86,7 +87,6 @@
 ;;                     :done true)
 
 ;; Todo
-
 
 
 ;; Finally render the app

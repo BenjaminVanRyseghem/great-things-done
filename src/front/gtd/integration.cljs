@@ -1,5 +1,5 @@
 (ns gtd.integration
-  (:require [gtd.platform :as platform]))
+  (:require [utils.os :as os]))
 
 (def ^:private osx-mail-applescript
   "tell application \"Mail\"
@@ -59,7 +59,7 @@
 
 (defn get-current-app-info
   []
-  (platform/for-os
+  (os/for-os
    "Mac OS X" (get-current-app-info-osx)))
 
 (defn ^:export js-get-current-app-info
@@ -69,7 +69,7 @@
 (defn get-current-app-data
   [fun]
   (let [info (get-current-app-info)]
-    (platform/for-os
+    (os/for-os
      "Mac OS X" (retrieve-current-app-data-osx info fun))))
 
 (defn ^:export js-get-current-app-data
