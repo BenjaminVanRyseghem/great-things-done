@@ -63,11 +63,12 @@
      {:component-did-mount #()
       :reagent-render (fn [task]
                         [:li
-                         {:class (build-to-do-class task
+                         {:tab-index 0
+                          :class (build-to-do-class task
                                                     @selected-task
                                                     @editing)
                           :id (str "todo-" (:id task))
-                          :on-click #(reset! selected-task task)
+                          :on-focus #(reset! selected-task task)
                           :on-double-click (fn []
                                              (when-not @editing
                                                (reset! editing true)
@@ -128,7 +129,7 @@
 
 (defn- render-dones
   [project tasks]
-  [:div
+  [:span
    [:span.toggle-hide-done
     {:on-click #(state/update-project! project
                                        :hide-done true)}
