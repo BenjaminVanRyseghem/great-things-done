@@ -5,9 +5,6 @@
             [ui.widgets.entity-editor :as entity-editor]
             [ui.widgets.name-editor :as name-editor]))
 
-(def ^{:private true
-       :no-docs true} shell (js/require "shell"))
-
 (defonce ^:private selected-task (atom nil))
 
 (defn- build-to-do-class
@@ -53,34 +50,63 @@
                     (doseq [[k v] @changes]
                       (reset! _task (state/update-task! @_task
                                                         k v))))
-                  (close))]
+                  (close))
+        edit    (fn []
+                  (when-not @editing
+                    (reset! editing true)
+                    (.removeAllRanges (.getSelection js/document))
+                    (.on ($ js/document)
+                         "keydown"
+                         #(when (= (.-keyCode %)
+                                   27) ; Escape
+                            (close)))
+                    (.on ($ js/document)
+                         "click"
+                         @handler)))]
+    (add-watch selected-task
+               (:id task)
+               (fn [k a o n]
+                 (when-not (= (:id n)
+                              (:id task))
+                   (close))))
     (reset! handler (fn [e]
                       (when-not (has-as-parent? (.-target e)
                                                 (.getElementById js/document
                                                                  (str "todo-" (:id task))))
                         (save))))
     (reagent/create-class
-     {:component-did-mount #()
-      :reagent-render (fn [task]
+     {:reagent-render (fn [task]
                         [:li
                          {:tab-index 0
+                          :focus-out #(js/alert "OUT!")
                           :class (build-to-do-class task
                                                     @selected-task
                                                     @editing)
                           :id (str "todo-" (:id task))
+                          :on-key-down (fn [e]
+                                         (when-not @editing
+                                           (.preventDefault e)
+                                           (when (= (.-keyCode e)
+                                                    13)
+                                             (edit))
+                                           (when (= (.-keyCode e)
+                                                    32)
+                                             (state/update-task! task
+                                                                 :done true))
+                                           (when (= (.-keyCode e)
+                                                    38)
+                                             (.focus (.prev ($ ":focus"))))
+                                           (when (= (.-keyCode e)
+                                                    40)
+                                             (.focus (.next ($ ":focus"))))
+                                           (when (= (.-keyCode e)
+                                                    9)
+                                             (.focus (.get ($ ".toggle-hide-done")
+                                                           0))
+                                             (reset! selected-task
+                                                     nil))))
                           :on-focus #(reset! selected-task task)
-                          :on-double-click (fn []
-                                             (when-not @editing
-                                               (reset! editing true)
-                                               (.removeAllRanges (.getSelection js/document))
-                                               (.on ($ js/document)
-                                                    "keydown"
-                                                    #(when (= (.-keyCode %)
-                                                              27) ; Escape
-                                                       (close)))
-                                               (.on ($ js/document)
-                                                    "click"
-                                                    @handler)))}
+                          :on-double-click edit}
                          (if @editing
                            [entity-editor/render
                             task
@@ -131,7 +157,16 @@
   [project tasks]
   [:span
    [:span.toggle-hide-done
-    {:on-click #(state/update-project! project
+    {:tab-index 0
+     :on-key-down (fn [e]
+                    (when (= (.-keyCode e)
+                             32)
+                      (state/update-project! project
+                                             :hide-done true)
+                      (js/setTimeout #(.focus (.get ($ ".toggle-hide-done")
+                                                    0))
+                                     0)))
+     :on-click #(state/update-project! project
                                        :hide-done true)}
     "Hide done"]
    [:ul.tasks.dones
@@ -148,7 +183,16 @@
 (defn- render-hidden-done
   [project dones]
   [:span.toggle-hide-done
-   {:on-click #(state/update-project! project
+   {:tab-index 0
+    :on-key-down (fn [e]
+                   (when (= (.-keyCode e)
+                            32)
+                     (state/update-project! project
+                                            :hide-done false)
+                     (js/setTimeout #(.focus (.get ($ ".toggle-hide-done")
+                                                   0))
+                                    0)))
+    :on-click #(state/update-project! project
                                       :hide-done false)}
    (str (count dones) " more done...")])
 
@@ -264,16 +308,16 @@
 (defn main-component
   [project-id]
   [:div.main
-   {:on-click (fn [e]
-                (when (or (has-as-parent? (.-target e)
-                                          (.get ($ :.project-info)
-                                                0))
-                          (= (.-target e)
-                             (.get ($ :#tasks-container)
-                                   0))
-                          (= (.-target e)
-                             (.get ($ :.main-viewport)
-                                   0)))
-                  (reset! selected-task nil)))}
+   {:on-mouse-down (fn [e]
+                     (when (or (has-as-parent? (.-target e)
+                                               (.get ($ :.project-info)
+                                                     0))
+                               (= (.-target e)
+                                  (.get ($ :#tasks-container)
+                                        0))
+                               (= (.-target e)
+                                  (.get ($ :.main-viewport)
+                                        0)))
+                       (reset! selected-task nil)))}
    [main-container-component
     project-id]])
