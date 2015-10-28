@@ -1,78 +1,86 @@
 (ns ui.widgets.due-date-picker
   (:use [jayq.core :only [$]])
   (:require [gtd.settings :as settings]
-            [reagent.core :as reagent :refer [atom]]))
+            [reagent.core :as reagent :refer [atom]]
+            [ui.widgets.show-in-today-picker :as show-in-today-picker]))
 
 
-(defn- plain-due-date-picker
+(defn- clear-date
   [entity]
-  (let [due-date (:due-date entity)
-        text     (if due-date
-                   (.format (.moment js/window
-                                     (:due-date entity))
-                            (settings/date-format))
-                   "")]
-    [:div
-     [:input
-      {:id (str "entity-due-date-picker-" (:id entity))
-       :class "form-control due-date-picker"
-       :placeholder "Add a due date"
-       :value text}]
-     [:div
-      {:id (str "clear-due-date-" (:id entity))
-       :class "clear-due-date"}
-      [:i.fa.fa-times]]]))
+  (reagent/create-class
+   {:component-did-mount #(.click ($ (str "#clear-due-date-" (:id entity)))
+                                  (fn []
+                                    (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
+                                                 "clearDates")))
+    :reagent-render (fn []
+                      [:div
+                       {:id (str "clear-due-date-" (:id entity))
+                        :class "clear-due-date"}
+                       [:i.fa.fa-times]])}))
 
-(defn- plain-empty-due-date-picker
-  [entity]
-  [:div
-   [:input
-    {:id (str "entity-due-date-picker-" (:id entity))
-     :placeholder "Add a due date"
-     :class "due-date-picker empty"}]])
-
-(defn build
+(defn- build
   [entity callback on-enter]
-  (with-meta (if (:due-date entity)
-               plain-due-date-picker
-               plain-empty-due-date-picker)
-    {:component-did-mount (fn []
-                            (.on ($ (str "#entity-due-date-picker-" (:id entity)))
-                                 "keydown"
-                                 (fn [e]
-                                   (when (and (= (.-keyCode e)
-                                                 13)
-                                              (= (.-length ($ :.dropdown-menu.datepicker-dropdown))
-                                                 0)
-                                              (on-enter)))
-                                   (when (= (.-keyCode e)
-                                            8)
-                                     (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
-                                                  "clearDates"))))
-                            (.click ($ (str "#clear-due-date-" (:id entity)))
-                                    (fn []
+  (let [date (atom (:due-date entity))]
+    (reagent/create-class
+     {:component-did-mount (fn []
+                             (.on ($ (str "#entity-due-date-picker-" (:id entity)))
+                                  "keydown"
+                                  (fn [e]
+                                    (when (and (= (.-keyCode e)
+                                                  13)
+                                               (= (.-length ($ :.dropdown-menu.datepicker-dropdown))
+                                                  0)
+                                               (on-enter)))
+                                    (when (= (.-keyCode e)
+                                             8)
                                       (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
-                                                   "clearDates")))
-                            (.on (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
-                                              (clj->js {:todayBtn  "linked",
-                                                        :autoclose true
-                                                        :keyboardNavigation true
-                                                        :format {:toDisplay (fn [d _ _]
-                                                                              (.format (.moment js/window
-                                                                                                (js/Date. d))
-                                                                                       (settings/date-format)))
-                                                                 :toValue (fn [d, f, t]
-                                                                            (js/Date. (.format (.moment js/window
-                                                                                                        d
-                                                                                                        (settings/date-format)))))}}))
-                                 "changeDate"
-                                 (fn [e]
-                                   (callback entity
-                                             (.-date e)))))}))
+                                                   "clearDates"))))
+                             (.on (.datepicker ($ (str "#entity-due-date-picker-" (:id entity)))
+                                               (clj->js {:todayBtn  "linked",
+                                                         :autoclose true
+                                                         :keyboardNavigation true
+                                                         :format {:toDisplay (fn [d _ _]
+                                                                               (.format (.moment js/window
+                                                                                                 (js/Date. d))
+                                                                                        (settings/date-format)))
+                                                                  :toValue (fn [d, f, t]
+                                                                             (js/Date. (.format (.moment js/window
+                                                                                                         d
+                                                                                                         (settings/date-format)))))}}))
+                                  "changeDate"
+                                  (fn [e]
+                                    (reset! date
+                                            (.-date e))
+                                    (callback entity
+                                              (.-date e)))))
+
+      :reagent-render (fn [entity callback on-enter]
+                        [:div
+                         (if @date
+                           [:div
+                            [:input
+                             {:id (str "entity-due-date-picker-" (:id entity))
+                              :class "form-control due-date-picker"
+                              :placeholder "Add a due date"
+                              :value (if @date
+                                       (.format (.moment js/window
+                                                         @date)
+                                                (settings/date-format))
+                                       "")}]
+                            [clear-date entity]
+                            [show-in-today-picker/render
+                             entity
+                             callback]]
+                           [:div
+                            [:input
+                             {:id (str "entity-due-date-picker-" (:id entity))
+                              :placeholder "Add a due date"
+                              :class "due-date-picker empty"}]])])})))
 
 (defn render
   [entity callback & [on-enter]]
   [:div.date-picker
-   [(build entity
-           callback
-           on-enter) entity]])
+   [build
+    entity
+    callback
+    on-enter]])

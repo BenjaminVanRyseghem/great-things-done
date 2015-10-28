@@ -84,27 +84,31 @@
                                                     @editing)
                           :id (str "todo-" (:id task))
                           :on-key-down (fn [e]
-                                         (when-not @editing
-                                           (.preventDefault e)
+                                         (if @editing
                                            (when (= (.-keyCode e)
                                                     13)
-                                             (edit))
-                                           (when (= (.-keyCode e)
-                                                    32)
-                                             (state/update-task! task
-                                                                 :done true))
-                                           (when (= (.-keyCode e)
-                                                    38)
-                                             (.focus (.prev ($ ":focus"))))
-                                           (when (= (.-keyCode e)
-                                                    40)
-                                             (.focus (.next ($ ":focus"))))
-                                           (when (= (.-keyCode e)
-                                                    9)
-                                             (.focus (.get ($ ".toggle-hide-done")
-                                                           0))
-                                             (reset! selected-task
-                                                     nil))))
+                                             (save))
+                                           (do
+                                             (.preventDefault e)
+                                             (when (= (.-keyCode e)
+                                                      13)
+                                               (edit))
+                                             (when (= (.-keyCode e)
+                                                      32)
+                                               (state/update-task! task
+                                                                   :done true))
+                                             (when (= (.-keyCode e)
+                                                      38)
+                                               (.focus (.prev ($ ":focus"))))
+                                             (when (= (.-keyCode e)
+                                                      40)
+                                               (.focus (.next ($ ":focus"))))
+                                             (when (= (.-keyCode e)
+                                                      9)
+                                               (.focus (.get ($ ".toggle-hide-done")
+                                                             0))
+                                               (reset! selected-task
+                                                       nil)))))
                           :on-focus #(reset! selected-task task)
                           :on-double-click edit}
                          (if @editing

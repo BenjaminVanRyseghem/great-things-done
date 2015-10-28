@@ -4,7 +4,6 @@
             [ui.widgets.description-editor :as description-editor]
             [ui.widgets.due-date-picker :as due-date-picker]
             [ui.widgets.name-editor :as name-editor]
-            [ui.widgets.show-in-today-picker :as show-in-today-picker]
             [ui.widgets.tag-editor :as tag-editor]))
 
 (defn- tags-changed
@@ -53,10 +52,7 @@
     [due-date-picker/render
      entity
      #(due-date-changed %1 %2 update-fn)
-     on-enter]
-    [show-in-today-picker/render
-     entity
-     #(show-before-changed %1 %2 update-fn)]]
+     on-enter]]
    [:div.description
     [:i.icon.fa.fa-fw.fa-pencil-square-o]
     [description-editor/render
