@@ -88,6 +88,7 @@
 
 ;; Todo
 
+(badge/set-badge 6)
 
 ;; Finally render the app
 (routes/init)
