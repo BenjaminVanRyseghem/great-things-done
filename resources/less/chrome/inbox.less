@@ -15,12 +15,59 @@
       width: @empty-inbox-image-size;
       height: @empty-inbox-image-size;
       border-radius: @empty-inbox-image-size / 2;
+      border: 1px solid black;
 
       overflow: hidden;
       margin: auto;
+
+      &.loading {
+        position: relative;
+
+        &:before {
+          .font-awesome();
+          content: '\f021';
+          color: #111111;
+          font-size: 70px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+
+          animation-delay: -10s;
+          animation-name: spin;
+          animation-duration: 2000ms;
+          animation-iteration-count: infinite;
+          transform-origin: 0 0;
+
+          @keyframes spin {
+            from { transform:rotate(0deg) translate(-50%, -50%); }
+            to { transform:rotate(360deg) translate(-50%, -50%); }
+          }
+        }
+
+        &:after {
+          .font-awesome();
+          content: '\f021';
+          color: #EEEEEE;
+          font-size: 64px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+
+          animation-delay: -10s;
+          animation-name: spin;
+          animation-duration: 2000ms;
+          animation-iteration-count: infinite;
+          transform-origin: 0 0;
+
+          @keyframes spin {
+            from { transform:rotate(0deg) translate(-50%, -50%); }
+            to { transform:rotate(360deg) translate(-50%, -50%); }
+          }
+        }
+      }
     }
 
-    .image-description{
+    .image-description {
       padding-top: 4px;
       font-size: 11px;
       color: #aaa;

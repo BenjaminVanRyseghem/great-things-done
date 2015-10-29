@@ -10,12 +10,15 @@
 
 (defn- render-empty-inbox
   []
-  (let [image (image/empty-inbox)
-        ratio (/ empty-inbox-image-size
-                 (:height image))]
+  (let [image   (image/empty-inbox)
+        loading (image/loading?)
+        ratio   (/ empty-inbox-image-size
+                   (:height image))]
     [:div.empty-inbox
      [:div.image-container
       [:div.image-cropper
+       {:class (when loading
+                 "loading")}
        [:img
         {:src (:src image)
          :style {:height (str empty-inbox-image-size "px")

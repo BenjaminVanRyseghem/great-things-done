@@ -13,6 +13,7 @@
             [ui.routes :as routes]
             [ui.main.inbox] ;; Force its loading
             [ui.main.project] ;; Force its loading
+            [gtd.hooks :as hooks]
             [utils.keychain :as keychain]
             [utils.badge :as badge]))
 
@@ -37,6 +38,9 @@
   (do
     (repl/init-tcp-repl "gtd>")
     (repl/init-tcp-cli)))
+
+;; Install hooks
+(hooks/install)
 
 ;; =================
 ;;
