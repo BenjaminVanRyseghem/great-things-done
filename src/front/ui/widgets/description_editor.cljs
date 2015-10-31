@@ -51,6 +51,22 @@
                        :action "focus"})
              (clj->js {:onInputCreation (fn [input _]
                                           (add-autogrow input)
+                                          (.on input
+                                               "keydown"
+                                               (fn [e]
+                                                 (when (and (= (.-keyCode e)
+                                                               9)
+                                                            (.-shiftKey e))
+;;                                                    .parent().prev().find(":tabbable").first().focus()
+
+                                                   (-> ($ (str "#description-output" (:id entity)))
+                                                       (.parent)
+                                                       (.prev)
+                                                       (.find ":tabbable")
+                                                       (.last)
+                                                       (.focus))
+
+                                                   (.preventDefault e))))
                                           (when on-enter
                                             (.on input
                                                  "keydown"

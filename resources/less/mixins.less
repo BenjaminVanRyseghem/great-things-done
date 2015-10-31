@@ -15,20 +15,39 @@
 }
 
 .bootstrap-select-mixin(@color, @bg-color, @border-color, @hover-color) {
+  .bootstrap-select.open>.dropdown-toggle.btn-default {
+    color: darken(@color, 20%);
+    border-color: @border-color;
+  }
+
   .dropdown-menu.open {
     border-color: @border-color;
     li a {
       background-color: @bg-color;
       color: @color;
 
-      &:hover {
+      &:hover, &:focus {
         background-color: @hover-color;
       }
     }
   }
+
   button.dropdown-toggle {
     border-color: @border-color;
     color: @color;
+
+    &:active {
+      border-color: @border-color;
+      color: @color;
+    }
+
+    &:focus {
+      box-shadow: 0 0 10px rgba(255,255,255, 0.3) inset;
+
+      span.filter-option {
+        text-decoration: underline;
+      }
+    }
   }
 }
 

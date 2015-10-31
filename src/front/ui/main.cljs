@@ -78,7 +78,6 @@
      {:reagent-render (fn [task]
                         [:li
                          {:tab-index 0
-                          :focus-out #(js/alert "OUT!")
                           :class (build-to-do-class task
                                                     @selected-task
                                                     @editing)
@@ -89,26 +88,31 @@
                                                     13)
                                              (save))
                                            (do
-                                             (.preventDefault e)
                                              (when (= (.-keyCode e)
                                                       13)
-                                               (edit))
+                                               (edit)
+                                               (.preventDefault e))
                                              (when (= (.-keyCode e)
                                                       32)
                                                (state/update-task! task
-                                                                   :done true))
+                                                                   :done true)
+                                               (.preventDefault e))
                                              (when (= (.-keyCode e)
                                                       38)
-                                               (.focus (.prev ($ ":focus"))))
+                                               (.focus (.prev ($ ":focus")))
+                                               (.preventDefault e))
                                              (when (= (.-keyCode e)
                                                       40)
-                                               (.focus (.next ($ ":focus"))))
-                                             (when (= (.-keyCode e)
-                                                      9)
+                                               (.focus (.next ($ ":focus")))
+                                               (.preventDefault e))
+                                             (when (and (= (.-keyCode e)
+                                                           9)
+                                                        (not (.-shiftKey  e)))
                                                (.focus (.get ($ ".toggle-hide-done")
                                                              0))
                                                (reset! selected-task
-                                                       nil)))))
+                                                       nil)
+                                               (.preventDefault e)))))
                           :on-focus #(reset! selected-task task)
                           :on-double-click edit}
                          (if @editing
