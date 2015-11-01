@@ -112,6 +112,21 @@
                                                              0))
                                                (reset! selected-task
                                                        nil)
+                                               (.preventDefault e))
+                                             (when (and (= (.-keyCode e)
+                                                           9)
+                                                        (.-shiftKey  e))
+                                               (-> ($ (str "#todo-" (:id task)))
+                                                   (.parent)
+                                                   (.parent)
+                                                   (.parent)
+                                                   (.parent)
+                                                   (.prev)
+                                                   (.find ":tabbable")
+                                                   (.last)
+                                                   (.focus))
+                                               (reset! selected-task
+                                                       nil)
                                                (.preventDefault e)))))
                           :on-focus #(reset! selected-task task)
                           :on-double-click edit}
@@ -143,10 +158,42 @@
 (defn render-done
   [task]
   [:li
-   {:class (build-to-do-class task
+   {:tab-index 0
+    :class (build-to-do-class task
                               @selected-task)
     :id (str "done-" (:id task))
-    :on-click (fn [e]
+    :on-key-down (fn [e]
+                   (do
+                     (when (= (.-keyCode e)
+                              32)
+                       (state/update-task! task
+                                           :done false)
+                       (.preventDefault e))
+                     (when (= (.-keyCode e)
+                              38)
+                       (.focus (.prev ($ ":focus")))
+                       (.preventDefault e))
+                     (when (= (.-keyCode e)
+                              40)
+                       (.focus (.next ($ ":focus")))
+                       (.preventDefault e))
+                     (when (and (= (.-keyCode e)
+                                   9)
+                                (not (.-shiftKey  e)))
+                       (.focus (.get ($ "#search-field")
+                                     0))
+                       (reset! selected-task
+                               nil)
+                       (.preventDefault e))
+                     (when (and (= (.-keyCode e)
+                                   9)
+                                (.-shiftKey  e))
+                       (.focus (.get ($ ".toggle-hide-done")
+                                     0))
+                       (reset! selected-task
+                               nil)
+                       (.preventDefault e))))
+    :on-focus (fn [e]
                 (when (= (.-target e)
                          (.get ($ (str "#done-" (:id task)))
                                0))
@@ -301,7 +348,7 @@
    [:div.search-container
     [:div.icon
      [:i.fa.fa-search]]
-    [:input
+    [:input#search-field
      {:placeholder "Search"}]]])
 
 (defmulti main-toolbar-component (fn [id _] id))
