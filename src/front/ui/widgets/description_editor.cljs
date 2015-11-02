@@ -24,19 +24,20 @@
           (.toHTML js/markdown
                    (.-innerHTML (.get output
                                       0))))
-    (doall (for [a ($ "#description-output a")]
-             (.on ($ a)
-                  "click"
-                  (fn [e]
-                    (let [url (.attr ($ a)
-                                     "href")
-                          url (if (= -1 (.indexOf url "://"))
-                                (str "http://" url)
-                                url)]
-                      (.openExternal shell
-                                     url)
-                      (.preventDefault e)
-                      (.stopPropagation e))))))))
+    (doall (for [a ($ (str "#description-output" (:id entity) " a"))]
+             (do
+               (.on ($ a)
+                    "click"
+                    (fn [e]
+                      (let [url (.attr ($ a)
+                                       "href")
+                            url (if (= -1 (.indexOf url "://"))
+                                  (str "http://" url)
+                                  url)]
+                        (.openExternal shell
+                                       url)
+                        (.preventDefault e)
+                        (.stopPropagation e)))))))))
 
 (defn- add-autogrow
   [input]
@@ -57,7 +58,7 @@
                                                  (when (and (= (.-keyCode e)
                                                                9)
                                                             (.-shiftKey e))
-;;                                                    .parent().prev().find(":tabbable").first().focus()
+                                                   ;;                                                    .parent().prev().find(":tabbable").first().focus()
 
                                                    (-> ($ (str "#description-output" (:id entity)))
                                                        (.parent)
