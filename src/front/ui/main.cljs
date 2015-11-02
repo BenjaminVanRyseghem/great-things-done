@@ -78,6 +78,7 @@
      {:reagent-render (fn [task]
                         [:li
                          {:tab-index 0
+                          :data-id (:id task)
                           :class (build-to-do-class task
                                                     @selected-task
                                                     @editing)
@@ -144,16 +145,57 @@
                             [:div.input.check-box
                              {:on-click #(state/update-task! task
                                                              :done true)}]
-                            [:div.name (:name task)]])])})))
+                            [:div.name (:name task)]
+                            [:i.fa.fa-exchange.fa-rotate-90.handle]])])})))
+
+(defn- update-tasks-order
+  [project item]
+  (let [id             (-> item
+                           (.attr "id"))
+        ids            (-> item
+                           (.parent)
+                           (.sortable "toArray"))
+        index          (-> ids
+                           (.indexOf id))
+        id             (-> item
+                           (.attr "data-id"))
+        tasks          (:tasks project)
+        task           (first (filter #(= (:id %)
+                                          id)
+                                      tasks))
+        tasks          (filter #(not= (:id %)
+                                      id)
+                               tasks)
+        [before after] (split-at index
+                                 tasks)
+        tasks          (concat before [task] after)]
+    (doseq [t tasks]
+      (js/console.log (:name t)))
+    (state/update-project! project
+                           :tasks tasks)))
 
 (defn- render-to-dos
-  [tasks]
-  [:div
-   [:ul.tasks.todos
-    (doall (for [task tasks]
-             ^{:key (:id task)}
-             [render-todo
-              task]))]])
+  [t p]
+    (reagent/create-class
+     {:component-did-mount (fn []
+                             (-> ($ ".tasks.todos")
+                                 (.sortable (clj->js {:items "> li"
+                                                      :handle ".handle"
+                                                      :update (fn [event ui]
+                                                                (js/setTimeout #(update-tasks-order (state/get-project-by-id (:id p))
+                                                                                                    (.-item ui))
+                                                                               1000))}))
+                                 (.disableSelection)))
+      :reagent-render (fn [tasks]
+                        (let [project (state/get-project-by-id (:id p))
+                              tasks   (filter #(not (:done %))
+                                              (:tasks project))]
+                          [:div
+                           [:ul.tasks.todos
+                            (doall (for [task tasks]
+                                     ^{:key (:id task)}
+                                     [render-todo
+                                      task]))]]))}))
 
 (defn render-done
   [task]
@@ -263,7 +305,7 @@
      [:div.todo-container
       (if (empty? tasks-to-do)
         [render-no-to-do]
-        [render-to-dos tasks-to-do])]
+        [render-to-dos tasks-to-do project])]
      [:div.done-container
       (if (:hide-done project)
         [render-hidden-done

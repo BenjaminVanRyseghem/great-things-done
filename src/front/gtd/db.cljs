@@ -100,7 +100,8 @@
 
 (defmethod deserialize-project-value "tasks"
   [_ v project-path callback]
-  (map #(deserialize-task project-path % callback) v))
+  (sort-by :done
+           (map #(deserialize-task project-path % callback) v)))
 
 (defmethod deserialize-project-value :default
   [k v _ _]
@@ -167,7 +168,8 @@
                                          (.valueOf (:due-date project))
                                          nil)
                                        :tasks
-                                       (map :id (:tasks project)))))))
+                                       (map :id (sort-by :done
+                                                         (:tasks project))))))))
 
 (defn rename-project!
   [project old-id]
