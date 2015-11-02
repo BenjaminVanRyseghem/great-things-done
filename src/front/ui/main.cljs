@@ -142,7 +142,8 @@
                             #(name-editor/render @task
                                                  (fn [t n]
                                                    (update t :name n))
-                                                 save)
+                                                 :on-enter save
+                                                 :auto-focus true)
                             save]
                            [:div
                             [:div.input.check-box

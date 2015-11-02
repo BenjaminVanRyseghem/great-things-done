@@ -4,7 +4,7 @@
 
 
 (defn- plain-name-editor
-  [entity]
+  [entity auto-focus]
   [:div.entity-name
    {:id (str "entity-name-" (:id entity))
     :tab-index 0
@@ -37,14 +37,18 @@
                                                  (.-value event)))))})))
 
 (defn- build
-  [entity callback on-enter]
+  [entity callback on-enter auto-focus]
   (with-meta plain-name-editor
-    {:component-did-mount #(make-editable entity
-                                          callback
-                                          on-enter)}))
+    {:component-did-mount (fn []
+                            (make-editable entity
+                                           callback
+                                           on-enter)
+                            (when auto-focus
+                              (.focus ($ (str "#entity-name-" (:id entity))))))}))
 
 (defn render
-  [entity callback & [on-enter]]
+  [entity callback & {:keys [on-enter auto-focus]}]
   [(build entity
           callback
-          on-enter) entity])
+          on-enter
+          auto-focus) entity])
