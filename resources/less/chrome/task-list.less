@@ -4,17 +4,17 @@
 #tasks-container {
   margin-top: 6px;
 
-  .toggle-hide-done:focus {
-    outline: none;
-    text-decoration: underline;
-  }
-
   .toggle-hide-done {
     margin-left: 4px;
     font-weight: 300;
     color: #aaa;
 
     cursor: pointer;
+
+    &:focus, &:hover {
+      outline: none;
+      text-decoration: underline;
+    }
   }
 
   ul.tasks {
