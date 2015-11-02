@@ -8,7 +8,7 @@
   {:src    "/img/empty-inbox.jpg"
    :author "Todd MacDonald"
    :height 852
-   :width  1280
+   :width  1200
    :url    "https://pixabay.com/en/rocks-cairns-pile-balance-stones-175585/"})
 
 (defonce today-image (atom default-inbox))
