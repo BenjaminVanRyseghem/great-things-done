@@ -146,7 +146,7 @@
                              {:on-click #(state/update-task! task
                                                              :done true)}]
                             [:div.name (:name task)]
-                            [:i.fa.fa-exchange.fa-rotate-90.handle]])])})))
+                            [:i.fa.fa-arrows.handle]])])})))
 
 (defn- update-tasks-order
   [project item]

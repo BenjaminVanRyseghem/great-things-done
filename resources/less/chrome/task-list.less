@@ -84,15 +84,13 @@
 
       i.fa.handle {
         cursor: pointer;
-        color: white;
+        color: #444;
         float: right;
         margin-top: 2px;
         padding: 4px;
-        border-radius: 4px;
-        background-color: #ccc;
 
         &:hover {
-          background-color: @todo-selected-background;
+          color: #666;
         }
       }
 
@@ -101,15 +99,6 @@
 
         div.name.empty[placeholder]:after {
           color: #444;
-        }
-
-        i.fa.handle {
-          color: white;
-          background-color: mix(@todo-selected-background, #aaa);
-
-          &:hover {
-            background-color: mix(@todo-selected-background, blue, 85%);
-          }
         }
       }
 
