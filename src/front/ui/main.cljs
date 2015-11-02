@@ -33,8 +33,9 @@
       false)))
 
 (defn- render-todo
-  [task]
-  (let [editing (atom false)
+  [t]
+  (let [task    (atom t)
+        editing (atom false)
         handler (atom nil)
         changes (atom {})
         update  (fn [task & [k v]]
@@ -46,11 +47,13 @@
                        "click"
                        @handler))
         save    (fn []
-                  (let [_task (atom task)]
-                    (doseq [[k v] @changes]
-                      (reset! _task (state/update-task! @_task
-                                                        k v))))
-                  (close))
+                  (doseq [[k v] @changes]
+                    (reset! task (state/update-task! @task
+                                                      k v)))
+                  (reset! selected-task @task)
+                  (close)
+                  (js/setTimeout #(.focus ($ (str "#todo-" (:id @task))))
+                                 0))
         edit    (fn []
                   (when-not @editing
                     (reset! editing true)
@@ -64,25 +67,25 @@
                          "click"
                          @handler)))]
     (add-watch selected-task
-               (:id task)
+               (:id @task)
                (fn [k a o n]
                  (when-not (= (:id n)
-                              (:id task))
+                              (:id @task))
                    (close))))
     (reset! handler (fn [e]
                       (when-not (has-as-parent? (.-target e)
                                                 (.getElementById js/document
-                                                                 (str "todo-" (:id task))))
+                                                                 (str "todo-" (:id @task))))
                         (save))))
     (reagent/create-class
-     {:reagent-render (fn [task]
+     {:reagent-render (fn [_]
                         [:li
                          {:tab-index 0
-                          :data-id (:id task)
-                          :class (build-to-do-class task
+                          :data-id (:id @task)
+                          :class (build-to-do-class @task
                                                     @selected-task
                                                     @editing)
-                          :id (str "todo-" (:id task))
+                          :id (str "todo-" (:id @task))
                           :on-key-down (fn [e]
                                          (if @editing
                                            (when (= (.-keyCode e)
@@ -117,7 +120,7 @@
                                              (when (and (= (.-keyCode e)
                                                            9)
                                                         (.-shiftKey  e))
-                                               (-> ($ (str "#todo-" (:id task)))
+                                               (-> ($ (str "#todo-" (:id @task)))
                                                    (.parent)
                                                    (.parent)
                                                    (.parent)
@@ -129,23 +132,23 @@
                                                (reset! selected-task
                                                        nil)
                                                (.preventDefault e)))))
-                          :on-focus #(reset! selected-task task)
+                          :on-focus #(reset! selected-task @task)
                           :on-double-click edit}
                          (if @editing
                            [entity-editor/render
-                            task
+                            @task
                             "task-info"
                             update
-                            #(name-editor/render task
+                            #(name-editor/render @task
                                                  (fn [t n]
                                                    (update t :name n))
                                                  save)
                             save]
                            [:div
                             [:div.input.check-box
-                             {:on-click #(state/update-task! task
+                             {:on-click #(state/update-task! @task
                                                              :done true)}]
-                            [:div.name (:name task)]
+                            [:div.name (:name @task)]
                             [:i.fa.fa-arrows.handle]])])})))
 
 (defn- update-tasks-order
@@ -169,8 +172,6 @@
         [before after] (split-at index
                                  tasks)
         tasks          (concat before [task] after)]
-    (doseq [t tasks]
-      (js/console.log (:name t)))
     (state/update-project! project
                            :tasks tasks)))
 
