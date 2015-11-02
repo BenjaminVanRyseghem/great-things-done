@@ -176,26 +176,27 @@
 
 (defn- render-to-dos
   [t p]
+  (let [project (state/get-project-by-id (:id p))
+        tasks   (filter #(not (:done %))
+                        (:tasks project))]
     (reagent/create-class
      {:component-did-mount (fn []
                              (-> ($ ".tasks.todos")
                                  (.sortable (clj->js {:items "> li"
                                                       :handle ".handle"
                                                       :update (fn [event ui]
-                                                                (js/setTimeout #(update-tasks-order (state/get-project-by-id (:id p))
-                                                                                                    (.-item ui))
-                                                                               1000))}))
+                                                                (update-tasks-order project
+                                                                                    (.-item ui))
+                                                                (-> ($ ".tasks.todos")
+                                                                    (.sortable "cancel")))}))
                                  (.disableSelection)))
       :reagent-render (fn [tasks]
-                        (let [project (state/get-project-by-id (:id p))
-                              tasks   (filter #(not (:done %))
-                                              (:tasks project))]
-                          [:div
-                           [:ul.tasks.todos
-                            (doall (for [task tasks]
-                                     ^{:key (:id task)}
-                                     [render-todo
-                                      task]))]]))}))
+                        [:div
+                         [:ul.tasks.todos
+                          (doall (for [task tasks]
+                                   ^{:key (:id task)}
+                                   [render-todo
+                                    task]))]])})))
 
 (defn render-done
   [task]
