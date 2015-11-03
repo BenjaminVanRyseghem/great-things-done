@@ -12,7 +12,7 @@ node_modules
 *.ipr
 *.iws
 .nrepl-port
-electron
+/electron
 *.log
 
 resources/js/
