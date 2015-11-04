@@ -1,0 +1,73 @@
+@import "../variables";
+
+#modal-container {
+
+  .modal-dialog {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: 50%;
+    transform: translate(0, 50%);
+
+    .modal-content {
+      background-color: #585858;
+      color: #eee;
+      .modal-header, .modal-footer {
+        border-color: #313131;
+      }
+
+      .modal-body {
+        ul {
+          border: 1px solid #313131;
+          background-color: #383838;
+          padding: 0;
+
+          display: inline-block;
+          width: 50%;
+          vertical-align: top;
+          height: 172px;
+
+          &#categories.projects {
+            border-right: 0 none;
+
+            li.selected {
+              position: relative;
+              margin-right: 18px;
+
+              &:after {
+                position: absolute;
+                content:"";
+                width: 0;
+                height: 0;
+                right: -18px;
+                top: -1px;
+                bottom: 0;
+                border-top: 17px solid transparent;
+                border-bottom: 17px solid transparent;
+                border-left: 17px solid mix(@icon-blue, #383838);
+              }
+            }
+          }
+
+          &#elements {
+            border-left: 0 none;
+          }
+
+          li {
+            list-style: none;
+            padding: 6px;
+            border: 1px solid transparent;
+
+            &.selected {
+              background-color: mix(@icon-blue, #383838);
+            }
+
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}

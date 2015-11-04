@@ -8,7 +8,8 @@
 
 (ns ui.main.toolbar
   (:require [gtd.state :as state]
-            [ui.main :as main]))
+            [ui.main :as main]
+            [ui.widgets.move-dialog :as move-dialog]))
 
 (defn- new-task
   [project selected-task-atom]
@@ -40,7 +41,8 @@
                                                  :today false)))
 
 (defn- move
-  [selected-task-atom])
+  [selected-task-atom]
+  (move-dialog/append @selected-task-atom))
 
 (defn- render-toolbar-action
   [text css-class icon function]
