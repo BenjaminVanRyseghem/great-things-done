@@ -33,7 +33,7 @@
                                              :tags          []
                                              :tasks         []
                                              :description   nil
-                                             :creation-date nil
+                                             :creation-date (date/now)
                                              :due-date      nil
                                              :active        nil
                                              :done          false
