@@ -16,10 +16,10 @@
   [project-id]
   [:div.container
    [menu/menu-component project-id]
-   [main/main-component project-id]])
+   [main/main-component project-id]
+   [:div#modal-container]])
 
 (defn render-core
   [project-id]
-  (reagent/render
-   [chrome-component project-id]
-   (.-body js/document)))
+  (reagent/render [chrome-component project-id]
+                  (.-body js/document)))

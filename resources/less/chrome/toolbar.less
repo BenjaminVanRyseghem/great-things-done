@@ -1,0 +1,135 @@
+@import "../variables";
+@import "../mixins";
+
+.main-toolbar {
+  position: absolute;
+  height: @toolbar-height;
+  right: 0;
+  left: 0;
+  bottom: 0;
+
+  background-image: url(../img/px_by_Gre3g.png);
+  padding: 10px;
+
+  .toolbar-container {
+    height: 100%;
+    position: relative;
+
+    .items {
+      height: 100%;
+      position: relative;
+      margin-right: @toolbar-search-width + 10px;
+
+      .group {
+        margin-top: 5px;
+        position: absolute;
+
+        &.disabled {
+          color: @disabled-action-color;
+
+          .item {
+            border-color: @project-info-border;
+            cursor: default;
+          }
+        }
+
+        &.left {
+          left: 0;
+        }
+
+        &.center {
+          left: 50%;
+          transform: translate(-50%, 0);
+        }
+
+        &.right {
+          right: 0;
+        }
+
+        .item {
+          display: inline-block;
+          padding: 8px;
+          width: 82px;
+          margin: 0 2px;
+          text-align: center;
+          font-weight: 300;
+          cursor: pointer;
+
+
+          @media screen and (max-width: 774px) {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            border-radius: 50%;
+
+            border: 1px solid white;
+            background-color: @selection-background;
+
+            .icon {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+
+            span.text {
+              display: none;
+            }
+          }
+        }
+        .toolbar-item(new);
+        .toolbar-item(resolve, @icon-green);
+        .toolbar-item(unresolve, @icon-red);
+        .toolbar-item(today, @icon-yellow);
+        .toolbar-item(not-today, @icon-yellow);
+        .toolbar-item(move, @icon-brown);
+
+        .icon {
+          font-size: 18px;
+          margin-bottom: 4px;
+
+        }
+      }
+    }
+
+    .search {
+      width: @toolbar-search-width;
+      height: 100%;
+      float: right;
+
+      .search-container {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translate(0, -50%);
+
+        .icon {
+          padding: 0 4px 0 0;
+          float: left;
+          background-color: @selection-background;
+          border: 1px solid @project-info-border;
+          border-right: 0 none;
+
+          i {
+            color: #999;
+            line-height: @searchbar-height - 2px;
+            padding: 0 8px;
+          }
+        }
+
+        input {
+          cursor: pointer;
+          height: @searchbar-height;
+          border: 1px solid @project-info-border;
+          border-left: 0 none;
+          width: @toolbar-search-width - 34px;
+          background-color: @selection-background;
+
+          &:focus{
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+}

@@ -11,12 +11,13 @@
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [ui.widgets.entity-editor :as entity-editor]
-            [ui.widgets.name-editor :as name-editor]))
+            [ui.widgets.name-editor :as name-editor]
+            [utils.core :as utils]))
 
-(defonce ^:private selected-task (atom nil))
+(defonce selected-task (atom nil))
 
 (defn- build-to-do-class
-  [task selected-task & [editing]]
+  [task selected-task & [editing today]]
   (let [css-class "todo"
         css-class (if (= (:id task)
                          (:id selected-task))
@@ -25,7 +26,7 @@
         css-class (if editing
                     (str css-class " editing")
                     css-class)
-        css-class (if (:today task)
+        css-class (if today
                     (str css-class " today")
                     css-class)]
     css-class))
@@ -41,9 +42,8 @@
       false)))
 
 (defn- render-todo
-  [t]
-  (let [task    (atom t)
-        editing (atom false)
+  [task]
+  (let [editing (atom false)
         handler (atom nil)
         changes (atom {})
         update  (fn [task & [k v]]
@@ -55,13 +55,14 @@
                        "click"
                        @handler))
         save    (fn []
+                  (let [t (atom task)]
                   (doseq [[k v] @changes]
-                    (reset! task (state/update-task! @task
-                                                      k v)))
-                  (reset! selected-task @task)
+                    (reset! t (state/update-task! @t
+                                                  k v)))
+                  (reset! selected-task @t)
                   (close)
-                  (js/setTimeout #(.focus ($ (str "#todo-" (:id @task))))
-                                 0))
+                  (js/setTimeout #(.focus ($ (str "#todo-" (:id @t))))
+                                 0)))
         edit    (fn []
                   (when-not @editing
                     (reset! editing true)
@@ -75,25 +76,26 @@
                          "click"
                          @handler)))]
     (add-watch selected-task
-               (:id @task)
+               (:id task)
                (fn [k a o n]
                  (when-not (= (:id n)
-                              (:id @task))
+                              (:id task))
                    (close))))
     (reset! handler (fn [e]
                       (when-not (has-as-parent? (.-target e)
                                                 (.getElementById js/document
-                                                                 (str "todo-" (:id @task))))
+                                                                 (str "todo-" (:id task))))
                         (save))))
     (reagent/create-class
-     {:reagent-render (fn [_]
+     {:reagent-render (fn [task]
                         [:li
                          {:tab-index 0
-                          :data-id (:id @task)
-                          :class (build-to-do-class @task
+                          :data-id (:id task)
+                          :class (build-to-do-class task
                                                     @selected-task
-                                                    @editing)
-                          :id (str "todo-" (:id @task))
+                                                    @editing
+                                                    (:today task))
+                          :id (str "todo-" (:id task))
                           :on-key-down (fn [e]
                                          (if @editing
                                            (utils/key-code e
@@ -121,14 +123,14 @@
                                                                                         (.focus))
                                                                                     (reset! selected-task
                                                                                             nil)))))
-                          :on-focus #(reset! selected-task @task)
+                          :on-focus #(reset! selected-task task)
                           :on-double-click edit}
                          (if @editing
                            [entity-editor/render
-                            @task
+                            task
                             "task-info"
                             update
-                            #(name-editor/render @task
+                            #(name-editor/render task
                                                  (fn [t n]
                                                    (update t :name n))
                                                  :on-enter save
@@ -136,9 +138,9 @@
                             save]
                            [:div
                             [:div.input.check-box
-                             {:on-click #(state/update-task! @task
+                             {:on-click #(state/update-task! task
                                                              :done true)}]
-                            [:div.name (:name @task)]
+                            [:div.name (:name task)]
                             [:i.fa.fa-arrows.handle]])])})))
 
 (defn- update-tasks-order
@@ -311,88 +313,7 @@
 
 (defmulti main-container-component (fn [id] id))
 
-(defn- new-task
-  [project]
-  (let [task (state/register-task ""
-                                  :project project
-
-                                  ;;; should parent be the selected task?
-                                  :parent project)]
-    (reset! selected-task task)))
-
-(defn- render-toolbar-action
-  [text css-class icon function]
-  [:div
-   {:class (str "item " css-class)
-    :on-click function}
-   [:div.icon
-    {:title text}
-    [:i
-     {:class (str "fa fa-" icon)}]]
-   [:span.text text]])
-
-(defn- render-left-group
-  [items]
-  [:div.group.left
-   (doall (for [item items]
-            ^{:key (:text item)}
-            [render-toolbar-action
-             (:text item)
-             (:css-class item)
-             (:icon item)
-             (:function item)]))])
-
-(defn- render-right-group
-  [items]
-  [:div.group.right
-   {:class (if @selected-task
-             ""
-             "disabled")}
-   (doall (for [item items]
-            ^{:key (:text item)}
-            [render-toolbar-action
-             (:text item)
-             (:css-class item)
-             (:icon item)
-             (:function item)]))])
-
-(defn- render-toolbar-groups
-  [project]
-  [:div.items
-   [render-left-group [{:text "New"
-                        :css-class "new"
-                        :icon "plus"
-                        :function #(new-task project)}]]
-   [render-right-group [{:text "Resolve"
-                         :css-class "resolve"
-                         :icon "check"
-                         :function #()}
-                        {:text "Not Today"
-                         :css-class "today"
-                         :icon "star-o"
-                         :function #()}
-                        {:text "Move"
-                         :css-class "move"
-                         :icon "arrow-right"
-                         :function #()}]]])
-
-(defn- render-toolbar-search
-  []
-  [:div.search
-   [:div.search-container
-    [:div.icon
-     [:i.fa.fa-search]]
-    [:input#search-field
-     {:placeholder "Search"}]]])
-
 (defmulti main-toolbar-component (fn [id _] id))
-
-(defmethod main-toolbar-component :default
-  [_ project]
-  [:div.main-toolbar
-   [:div.toolbar-container
-    [render-toolbar-groups project]
-    [render-toolbar-search]]])
 
 (defn main-component
   [project-id]

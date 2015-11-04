@@ -120,3 +120,27 @@
     }
   }
 }
+
+.toolbar-item(@name, @color: @icon-blue) {
+  &.disabled {
+    .item.@{name} {
+      .fa {
+        color: @disabled-action-color;
+      }
+
+      @media screen and (max-width: 774px) {
+        border-color: @disabled-action-color;;
+      }
+    }
+  }
+
+  .item.@{name} {
+    .fa {
+      color: @color;
+    }
+
+    @media screen and (max-width: 774px) {
+      border-color: @color;
+    }
+  }
+}
