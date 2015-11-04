@@ -96,50 +96,31 @@
                           :id (str "todo-" (:id @task))
                           :on-key-down (fn [e]
                                          (if @editing
-                                           (when (= (.-keyCode e)
-                                                    13)
-                                             (save))
-                                           (do
-                                             (when (= (.-keyCode e)
-                                                      13)
-                                               (edit)
-                                               (.preventDefault e))
-                                             (when (= (.-keyCode e)
-                                                      32)
-                                               (state/update-task! task
-                                                                   :done true)
-                                               (.preventDefault e))
-                                             (when (= (.-keyCode e)
-                                                      38)
-                                               (.focus (.prev ($ ":focus")))
-                                               (.preventDefault e))
-                                             (when (= (.-keyCode e)
-                                                      40)
-                                               (.focus (.next ($ ":focus")))
-                                               (.preventDefault e))
-                                             (when (and (= (.-keyCode e)
-                                                           9)
-                                                        (not (.-shiftKey  e)))
-                                               (.focus (.get ($ ".toggle-hide-done")
-                                                             0))
-                                               (reset! selected-task
-                                                       nil)
-                                               (.preventDefault e))
-                                             (when (and (= (.-keyCode e)
-                                                           9)
-                                                        (.-shiftKey  e))
-                                               (-> ($ (str "#todo-" (:id @task)))
-                                                   (.parent)
-                                                   (.parent)
-                                                   (.parent)
-                                                   (.parent)
-                                                   (.prev)
-                                                   (.find ":tabbable")
-                                                   (.last)
-                                                   (.focus))
-                                               (reset! selected-task
-                                                       nil)
-                                               (.preventDefault e)))))
+                                           (utils/key-code e
+                                                           :enter save)
+                                           (utils/key-code e
+                                                           [:enter :prevent] save
+                                                           [:space :prevent] #(state/update-task! task
+                                                                                                  :done true)
+                                                           [:up :prevent] #(.focus (.prev ($ ":focus")))
+                                                           [:down :prevent] #(.focus (.next ($ ":focus")))
+                                                           [:tab :prevent] (fn []
+                                                                             (.focus (.get ($ ".toggle-hide-done")
+                                                                                           0))
+                                                                             (reset! selected-task
+                                                                                     nil))
+                                                           [:shift :tab :prevent] (fn []
+                                                                                    (-> ($ (str "#todo-" (:id task)))
+                                                                                        (.parent)
+                                                                                        (.parent)
+                                                                                        (.parent)
+                                                                                        (.parent)
+                                                                                        (.prev)
+                                                                                        (.find ":tabbable")
+                                                                                        (.last)
+                                                                                        (.focus))
+                                                                                    (reset! selected-task
+                                                                                            nil)))))
                           :on-focus #(reset! selected-task @task)
                           :on-double-click edit}
                          (if @editing
