@@ -8,8 +8,7 @@
 
 (ns gtd.app-menu)
 
-(defn init
-  "Initialize the application menu."
+(defn- default-menu
   []
   (let [remote        (js/require "remote")
         app           (.require remote "app")
@@ -17,12 +16,12 @@
         shell         (.require remote "shell")
         Menu          (.require remote "menu")
         MenuItem      (.require remote "menu-item")
-        menu          (new Menu)
         template      (clj->js [{:label "Electron"
                                  :submenu [{:label "About Electron"
                                             :selector "orderFrontStandardAboutPanel:"}
                                            {:type "separator"}
                                            {:label "Services"
+                                            :role "services"
                                             :submenu []}
                                            {:type "separator"}
                                            {:label "Hide Electron"
@@ -58,14 +57,15 @@
                                            {:label "Select All"
                                             :accelerator "Command+A"
                                             :selector "selectAll:"}]}
-                                {:label "View"
+                                {:label "Debug"
                                  :submenu [{:label "Reload"
                                             :accelerator "Command+R"
                                             :click #(.reloadIgnoringCache (.getFocusedWindow BrowserWindow))}
                                            {:label "Toggle DevTools"
-                                            :accelerator "Alt+Command+I"
+                                            :accelerator "Alt+Command+J"
                                             :click #(.toggleDevTools (.getFocusedWindow BrowserWindow))}]}
                                 {:label "Window"
+                                 :role "window"
                                  :submenu [{:label "Minimize"
                                             :accelerator "Command+M"
                                             :selector "performMiniaturize:"}
@@ -76,7 +76,35 @@
                                            {:label "Bring All to Front"
                                             :selector "arrangeInFront:"}]}
                                 {:label "Help"
+                                 :role "help"
                                  :submenu [{:label "Report an issue"
-                                            :click #(.openExternal shell "https://github.com/BenjaminVanRyseghem/great-things-done/issues/new")}]}])
-        tmp-menu      (.buildFromTemplate Menu template)]
-    (.setApplicationMenu Menu tmp-menu)))
+                                            :click #(.openExternal shell "https://github.com/BenjaminVanRyseghem/great-things-done/issues/new")}]}])]
+    (.buildFromTemplate Menu template)))
+
+(defn project-menu
+  [new-task & {:keys [selected move]}]
+  (let [remote        (js/require "remote")
+        Menu          (.require remote "menu")
+        MenuItem      (.require remote "menu-item")
+        submenu       (.buildFromTemplate Menu (clj->js [{:label "New Task"
+                                                          :click new-task
+                                                          :accelerator "Command+N"}
+                                                         {:type "separator"}
+                                                         {:label "Move..."
+                                                          :enabled (boolean selected)
+                                                          :click move
+                                                          :accelerator "Command+Shift+M"}]))
+        item          (MenuItem. (clj->js {:label "File"
+                                           :submenu submenu}))
+        menu          (default-menu)]
+    (.insert menu
+             1
+             item)
+    (.setApplicationMenu Menu menu)))
+
+(defn init
+  "Initialize the application menu."
+  []
+  (let [remote        (js/require "remote")
+        Menu          (.require remote "menu")]
+    (.setApplicationMenu Menu (default-menu))))

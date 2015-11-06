@@ -8,12 +8,14 @@
 
 (ns ui.main.project
   (:use [jayq.core :only [$]])
-  (:require [gtd.state :as state]
+  (:require [gtd.app-menu :as app-menu]
+            [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
             [ui.widgets.entity-editor :as entity-editor]
             [ui.widgets.name-editor :as name-editor]
             [ui.main :as main]
+            [ui.main.toolbar :as toolbar]
             [utils.core :as utils]))
 
 (def ^{:private true
@@ -24,8 +26,8 @@
   (let [url-builder #(str "/project/"
                           (:id %))
         new-entity  (state/update-project! entity
-                                          :name new-name
-                                          :callback #(secretary/dispatch! (url-builder %)))]
+                                           :name new-name
+                                           :callback #(secretary/dispatch! (url-builder %)))]
     (utils/goto (url-builder new-entity))))
 
 (defn- render-empty-project
@@ -35,32 +37,41 @@
 
 (defn- render-main-container
   [id]
-  (let [project (state/get-project-by-id id)
-        tasks   (:tasks project)]
-  (reagent/create-class
-   {:component-did-mount (fn []
-                           (.perfectScrollbar ($ :.main-viewport)
-                                              (clj->js {:suppressScrollX true})))
-    :reagent-render (fn [id]
-                      (let [project (state/get-project-by-id id)
-                            tasks   (:tasks project)]
-                        (if (nil? project)
-                          [:div.no-project]
-                          [:div.main-container
-                           [:div.main-viewport
-                            {:id (str "main-project-" id)}
-                            [entity-editor/render
-                             project
-                             "project-info"
-                             state/update-project!
-                             #(name-editor/render project
-                                                  name-changed)]
-                            (if (empty? tasks)
-                              [render-empty-project]
-                              [main/render-tasks-for
+  (let [project     (state/get-project-by-id id)
+        tasks       (:tasks project)
+        update-menu (fn []
+                      (app-menu/project-menu #(toolbar/new-task project
+                                                                main/selected-task)
+                                             :selected @main/selected-task
+                                             :move #(toolbar/move main/selected-task)))]
+    (update-menu)
+    (add-watch main/selected-task
+               :viewport-change
+               #(update-menu))
+    (reagent/create-class
+     {:component-did-mount (fn []
+                             (.perfectScrollbar ($ :.main-viewport)
+                                                (clj->js {:suppressScrollX true})))
+      :reagent-render (fn [id]
+                        (let [project (state/get-project-by-id id)
+                              tasks   (:tasks project)]
+                          (if (nil? project)
+                            [:div.no-project]
+                            [:div.main-container
+                             [:div.main-viewport
+                              {:id (str "main-project-" id)}
+                              [entity-editor/render
                                project
-                               tasks])]
-                           [main/main-toolbar-component project-id]])))})))
+                               "project-info"
+                               state/update-project!
+                               #(name-editor/render project
+                                                    name-changed)]
+                              (if (empty? tasks)
+                                [render-empty-project]
+                                [main/render-tasks-for
+                                 project
+                                 tasks])]
+                             [main/main-toolbar-component id]])))})))
 
 (defmethod main/main-container-component :default
   [id]

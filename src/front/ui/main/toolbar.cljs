@@ -11,7 +11,7 @@
             [ui.main :as main]
             [ui.widgets.move-dialog :as move-dialog]))
 
-(defn- new-task
+(defn new-task
   [project selected-task-atom]
   (let [task (state/register-task ""
                                   :project project
@@ -20,27 +20,27 @@
                                   :parent project)]
     (reset! selected-task-atom task)))
 
-(defn- resolve-task
+(defn resolve-task
   [selected-task-atom]
   (reset! selected-task-atom (state/update-task! @selected-task-atom
                                                  :done true)))
 
-(defn- unresolve-task
+(defn unresolve-task
   [selected-task-atom]
   (reset! selected-task-atom (state/update-task! @selected-task-atom
                                                  :done false)))
 
-(defn- today
+(defn today
   [selected-task-atom]
   (reset! selected-task-atom (state/update-task! @selected-task-atom
                                                  :today true)))
 
-(defn- not-today
+(defn not-today
   [selected-task-atom]
   (reset! selected-task-atom (state/update-task! @selected-task-atom
                                                  :today false)))
 
-(defn- move
+(defn move
   [selected-task-atom]
   (move-dialog/append @selected-task-atom))
 
