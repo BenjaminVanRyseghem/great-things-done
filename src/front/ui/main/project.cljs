@@ -43,6 +43,10 @@
                       (app-menu/project-menu #(toolbar/new-task project
                                                                 main/selected-task)
                                              :selected @main/selected-task
+                                             :resolve-task #(toolbar/resolve-task main/selected-task)
+                                             :unresolve-task #(toolbar/unresolve-task main/selected-task)
+                                             :today #(toolbar/today main/selected-task)
+                                             :not-today #(toolbar/not-today main/selected-task)
                                              :move #(toolbar/move main/selected-task)))]
     (update-menu)
     (add-watch main/selected-task

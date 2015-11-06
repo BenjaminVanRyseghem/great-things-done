@@ -82,7 +82,7 @@
     (.buildFromTemplate Menu template)))
 
 (defn project-menu
-  [new-task & {:keys [selected move]}]
+  [new-task & {:keys [selected move today not-today resolve-task unresolve-task]}]
   (let [remote        (js/require "remote")
         Menu          (.require remote "menu")
         MenuItem      (.require remote "menu-item")
@@ -90,6 +90,22 @@
                                                           :click new-task
                                                           :accelerator "Command+N"}
                                                          {:type "separator"}
+                                                         (if (:done selected)
+                                                           {:label "Unresolve"
+                                                            :click unresolve-task
+                                                            :accelerator "Space"}
+                                                           {:label "Resolve"
+                                                            :enabled (boolean selected)
+                                                            :click resolve-task
+                                                            :accelerator "Space"})
+                                                         (if (:today selected)
+                                                           {:label "Not Today"
+                                                            :click not-today
+                                                            :accelerator "Command+T"}
+                                                           {:label "Today"
+                                                            :enabled (boolean selected)
+                                                            :click today
+                                                            :accelerator "Command+T"})
                                                          {:label "Move..."
                                                           :enabled (boolean selected)
                                                           :click move
