@@ -45,10 +45,11 @@
   (move-dialog/append @selected-task-atom))
 
 (defn- render-toolbar-action
-  [text css-class icon function]
+  [selected-task text css-class icon function]
   [:div
    {:class (str "item " css-class)
-    :on-click function}
+    :on-click (when selected-task
+                function)}
    [:div.icon
     {:title text}
     [:i
@@ -61,6 +62,7 @@
    (doall (for [item items]
             ^{:key (:text item)}
             [render-toolbar-action
+             true
              (:text item)
              (:css-class item)
              (:icon item)
@@ -75,6 +77,7 @@
    (doall (for [item items]
             ^{:key (:text item)}
             [render-toolbar-action
+             @selected-task-atom
              (:text item)
              (:css-class item)
              (:icon item)
