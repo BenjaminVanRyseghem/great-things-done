@@ -23,7 +23,7 @@
 (defonce projects                     (atom {}))
 (defonce ^:private active-projects    (atom {}))
 (defonce ^:private completed-projects (atom {}))
-(defonce ^:private tasks              (atom {}))
+(defonce tasks                        (atom {}))
 (defonce ^:private repeating-tasks    (atom {}))
 (defonce ^:private completed-tasks    (atom {}))
 (defonce ^:private tags               (atom {}))
@@ -95,12 +95,12 @@
 
 (defn- store-task!
   [task]
-  (if (and (:repeating task)
-           (= (get-in task [:repeating :type])
-              "pattern"))
-    (register-entity-in task repeating-tasks)
-    (when (:done task)
-      (register-entity-in task completed-tasks)))
+  (when (and (:repeating task)
+             (= (get-in task [:repeating :type])
+                "pattern"))
+    (register-entity-in task repeating-tasks))
+  (when (:done task)
+    (register-entity-in task completed-tasks))
   (register-entity-in task tasks)
   (register-tags! task :tasks))
 
@@ -154,7 +154,7 @@
 
 (defn all-tasks
   []
-  @tasks)
+  (vals @tasks))
 
 (defn get-task-by-id
   [id]

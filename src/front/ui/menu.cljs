@@ -11,7 +11,8 @@
   (:require [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
-            [utils.core :as utils]))
+            [utils.core :as utils]
+            [utils.date :as date]))
 
 (def ^:private max-title-witdh 140)
 
@@ -33,25 +34,42 @@
        (str ratio "% complete")]]]))
 
 (defn- menu-item-component
-  [& {:keys [project-id route title item-id icon]}]
-  (if icon
-    [:li
-     {:id (str "item-" item-id)
-      :class (if (= project-id item-id)
-               "menu-item clearfix selected"
-               "menu-item clearfix")
-      :on-click #(utils/goto route)}
-     [:h5
+  [& {:keys [project-id route title item-id icon badge]}]
+  [:li
+   {:id (str "item-" item-id)
+    :class (if (= project-id item-id)
+             "menu-item clearfix selected"
+             "menu-item clearfix")
+    :on-click #(utils/goto route)}
+   [:h5
+    (when icon
       [:i
-       {:class (str "fa fa-fw fa-lg fa-" icon)}]
-      title]]
-    [:li
-     {:id (str "item-" item-id)
-      :class (if (= project-id item-id)
-               "menu-item clearfix selected"
-               "menu-item clearfix")
-      :on-click #(utils/goto route)}
-     [:h5 title]]))
+       {:class (str "fa fa-fw fa-lg fa-" icon)}])
+    title]
+   (when badge
+     (let [now         (date/now)
+           tasks       (badge)
+           total       (count tasks)
+           overdue     (count (filter #(and (some? (:due-date %))
+                                        (< (:due-date %)
+                                          now))
+                                      tasks))
+           has-overdue (> overdue
+                          0)]
+       (when (> total 0)
+         [:div.badge
+          {:class (when has-overdue
+                    "overdue")}
+          (when has-overdue
+            [:div.overdue-segment
+             {:class (when (= (- total overdue)
+                              0)
+                       "only")}
+             overdue])
+          (when (> (- total overdue)
+                   0)
+            [:div.badge-segment
+             (- total overdue)])])))])
 
 (defn- menu-project-item-component
   [& {:keys [project-id title item-id completion]}]
@@ -117,6 +135,7 @@
       (let [title (:title i)
             id    (:id i)
             icon  (:icon i)
+            badge  (:badge i)
             route (or (:route i)
                       (str "/" id))]
         (if (:stacked i)
@@ -134,6 +153,7 @@
            :route route
            :title title
            :item-id id
+           :badge badge
            :icon icon])))]])
 
 (defn- plain-menu-component
@@ -148,14 +168,19 @@
      :items [{:title "Inbox"
               :id "Inbox"
               :route "/inbox"
-              :icon "inbox"}]]
+              :icon "inbox"
+              :badge #(:tasks (state/inbox))}]]
     [menu-section-component
      :project-id project-id
      :title "Focus"
      :section-id "focus"
      :items [{:title "Today"
               :id "today"
-              :icon "star"}
+              :icon "star"
+              :badge #(filter (fn [t]
+                                (and (:today t)
+                                     (not (:done t))))
+                              (state/all-tasks))}
              {:title "Next"
               :id "next"
               :icon "server fa-rotate-180"}
