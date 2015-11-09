@@ -141,13 +141,28 @@
   (when (is-task? entity)
     (install-task entity)))
 
+(defn inbox
+  []
+  @inbox-project)
+
+(defn all-projects
+  []
+  (assoc
+    @projects
+    "Inbox"
+    (inbox)))
+
+(defn all-tasks
+  []
+  @tasks)
+
 (defn get-task-by-id
   [id]
   (get @tasks id))
 
 (defn get-project-by-id
   [id]
-  (get @projects id))
+  (get (all-projects) id))
 
 ;; `repeating` can have two values:
 ;;   - nil
@@ -207,21 +222,6 @@
    :active                 active
    :hide-done              hide-done
    :done                   done})
-
-(defn inbox
-  []
-  @inbox-project)
-
-(defn all-projects
-  []
-  (assoc
-    @projects
-    "Inbox"
-    (inbox)))
-
-(defn all-tasks
-  []
-  @tasks)
 
 (defn register-task
   [task-name & {:keys [project parent tags tasks description remind-date due-date show-before repeating]

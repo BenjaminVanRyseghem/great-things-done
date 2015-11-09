@@ -47,13 +47,14 @@
 
 (defmethod main/main-container-component "Inbox"
   [_]
-  [:div.main-container
-   [:div.main-viewport
-    {:id (str "main-inbox")}
-    (let [inbox (state/inbox)
-          tasks (:tasks inbox)]
+  (let [inbox (state/inbox)
+        tasks (:tasks inbox)]
+    [:div.main-container
+     [:div.main-viewport
+      {:id (str "main-inbox")}
       (if (empty? tasks)
         [render-empty-inbox]
-        [main/render-tasks-for
+        [main/render-only-todos-for
          inbox
-         tasks]))]])
+         tasks])]
+     [main/main-toolbar-component (:id inbox)]]))

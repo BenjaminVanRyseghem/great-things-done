@@ -297,6 +297,20 @@
                                       :hide-done false)}
    (str (count dones) " more done...")])
 
+(defn render-only-todos-for
+  [project tasks]
+  (let [ts          (map #(state/get-task-by-id (:id %))
+                         tasks)
+        tasks-done  (filter #(:done %)
+                            ts)
+        tasks-to-do (remove #(:done %)
+                            ts)]
+    [:div#tasks-container
+     [:div.todo-container
+      (if (empty? tasks-to-do)
+        [render-no-to-do]
+        [render-to-dos tasks-to-do project])]]))
+
 (defn render-tasks-for
   [project tasks]
   (let [ts          (map #(state/get-task-by-id (:id %))

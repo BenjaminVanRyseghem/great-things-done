@@ -83,6 +83,7 @@
       }
 
       i.fa.handle {
+        display: none;
         cursor: pointer;
         color: #444;
         float: right;
@@ -91,6 +92,12 @@
 
         &:hover {
           color: #666;
+        }
+      }
+
+      &:hover {
+        i.fa.handle {
+          display: block;
         }
       }
 
