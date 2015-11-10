@@ -9,7 +9,7 @@
   bottom: 0;
 
   background-image: url(../img/px_by_Gre3g.png);
-  padding: 10px;
+  padding: 8px;
 
   .toolbar-container {
     height: 100%;
@@ -21,7 +21,7 @@
       margin-right: @toolbar-search-width + 10px;
 
       .group {
-        margin-top: 5px;
+        margin-top: 0;
         position: absolute;
 
         &.disabled {
@@ -49,12 +49,11 @@
         .item {
           display: inline-block;
           padding: 8px;
-          width: 82px;
+          width: 84px;
           margin: 0 2px;
           text-align: center;
           font-weight: 300;
           cursor: pointer;
-
 
           @media screen and (max-width: 774px) {
             width: 50px;
@@ -77,6 +76,7 @@
             }
           }
         }
+
         .toolbar-item(new);
         .toolbar-item(resolve, @icon-green);
         .toolbar-item(unresolve, @icon-red);
@@ -86,7 +86,7 @@
 
         .icon {
           font-size: 18px;
-          margin-bottom: 4px;
+          margin-bottom: 0;
 
         }
       }

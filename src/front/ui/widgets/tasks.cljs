@@ -47,13 +47,13 @@
                        @handler))
         save    (fn []
                   (let [t (atom task)]
-                  (doseq [[k v] @changes]
-                    (reset! t (state/update-task! @t
-                                                  k v)))
-                  (reset! selected-task @t)
-                  (close)
-                  (js/setTimeout #(.focus ($ (str "#todo-" (:id @t))))
-                                 0)))
+                    (doseq [[k v] @changes]
+                      (reset! t (state/update-task! @t
+                                                    k v)))
+                    (reset! selected-task @t)
+                    (close)
+                    (js/setTimeout #(.focus ($ (str "#todo-" (:id @t))))
+                                   0)))
         edit    (fn []
                   (when-not @editing
                     (reset! editing true)
@@ -74,8 +74,8 @@
                    (close))))
     (reset! handler (fn [e]
                       (when-not (ui/has-as-parent? (.-target e)
-                                                (.getElementById js/document
-                                                                 (str "todo-" (:id task))))
+                                                   (.getElementById js/document
+                                                                    (str "todo-" (:id task))))
                         (save))))
     (reagent/create-class
      {:component-did-mount (fn []
@@ -190,9 +190,9 @@
   [task]
   (reagent/create-class
    {:component-did-mount (fn []
-                             (when (= (:id @selected-task)
-                                      (:id task))
-                               (.focus ($ (str "#done-" (:id task))))))
+                           (when (= (:id @selected-task)
+                                    (:id task))
+                             (.focus ($ (str "#done-" (:id task))))))
     :reagent-render (fn [task]
                       [:li
                        {:tab-index 0
@@ -325,3 +325,43 @@
           [render-dones
            project
            tasks-done]))]]))
+
+(defn render-categorized-todos-for
+  [tasks]
+  (let [projects (distinct (map #(state/get-project-by-id (get-in % [:project :id]))
+                                tasks))]
+    [:div#tasks-container
+     [:div.todo-container
+      [:ul.today
+       (doall (for [p (sort-by :name
+                               projects)]
+                ^{:key (:id p)}
+                [:li.project
+                 [:div.project-name
+                  [:span (:name p)]]
+                 (let [tasks   (filter #(:today %)
+                                       (:tasks p))
+                       n-tasks (count tasks)]
+                   (if (:show-only-first p)
+                     [:div
+                      [:ul.tasks.todos
+                       [render-todo (first tasks)]]
+                      (when (> n-tasks
+                               1)
+                        [:div.show-more
+                         {:on-click (fn []
+                                      (state/update-project! p
+                                                             :show-only-first false))}
+                         "Show more"])]
+                     [:div
+                      [:ul.tasks.todos
+                       (doall (for [t tasks]
+                                ^{:key (:id t)}
+                                [render-todo t]))]
+                      (when (> n-tasks
+                               1)
+                        [:div.show-more
+                         {:on-click (fn []
+                                      (state/update-project! p
+                                                             :show-only-first true))}
+                         "Show only first"])]))]))]]]))

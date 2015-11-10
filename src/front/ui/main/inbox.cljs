@@ -14,6 +14,7 @@
             [ui.widgets.tasks :as tasks]))
 
 (def ^:private empty-inbox-image-size 300)
+
 (def ^{:private true
        :no-docs true} shell (js/require "shell"))
 

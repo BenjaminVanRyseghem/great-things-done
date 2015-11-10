@@ -1,0 +1,66 @@
+@import "../variables";
+
+ul.today {
+  padding: 0;
+
+  .project-name {
+    text-align: center;
+
+    span {
+      position: relative;
+      color: #ADB7BD;
+
+      &:before {
+        content:' ';
+        position: absolute;
+        width: 67px;
+        height: 7px;
+        left: -82px;
+        background-color: #ADB7BD;
+        -webkit-mask: url(../img/left.svg) no-repeat 0 0;
+        -webkit-mask-size: 70px;
+        top: 50%;
+        transform: translate(0, -50%);
+      }
+
+      &:after {
+        content:' ';
+        position: absolute;
+        width: 67px;
+        height: 7px;
+        right: -78px;
+        background-color: #ADB7BD;
+        -webkit-mask: url(../img/right.svg) no-repeat 0 0;
+        -webkit-mask-size: 70px;
+        top: 50%;
+        transform: translate(0, -50%);
+      }
+    }
+  }
+
+  li.project {
+    list-style: none;
+    margin-top: 30px;
+
+    &:first-child {
+      margin-top: 20px;
+    }
+
+    ul.tasks.todos {
+      margin-top: 0;
+    }
+
+    .show-more {
+      margin-left: 4px;
+      font-weight: 300;
+      color: #aaa;
+
+      cursor: pointer;
+
+      &:focus, &:hover {
+        outline: none;
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -208,7 +208,7 @@
    :done                   done})
 
 (defn- new-project
-  [project-name tags tasks description due-date show-before active hide-done done]
+  [project-name tags tasks description due-date show-before active hide-done show-only-first done]
   {:name                   project-name
    :id                     (build-id project-name)
    :type                   "Project"
@@ -221,6 +221,7 @@
    :show-before            show-before
    :active                 active
    :hide-done              hide-done
+   :show-only-first        show-only-first
    :done                   done})
 
 (defn register-task
@@ -258,14 +259,15 @@
   task)
 
 (defn register-project
-  [project-name & {:keys [tags tasks description due-date show-before hide-done active]
+  [project-name & {:keys [tags tasks description due-date show-before hide-done show-only-first active]
                    :or   {tags        []
                           tasks       []
                           description ""
                           due-date    nil
                           show-before 0
                           active      true
-                          hide-done   true}}]
+                          hide-done   true
+                          show-only-first true}}]
   (install-project (new-project project-name
                                 tags
                                 tasks
@@ -274,6 +276,7 @@
                                 show-before
                                 active
                                 hide-done
+                                show-only-first
                                 false)))
 
 (defn unregister-project

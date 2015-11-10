@@ -21,6 +21,7 @@
             [ui.routes :as routes]
             [ui.main.inbox] ;; Force its loading
             [ui.main.project] ;; Force its loading
+            [ui.main.today] ;; Force its loading
             [ui.main.toolbar] ;; Force its loading
             [gtd.hooks :as hooks]
             [utils.keychain :as keychain]
