@@ -10,7 +10,8 @@
   (:require [gtd.image-service :as image]
             [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
-            [ui.main :as main]))
+            [ui.main :as main]
+            [ui.widgets.tasks :as tasks]))
 
 (def ^:private empty-inbox-image-size 300)
 (def ^{:private true
@@ -54,7 +55,7 @@
       {:id (str "main-inbox")}
       (if (empty? tasks)
         [render-empty-inbox]
-        [main/render-only-todos-for
+        [tasks/render-only-todos-for
          inbox
          tasks])]
      [main/main-toolbar-component (:id inbox)]]))

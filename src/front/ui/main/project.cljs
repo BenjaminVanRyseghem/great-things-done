@@ -12,10 +12,11 @@
             [gtd.state :as state]
             [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
-            [ui.widgets.entity-editor :as entity-editor]
-            [ui.widgets.name-editor :as name-editor]
             [ui.main :as main]
             [ui.main.toolbar :as toolbar]
+            [ui.widgets.entity-editor :as entity-editor]
+            [ui.widgets.name-editor :as name-editor]
+            [ui.widgets.tasks :as tasks]
             [utils.core :as utils]))
 
 (def ^{:private true
@@ -41,15 +42,15 @@
         tasks       (:tasks project)
         update-menu (fn []
                       (app-menu/project-menu #(toolbar/new-task project
-                                                                main/selected-task)
-                                             :selected @main/selected-task
-                                             :resolve-task #(toolbar/resolve-task main/selected-task)
-                                             :unresolve-task #(toolbar/unresolve-task main/selected-task)
-                                             :today #(toolbar/today main/selected-task)
-                                             :not-today #(toolbar/not-today main/selected-task)
-                                             :move #(toolbar/move main/selected-task)))]
+                                                                tasks/selected-task)
+                                             :selected @tasks/selected-task
+                                             :resolve-task #(toolbar/resolve-task tasks/selected-task)
+                                             :unresolve-task #(toolbar/unresolve-task tasks/selected-task)
+                                             :today #(toolbar/today tasks/selected-task)
+                                             :not-today #(toolbar/not-today tasks/selected-task)
+                                             :move #(toolbar/move tasks/selected-task)))]
     (update-menu)
-    (add-watch main/selected-task
+    (add-watch tasks/selected-task
                :viewport-change
                #(update-menu))
     (reagent/create-class
@@ -72,7 +73,7 @@
                                                     name-changed)]
                               (if (empty? tasks)
                                 [render-empty-project]
-                                [main/render-tasks-for
+                                [tasks/render-tasks-for
                                  project
                                  tasks])]
                              [main/main-toolbar-component id]])))})))

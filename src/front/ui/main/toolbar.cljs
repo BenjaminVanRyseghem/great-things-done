@@ -8,6 +8,7 @@
 
 (ns ui.main.toolbar
   (:require [gtd.state :as state]
+            [ui.widgets.tasks :as tasks]
             [ui.main :as main]
             [ui.widgets.move-dialog :as move-dialog]))
 
@@ -129,5 +130,5 @@
   (let [project (state/get-project-by-id project-id)]
   [:div.main-toolbar
    [:div.toolbar-container
-    [render-toolbar-groups project main/selected-task]
+    [render-toolbar-groups project tasks/selected-task]
     [render-toolbar-search]]]))
