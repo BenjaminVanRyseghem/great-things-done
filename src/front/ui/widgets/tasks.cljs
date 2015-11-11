@@ -332,7 +332,7 @@
                                 tasks))]
     [:div#tasks-container
      [:div.todo-container
-      [:ul.today
+      [:ul.todo-categories
        (doall (for [p (sort-by :name
                                projects)]
                 ^{:key (:id p)}
