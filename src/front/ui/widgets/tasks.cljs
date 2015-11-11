@@ -326,7 +326,7 @@
            project
            tasks-done]))]]))
 
-(defn render-categorized-todos-for
+(defn render-todays
   [tasks]
   (let [projects (distinct (map #(state/get-project-by-id (get-in % [:project :id]))
                                 tasks))]

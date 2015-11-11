@@ -21,9 +21,9 @@
                       (state/all-tasks))]
     [:div.main-container
      [:div.main-viewport
-      {:id (str "main-inbox")}
+      {:id (str "main-today")}
       (if (empty? tasks)
         [:div "Empty"]
-        [tasks/render-categorized-todos-for
+        [tasks/render-todays
          tasks])]
      [main/main-toolbar-component (:id inbox)]]))
