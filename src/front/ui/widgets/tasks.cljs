@@ -372,3 +372,10 @@
                                                 (not (:done %)))
                                           (:tasks p)))
    tasks])
+
+(defn render-next
+  [tasks]
+  [render-categorized-todos-for (fn [p]
+                                  (filter #(not (:done %))
+                                          (:tasks p)))
+   tasks])

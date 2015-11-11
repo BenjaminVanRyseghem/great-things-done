@@ -20,6 +20,7 @@
             [ui.core :as ui]
             [ui.routes :as routes]
             [ui.main.inbox] ;; Force its loading
+            [ui.main.next] ;; Force its loading
             [ui.main.project] ;; Force its loading
             [ui.main.today] ;; Force its loading
             [ui.main.toolbar] ;; Force its loading
