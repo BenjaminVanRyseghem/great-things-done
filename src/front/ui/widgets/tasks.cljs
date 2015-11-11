@@ -326,8 +326,8 @@
            project
            tasks-done]))]]))
 
-(defn render-todays
-  [tasks]
+(defn- render-categorized-todos-for
+  [filter-fn tasks]
   (let [projects (distinct (map #(state/get-project-by-id (get-in % [:project :id]))
                                 tasks))]
     [:div#tasks-container
@@ -339,8 +339,7 @@
                 [:li.project
                  [:div.project-name
                   [:span (:name p)]]
-                 (let [tasks   (filter #(:today %)
-                                       (:tasks p))
+                 (let [tasks   (filter-fn p)
                        n-tasks (count tasks)]
                    (if (:show-only-first p)
                      [:div
@@ -365,3 +364,11 @@
                                       (state/update-project! p
                                                              :show-only-first true))}
                          "Show only first"])]))]))]]]))
+
+(defn render-todays
+  [tasks]
+  [render-categorized-todos-for (fn [p]
+                                  (filter #(and (:today %)
+                                                (not (:done %)))
+                                          (:tasks p)))
+   tasks])
