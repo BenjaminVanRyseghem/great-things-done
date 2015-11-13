@@ -17,6 +17,17 @@
 
 (defonce selected-task (atom nil))
 
+(defn- has-as-parent?
+  [node match]
+  (if (= node
+         match)
+    true
+    (if (.-parentNode node)
+      (has-as-parent? (.-parentNode node)
+                      match)
+      false)))
+
+
 (defn- build-to-do-class
   [task selected-task & [editing today]]
   (let [css-class "todo"
@@ -34,17 +45,17 @@
 
 (defn- render-todo
   [task]
-  (let [editing (atom false)
+  (let [editing (atom (empty? (:name task)))
         handler (atom nil)
         changes (atom {})
         update  (fn [task & [k v]]
                   (swap! changes assoc k v))
-        close  (fn []
-                 (reset! changes {})
-                 (reset! editing false)
-                 (.off ($ js/document)
-                       "click"
-                       @handler))
+        close   (fn []
+                  (reset! changes {})
+                  (reset! editing false)
+                  (.off ($ js/document)
+                        "click"
+                        @handler))
         save    (fn []
                   (let [t (atom task)]
                     (doseq [[k v] @changes]
@@ -73,15 +84,19 @@
                               (:id task))
                    (close))))
     (reset! handler (fn [e]
-                      (when-not (ui/has-as-parent? (.-target e)
-                                                   (.getElementById js/document
-                                                                    (str "todo-" (:id task))))
+                      (when-not (has-as-parent? (.-target e)
+                                                (.getElementById js/document
+                                                                 (str "todo-" (:id task))))
                         (save))))
     (reagent/create-class
      {:component-did-mount (fn []
                              (when (= (:id @selected-task)
                                       (:id task))
-                               (.focus ($ (str "#todo-" (:id task))))))
+                               (.focus ($ (str "#todo-" (:id task)))))
+
+                             (when (and @editing
+                                        (empty? (:name task)))
+                               (.focus ($ (str "#entity-name-" (:id task))))))
       :reagent-render (fn [task]
                         [:li
                          {:tab-index 0
@@ -379,3 +394,19 @@
                                   (filter #(not (:done %))
                                           (:tasks p)))
    tasks])
+
+(-> ($ "document")
+    (.ready (fn []
+              (.on ($ :.main)
+                   "mousedown"
+                   (fn [e]
+                     (when (or (has-as-parent? (.-target e)
+                                               (.get ($ :.project-info)
+                                                     0))
+                               (= (.-target e)
+                                  (.get ($ :#tasks-container)
+                                        0))
+                               (= (.-target e)
+                                  (.get ($ :.main-viewport)
+                                        0)))
+                       (reset! selected-task nil)))))))

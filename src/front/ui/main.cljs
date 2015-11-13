@@ -8,18 +8,7 @@
 
 (ns ui.main
   (:use [jayq.core :only [$]])
-  (:require [utils.core :as utils]
-            [ui.widgets.tasks :as tasks]))
-
-(defn has-as-parent?
-  [node match]
-  (if (= node
-         match)
-    true
-    (if (.-parentNode node)
-      (has-as-parent? (.-parentNode node)
-                      match)
-      false)))
+  (:require [utils.core :as utils]))
 
 (defmulti main-container-component (fn [id] id))
 (defmulti main-toolbar-component (fn [id _] id))
@@ -27,16 +16,5 @@
 (defn main-component
   [project-id]
   [:div.main
-   {:on-mouse-down (fn [e]
-                     (when (or (has-as-parent? (.-target e)
-                                               (.get ($ :.project-info)
-                                                     0))
-                               (= (.-target e)
-                                  (.get ($ :#tasks-container)
-                                        0))
-                               (= (.-target e)
-                                  (.get ($ :.main-viewport)
-                                        0)))
-                       (reset! tasks/selected-task nil)))}
    [main-container-component
     project-id]])
