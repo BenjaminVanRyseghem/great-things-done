@@ -18,9 +18,7 @@
   [:div.description-output
    {:id (str "description-output" (:id entity))
     :tab-index 0
-    :placeholder "Add a description"
-    :class (when (empty? (:description entity))
-             "empty")}
+    :placeholder "Add a description"}
    (or (:description entity)
        "")])
 

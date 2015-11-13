@@ -5,15 +5,14 @@
     margin-bottom: 0;
   }
 
-  &.empty[placeholder]:after {
+  &:empty[placeholder]:after {
     content: attr(placeholder);
     font-weight: lighter;
   }
 
-  &.empty.pending-edit:after {
+  &:empty.pending-edit:after {
     content: none;
   }
-
 
   textarea {
     height: 100%;

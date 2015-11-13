@@ -15,11 +15,7 @@
   [entity auto-focus]
   [:div.entity-name
    {:id (str "entity-name-" (:id entity))
-    :tab-index 0
-    :placeholder "Add a name"
-    :class (if (empty? (:name entity))
-             "empty"
-             "")}
+    :tab-index 0}
    (:name entity)])
 
 (defn- make-editable
