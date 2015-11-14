@@ -1,3 +1,5 @@
+@import "../mixins";
+
 .description-output {
   height: 100%;
 
@@ -5,14 +7,7 @@
     margin-bottom: 0;
   }
 
-  &:empty[placeholder]:after {
-    content: attr(placeholder);
-    font-weight: lighter;
-  }
-
-  &:empty.pending-edit:after {
-    content: none;
-  }
+  .placeholder();
 
   textarea {
     height: 100%;

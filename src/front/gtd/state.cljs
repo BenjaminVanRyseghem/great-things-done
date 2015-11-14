@@ -65,7 +65,7 @@
 
 (defn- unregister-entity-in
   [entity atom-map]
-  (swap! atom-map dissoc (:id entity) entity))
+  (swap! atom-map dissoc (:id entity)))
 
 (defn- is-project?
   [entity]
@@ -458,6 +458,19 @@
   (if (nil? (keys @tags))
     []
     (keys @tags)))
+
+(defn move-to-trash-task
+  [task])
+
+(defn delete-task!
+  [task]
+  (unregister-task task)
+  (let [project (get-project-by-id (get-in task
+                                           [:project :id]))]
+    (install-project (assoc project :tasks (remove #(= (:id task)
+                                                       (:id %))
+                                                   (:tasks project)))))
+  (db/remove-task! task))
 
 (defn ^:export list-of-projects
   []

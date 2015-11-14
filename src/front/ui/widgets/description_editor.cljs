@@ -81,8 +81,7 @@
                                                    (when (and (= (.-keyCode e)
                                                                  13)
                                                               (.-ctrlKey e))
-                                                     (.blur input)
-                                                     (on-enter))))))
+                                                     (on-enter input))))))
                        :callback (fn [event]
                                    (inject-md! entity)
                                    (callback entity

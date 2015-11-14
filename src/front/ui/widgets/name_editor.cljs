@@ -8,13 +8,15 @@
 
 (ns ui.widgets.name-editor
   (:use [jayq.core :only [$]])
-  (:require [reagent.core :as reagent :refer [atom]]))
+  (:require [reagent.core :as reagent :refer [atom]]
+            [utils.core :as utils]))
 
 
 (defn- plain-name-editor
   [entity auto-focus]
   [:div.entity-name
    {:id (str "entity-name-" (:id entity))
+    :placeholder "Add a name"
     :tab-index 0}
    (:name entity)])
 
@@ -27,14 +29,15 @@
                                             (.on input
                                                  "keydown"
                                                  (fn [e]
-                                                   (when (= (.-keyCode e)
-                                                            13)
-                                                     (.blur input)
-                                                     (on-enter))))))
+                                                   (utils/key-code e
+                                                                   [:escape :prevent] #(.blur input)
+                                                                   [:enter :prevent] #(on-enter input))))))
                        :callback (fn [event]
                                    (if (empty? (.-value event))
-                                     (.html (.-target event)
-                                            (.-old_value event))
+                                     (do
+                                       (.html (.-target event)
+                                              (.-old_value event))
+                                       false)
                                      (when-not (= (.-old_value event)
                                                   (.-value event))
                                        (callback entity

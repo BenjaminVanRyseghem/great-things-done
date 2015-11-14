@@ -186,3 +186,14 @@
     transform: translate(0, -50%);
   }
 }
+
+.placeholder {
+  &:empty[placeholder]:after {
+    content: attr(placeholder);
+    font-weight: lighter;
+  }
+
+  &:empty.pending-edit:after {
+    content: none;
+  }
+}

@@ -45,49 +45,66 @@
 
 (defn- render-todo
   [task]
-  (let [editing (atom (empty? (:name task)))
-        handler (atom nil)
-        changes (atom {})
-        update  (fn [task & [k v]]
-                  (swap! changes assoc k v))
-        close   (fn []
-                  (reset! changes {})
-                  (reset! editing false)
-                  (.off ($ js/document)
-                        "click"
-                        @handler))
-        save    (fn []
-                  (let [t (atom task)]
-                    (doseq [[k v] @changes]
-                      (reset! t (state/update-task! @t
-                                                    k v)))
-                    (reset! selected-task @t)
-                    (close)
-                    (js/setTimeout #(.focus ($ (str "#todo-" (:id @t))))
-                                   0)))
-        edit    (fn []
-                  (when-not @editing
-                    (reset! editing true)
-                    (.removeAllRanges (.getSelection js/document))
-                    (.on ($ js/document)
-                         "keydown"
-                         #(when (= (.-keyCode %)
-                                   27) ; Escape
-                            (close)))
-                    (.on ($ js/document)
-                         "click"
-                         @handler)))]
+  (let [editing     (atom false)
+        handler     (atom nil)
+        key-handler (atom nil)
+        changes     (atom {})
+        update      (fn [task & [k v]]
+                      (swap! changes assoc k v))
+        close       (fn []
+                      (reset! changes {})
+                      (reset! editing false)
+                      (.off ($ js/document)
+                            "click"
+                            @handler)
+                      (.off ($ js/document)
+                            "keyup"
+                            @key-handler))
+        save        (fn [& [input]]
+                      (when-not (and (empty? (:name task))
+                                     (empty? (:name @changes)))
+                        (when input
+                          (.blur input))
+                        (let [t (atom task)]
+                          (doseq [[k v] @changes]
+                            (reset! t (state/update-task! @t
+                                                          k v)))
+                          (reset! selected-task @t)
+                          (close)
+                          (js/setTimeout #(.focus ($ (str "#todo-" (:id @t))))
+                                         0))))
+        edit        (fn []
+                      (when-not @editing
+                        (reset! editing true)
+                        (.removeAllRanges (.getSelection js/document))
+                        (.on ($ js/document)
+                             "keyup"
+                             @key-handler)
+                        (.on ($ js/document)
+                             "click"
+                             @handler)))]
     (add-watch selected-task
                (:id task)
                (fn [k a o n]
                  (when-not (= (:id n)
                               (:id task))
                    (close))))
+    (reset! key-handler #(utils/key-code %
+                                         :escape (fn []
+                                                   (if (and (empty? (:name task))
+                                                            (empty? (:name @changes)))
+                                                     (do
+                                                       (close)
+                                                       (state/delete-task! task)
+                                                       (reset! selected-task nil))
+                                                     (close)))))
     (reset! handler (fn [e]
                       (when-not (has-as-parent? (.-target e)
                                                 (.getElementById js/document
                                                                  (str "todo-" (:id task))))
                         (save))))
+    (when (empty? (:name task))
+      (edit))
     (reagent/create-class
      {:component-did-mount (fn []
                              (when (= (:id @selected-task)
