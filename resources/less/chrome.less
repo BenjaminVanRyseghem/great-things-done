@@ -1,4 +1,5 @@
 @import "variables";
+@import "mixins";
 @import "./chrome/menu";
 @import "./chrome/icons";
 @import "./chrome/scrollbar";
@@ -15,7 +16,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-image: url(../img/navy_blue.png);
+  .background-image("navy_blue");
   font-family: 'Open Sans', sans-serif;
   cursor: default;
 }

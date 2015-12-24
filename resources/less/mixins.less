@@ -197,3 +197,18 @@
     content: none;
   }
 }
+
+.background-image(@name, @path: "../img/") {
+  @media
+    only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (   min--moz-device-pixel-ratio: 2),
+    only screen and (     -o-min-device-pixel-ratio: 2/1),
+    only screen and (        min-device-pixel-ratio: 2),
+    only screen and (                min-resolution: 192dpi),
+    only screen and (                min-resolution: 2dppx) {
+      background-image: url("@{path}@{name}@2X.png");
+      background-size: 75%;
+    }
+
+  background-image: url("@{path}@{name}.png");
+}
