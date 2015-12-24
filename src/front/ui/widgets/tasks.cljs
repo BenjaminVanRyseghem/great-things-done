@@ -13,7 +13,8 @@
             [ui.main :as ui]
             [ui.widgets.entity-editor :as entity-editor]
             [ui.widgets.name-editor :as name-editor]
-            [utils.core :as utils]))
+            [utils.core :as utils]
+            [utils.date :as date]))
 
 (defonce selected-task (atom nil))
 
@@ -40,18 +41,29 @@
                     css-class)
         css-class (if today
                     (str css-class " today")
+                    css-class)
+        css-class (if (and (some? (:due-date task))
+                           (< (:due-date task)
+                              (date/now)))
+                    (str css-class " overdue")
                     css-class)]
     css-class))
 
 (defn- render-todo
   [task]
-  (let [editing     (atom false)
+  (let [overdue     (and (some? (:due-date task))
+                         (< (:due-date task)
+                            (date/now)))
+        day-overdue (js/Math.floor (/ (- (date/now)
+                                         (:due-date task))
+                                      86400000))
+        editing     (atom false)
         handler     (atom nil)
         key-handler (atom nil)
         changes     (atom {})
         update      (fn [task & [k v]]
                       (swap! changes assoc k v))
-        close       (fn []
+        tear-down   (fn []
                       (reset! changes {})
                       (reset! editing false)
                       (.off ($ js/document)
@@ -60,19 +72,30 @@
                       (.off ($ js/document)
                             "keyup"
                             @key-handler))
+        close       (fn []
+                      (if (and (empty? (:name task))
+                               (empty? (:name @changes)))
+                        (do
+                          (tear-down)
+                          (state/delete-task! task)
+                          (reset! selected-task nil))
+                        (tear-down)))
         save        (fn [& [input]]
-                      (when-not (and (empty? (:name task))
-                                     (empty? (:name @changes)))
-                        (when input
-                          (.blur input))
+                      (when input
+                        (.blur input))
+                      (if-not (and (empty? (:name task))
+                                   (empty? (:name @changes)))
                         (let [t (atom task)]
                           (doseq [[k v] @changes]
-                            (reset! t (state/update-task! @t
-                                                          k v)))
+                            (when-not (= v
+                                         (get task k))
+                              (reset! t (state/update-task! @t
+                                                            k v))))
                           (reset! selected-task @t)
-                          (close)
+                          (tear-down)
                           (js/setTimeout #(.focus ($ (str "#todo-" (:id @t))))
-                                         0))))
+                                         0)))
+                      (close))
         edit        (fn []
                       (when-not @editing
                         (reset! editing true)
@@ -90,18 +113,12 @@
                               (:id task))
                    (close))))
     (reset! key-handler #(utils/key-code %
-                                         :escape (fn []
-                                                   (if (and (empty? (:name task))
-                                                            (empty? (:name @changes)))
-                                                     (do
-                                                       (close)
-                                                       (state/delete-task! task)
-                                                       (reset! selected-task nil))
-                                                     (close)))))
+                                         :escape close))
     (reset! handler (fn [e]
-                      (when-not (has-as-parent? (.-target e)
-                                                (.getElementById js/document
-                                                                 (str "todo-" (:id task))))
+                      (when (and @editing
+                                 (not (has-as-parent? (.-target e)
+                                                      (.getElementById js/document
+                                                                       (str "todo-" (:id task))))))
                         (save))))
     (when (empty? (:name task))
       (edit))
@@ -126,9 +143,9 @@
                           :on-key-down (fn [e]
                                          (if @editing
                                            (utils/key-code e
-                                                           :enter save)
+                                                           [:enter :prevent] save)
                                            (utils/key-code e
-                                                           [:enter :prevent] save
+                                                           [:enter :prevent] edit
                                                            [:space :prevent] #(state/update-task! task
                                                                                                   :done true)
                                                            [:up :prevent] #(.focus (.prev ($ ":focus")))
@@ -168,7 +185,11 @@
                              {:on-click #(state/update-task! task
                                                              :done true)}]
                             [:div.name (:name task)]
-                            [:i.fa.fa-arrows.handle]])])})))
+                            [:i.fa.fa-arrows.handle]
+                            (when overdue
+                              [:div.overdue-text
+                               (str day-overdue
+                                    " days overdue")])])])})))
 
 (defn- update-tasks-order
   [project item]
@@ -321,7 +342,7 @@
    (str (count dones) " more done...")])
 
 (defn render-only-todos-for
-  [project tasks]
+  [project tasks & [no-to-dos]]
   (let [ts          (map #(state/get-task-by-id (:id %))
                          tasks)
         tasks-done  (filter #(:done %)
@@ -331,7 +352,9 @@
     [:div#tasks-container
      [:div.todo-container
       (if (empty? tasks-to-do)
-        [render-no-to-do]
+        (if no-to-dos
+          [no-to-dos]
+          [render-no-to-do])
         [render-to-dos tasks-to-do project])]]))
 
 (defn render-tasks-for

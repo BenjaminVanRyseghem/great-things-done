@@ -20,18 +20,28 @@
     :tab-index 0}
    (:name entity)])
 
+(defn- enter-pressed
+  [callback input]
+  (when-not (empty? (.val input))
+    (.blur input))
+  (callback input)
+  (when (empty? (.val input))
+    (.focus input)))
+
 (defn- make-editable
   [entity callback on-enter]
   (.editable ($ (str "#entity-name-" (:id entity)))
              "focus"
              (clj->js {:onInputCreation (fn [input _]
                                           (when on-enter
-                                            (.on input
-                                                 "keydown"
-                                                 (fn [e]
-                                                   (utils/key-code e
-                                                                   [:escape :prevent] #(.blur input)
-                                                                   [:enter :prevent] #(on-enter input))))))
+                                            (utils/on input
+                                                      "keydown"
+                                                      [:escape :prevent] #(.blur input)
+                                                      [:enter :prevent] #(enter-pressed (fn [i]
+                                                                                          (callback entity
+                                                                                                    (.val i))
+                                                                                          (on-enter i))
+                                                                                        input))))
                        :callback (fn [event]
                                    (if (empty? (.-value event))
                                      (do

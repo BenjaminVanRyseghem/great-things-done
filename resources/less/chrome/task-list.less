@@ -24,7 +24,7 @@
     li.todo {
       list-style: none;
       margin: 2px;
-      padding: 6px 8px;
+      padding: 0;
       border-radius: 4px;
       border: 1px solid #444;
       .input-support();
@@ -33,8 +33,13 @@
         outline: none;
       }
 
+      .input.check-box {
+        left: 8px;
+      }
+
       div.name {
-        margin: 0 0 0 20px;
+        padding-left: 8px;
+        margin: 6px 0 6px 20px;
 
         input {
           witdh: auto !important;
@@ -44,7 +49,6 @@
   }
 
   .todo-container {
-
     li.todo {
       background-color: @todo-background;
       color: @todo-color;
@@ -83,16 +87,27 @@
       }
 
       i.fa.handle {
+        position: absolute;
         display: none;
         cursor: pointer;
         color: #444;
-        float: right;
-        margin-top: 2px;
+        top: 8px;
+        right: 8px;
         padding: 4px;
 
         &:hover {
           color: #666;
         }
+      }
+
+      .overdue-text {
+        float: right;
+        line-height: 24px;
+        padding: 6px 8px;
+        padding-right: 36px;
+
+        border-left: 1px solid @icon-red;
+        background-color: lighten(@icon-red, 10%);
       }
 
       &:hover {
@@ -101,7 +116,11 @@
         }
       }
 
-      &.selected {
+      &.overdue {
+        border-color: @icon-red;
+      }
+
+      &.selected:not(.editing) {
         background-color: @todo-selected-background;
 
         div.name.empty[placeholder]:after {
@@ -151,7 +170,7 @@
         }
 
         div.name {
-          margin-left: 8px;
+          margin-left: 0;
           margin-bottom: 6px;
           margin-top: 6px;
         }
