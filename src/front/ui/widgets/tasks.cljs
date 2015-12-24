@@ -115,11 +115,12 @@
     (reset! key-handler #(utils/key-code %
                                          :escape close))
     (reset! handler (fn [e]
-                      (when (and @editing
-                                 (not (has-as-parent? (.-target e)
-                                                      (.getElementById js/document
-                                                                       (str "todo-" (:id task))))))
-                        (save))))
+                      (when-not (has-as-parent? (.-target e)
+                                                (.getElementById js/document
+                                                                 (str "todo-" (:id task))))
+                        (if @editing
+                          (save)
+                          (reset! selected-task nil)))))
     (when (empty? (:name task))
       (edit))
     (reagent/create-class
