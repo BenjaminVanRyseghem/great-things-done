@@ -169,7 +169,11 @@
               :id "Inbox"
               :route "/inbox"
               :icon "inbox"
-              :badge #(:tasks (state/inbox))}]]
+              :badge #(filter (fn [t]
+                                (and (= "Inbox"
+                                        (:id (:project t)))
+                                     (not (:done t))))
+                              (state/all-tasks))}]]
     [menu-section-component
      :project-id project-id
      :title "Focus"
