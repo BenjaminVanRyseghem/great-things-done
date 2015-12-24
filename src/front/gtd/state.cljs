@@ -327,6 +327,7 @@
                                    (replace {matching @tmp-task}
                                             (:tasks parent)))]
               (install-entity! updated-parent))
+            (unregister-task task)
             (db/remove-task! task))
           ;; This section is to be tested
           ;; The scenarios:
