@@ -49,7 +49,9 @@
 
 (defmethod main/main-container-component "Inbox"
   [_]
-  [:div.main-container
+  [:div.main-container.top-offset
+   [:div#main-title
+    "Tasks"]
    [:div.main-viewport
     (let [inbox (state/inbox)
           tasks (:tasks inbox)]

@@ -16,5 +16,6 @@
 (defn main-component
   [project-id]
   [:div.main
+   {:class js/process.platform}
    [main-container-component
     project-id]])
