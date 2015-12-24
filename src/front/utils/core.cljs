@@ -60,7 +60,6 @@
                    :meta (.-metaKey event)}
         match   (fn [matching prevent modifiers-left k]
                   (when-not (contains? (merge key-map
-                                              {:prevent true}
                                               modifiers)
                                        k)
                     (throw (js/Error. (str "No binding found for " k))))
@@ -105,3 +104,10 @@
           (when @prevent
             (.preventDefault event))
           (body))))))
+
+(defn on
+  [input event-type & pairs]
+  (.on input
+       event-type
+       (fn [e]
+         (apply key-code e pairs))))
