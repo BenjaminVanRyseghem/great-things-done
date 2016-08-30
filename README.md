@@ -4,7 +4,10 @@ A fully open-source GTD application made with Clojure/ClojureScript and Electron
 
 # How to run
 
-foreman start &
+In separate terminals run: 
+
+- `foreman start &`
+- `./electron/Electron.app/Contents/MacOS/Electron .`
 
 # How to dev
 

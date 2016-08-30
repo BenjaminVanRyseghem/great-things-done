@@ -37,7 +37,7 @@
                 :source-paths ["src/electron/dev/"
                                "src/electron/electron/"]
                 :compiler {:output-to "resources/js/main.js"
-                           :optimizations :simple
+                           :optimizations :none
                            :pretty-print true
                            :cache-analysis true}}
                {:id "gtd"
